@@ -64,17 +64,23 @@
     <div id="search-results"></div>
 
     <script>
-        const googleAppsScriptURL = 'YOUR_APPS_SCRIPT_URL'; // Замените на URL вашего веб-приложения
+        const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycby4w6CJ-To4FDp4OfzXLaI9VcIbHye70IQSGPdUpEUstcm3jtguOYNdz4HntKhjEatd/exec';
 
         let data = [];
         let headers = [];
 
-        // Загрузка данных из Google Apps Script
+        // Загрузка данных из Google Таблицы
         async function loadGoogleSheetData() {
             try {
-                const response = await fetch(googleAppsScriptURL);
-                if (!response.ok) throw new Error('Network response was not ok');
+                const response = await fetch(googleAppsScriptURL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
                 data = await response.json();
+                if (data.length === 0) throw new Error('No data returned');
                 headers = Object.keys(data[0]); // Получаем заголовки из первого элемента данных
                 populateDropdowns();
             } catch (error) {
