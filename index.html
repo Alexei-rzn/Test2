@@ -41,17 +41,34 @@
             margin-top: 20px;
             color: green;
         }
+        .dropdown-container {
+            position: relative;
+            margin-bottom: 20px; /* Добавляем отступ снизу */
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .spacer {
+            height: 20px; /* Высота пустого пространства */
+        }
     </style>
 </head>
 <body>
 
     <h1>Поиск товара</h1>
 
-    <label for="search-column">Выберите столбец для поиска:</label>
-    <select id="search-column"></select>
+    <div class="dropdown-container">
+        <label for="search-column">Выберите столбец для поиска:</label>
+        <select id="search-column"></select>
+    </div>
     
-    <label for="output-columns">Выберите столбцы для вывода:</label>
-    <select id="output-columns" multiple></select>
+    <div class="dropdown-container">
+        <label for="output-columns">Выберите столбцы для вывода:</label>
+        <select id="output-columns" multiple></select>
+    </div>
 
     <label for="search-input">Введите значение для поиска:</label>
     <div style="position: relative;">
@@ -65,8 +82,10 @@
     <div id="loading-indicator">Загрузка данных...</div>
     <div id="search-results"></div>
 
+    <div class="spacer"></div> <!-- Пустая строка для разделения -->
+
     <script>
-        const googleWebAppURL = 'https://script.google.com/macros/s/AKfycbzYXJFoHYqaXjmnhJKcOPfMD4LQ8LX6Va3c2T_T_6EebIR-pN1_zLIrnHoilsBiRVs/exec'; // Замените на свой URL
+        const googleWebAppURL = 'https://script.google.com/macros/s/вашID/exec'; // Замените на свой URL
 
         let data = [];
         let headers = [];
