@@ -73,15 +73,15 @@
 
     <script>
         // URL веб-приложения Google Apps Script (замените на свой)
-        const googleWebAppURL = 'https://script.google.com/macros/s/AKfycbzWNs2wlgcnmHsKJCt7VgmlrvPuT5272ai-cMJnzICcLajv7PKLvcppEzgu1IneFpLe/exec';
+        const googleWebAppURL = 'https://script.google.com/macros/s/ВАШ_УНИКАЛЬНЫЙ_УРЛ_СКРИПТА/exec';
 
         let data = [];
         let headers = [];
 
-        // Загрузка данных из веб-приложения Google Apps Script
+        // Загрузка данных из Google Apps Script
         async function loadGoogleSheetData() {
             const loadingIndicator = document.getElementById('loading-indicator');
-            loadingIndicator.style.display = 'block'; // Показываем индикатор загрузки
+            loadingIndicator.style.display = 'block';
 
             try {
                 const response = await fetch(googleWebAppURL);
@@ -92,7 +92,7 @@
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
             } finally {
-                loadingIndicator.style.display = 'none'; // Скрываем индикатор загрузки
+                loadingIndicator.style.display = 'none';
             }
         }
 
@@ -102,13 +102,11 @@
             const outputColumnsSelect = document.getElementById('output-columns');
 
             headers.forEach(header => {
-                // Добавление опций для поиска
                 const searchOption = document.createElement('option');
                 searchOption.value = header;
                 searchOption.textContent = header;
                 searchColumnSelect.appendChild(searchOption);
 
-                // Добавление опций для вывода
                 const outputOption = document.createElement('option');
                 outputOption.value = header;
                 outputOption.textContent = header;
@@ -141,7 +139,7 @@
             });
         }
 
-        // Функция выполнения поиска по выбранному значению
+        // Выполнение поиска
         function performSearch() {
             const searchInput = document.getElementById('search-input').value.toLowerCase();
             const searchColumn = document.getElementById('search-column').value;
@@ -174,14 +172,14 @@
             }
         }
 
-        // Функция сброса поиска
+        // Сброс поиска
         function resetSearch() {
-            document.getElementById('search-input').value = '';  // Очистка поля поиска
-            document.getElementById('autocomplete-list').innerHTML = '';  // Очистка списка автозаполнения
-            document.getElementById('search-results').innerHTML = '';  // Очистка результатов поиска
+            document.getElementById('search-input').value = '';
+            document.getElementById('autocomplete-list').innerHTML = '';
+            document.getElementById('search-results').innerHTML = '';
         }
 
-        // Добавляем слушатель для автозаполнения
+        // Слушатель для автозаполнения
         document.getElementById('search-input').addEventListener('input', filterSuggestions);
 
         // Загружаем данные при загрузке страницы
