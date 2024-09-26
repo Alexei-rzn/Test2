@@ -41,6 +41,10 @@
             margin-top: 20px;
             color: green;
         }
+        #debug-info {
+            margin-top: 20px;
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +75,9 @@
     <!-- Результаты поиска -->
     <div id="search-results"></div>
 
+    <!-- Отладочная информация -->
+    <div id="debug-info"></div>
+
     <script>
         const googleWebAppURL = 'https://script.google.com/macros/s/AKfycby4w6CJ-To4FDp4OfzXLaI9VcIbHye70IQSGPdUpEUstcm3jtguOYNdz4HntKhjEatd/exec';
 
@@ -80,16 +87,28 @@
         // Загрузка данных из Google Apps Script
         async function loadGoogleSheetData() {
             const loadingIndicator = document.getElementById('loading-indicator');
+            const debugInfo = document.getElementById('debug-info');
             loadingIndicator.style.display = 'block';
 
             try {
                 const response = await fetch(googleWebAppURL);
                 const jsonData = await response.json();
-                headers = Object.keys(jsonData[0]);
-                data = jsonData;
-                populateDropdowns(); // Заполняем выпадающие списки
+                
+                if (jsonData && jsonData.length > 0) {
+                    headers = Object.keys(jsonData[0]);
+                    data = jsonData;
+
+                    debugInfo.textContent = `Данные загружены: ${headers.join(', ')}`; // Отображаем заголовки в блоке отладки
+                    console.log('Headers:', headers); // Логируем заголовки для проверки
+                    console.log('Data:', data); // Логируем данные
+
+                    populateDropdowns(); // Заполняем выпадающие списки
+                } else {
+                    debugInfo.textContent = 'Ошибка: данные не загружены или пусты';
+                }
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
+                debugInfo.textContent = `Ошибка загрузки данных: ${error}`;
             } finally {
                 loadingIndicator.style.display = 'none';
             }
@@ -117,6 +136,9 @@
                 outputOption.textContent = header;
                 outputColumnsSelect.appendChild(outputOption);
             });
+
+            // Отладка: выводим сообщение, что выпадающие списки заполнены
+            console.log('Выпадающие списки заполнены:', headers);
         }
 
         // Фильтрация совпадающих значений для автозаполнения
