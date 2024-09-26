@@ -3,42 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fetch API Data</title>
+    <title>Данные из Google Sheets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Данные из API</h1>
+<h1>Данные из Google Sheets</h1>
 <div id="data"></div>
 
 <script>
-    const url = 'https://script.google.com/macros/s/AKfycby4w6CJ-To4FDp4OfzXLaI9VcIbHye70IQSGPdUpEUstcm3jtguOYNdz4HntKhjEatd/exec';
+    const url = 'https://script.google.com/macros/s/AKfycby4w6CJ-To4FDp4OfzXLaI9VcIbHye70IQSGPdUpEUstcm3jtguOYNdz4HntKhjEatd/exec'; // Ваш URL Google Apps Script
 
-    // Функция для получения данных с использованием Fetch API
+    // Функция для получения данных
     async function fetchData() {
         try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Ошибка HTTP: ${response.status}`);
             }
-
             const data = await response.json();
-            displayData(data); // Функция для вывода данных
+            displayData(data); // Отобразить данные на странице
         } catch (error) {
             console.error('Ошибка загрузки данных:', error);
             document.getElementById('data').innerText = 'Ошибка загрузки данных: ' + error;
         }
     }
 
-    // Функция для отображения данных на странице
+    // Функция для отображения данных в таблице
     function displayData(data) {
-        const dataDiv = document.getElementById('data');
-        dataDiv.innerHTML = JSON.stringify(data, null, 2); // Выводим данные на экран
+        const table = document.createElement('table');
+        const headers = Object.keys(data[0]);
+        
+        // Создаем заголовки таблицы
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Заполняем таблицу данными
+        const tbody = document.createElement('tbody');
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = row[header];
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+
+        // Добавляем таблицу на страницу
+        document.getElementById('data').appendChild(table);
     }
 
     // Загружаем данные при загрузке страницы
