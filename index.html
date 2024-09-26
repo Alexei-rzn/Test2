@@ -3,215 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Поиск товара</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #search-input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-        }
-        #search-results {
-            margin-top: 20px;
-        }
-        .autocomplete-items {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            background-color: #fff;
-            max-height: 150px;
-            overflow-y: auto;
-            width: calc(100% - 2px);
-            z-index: 1000;
-        }
-        .autocomplete-item {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #fff;
-            border-bottom: 1px solid #d4d4d4;
-        }
-        .autocomplete-item:hover {
-            background-color: #e9e9e9;
-        }
-        #loading-indicator {
-            display: none;
-            margin-top: 20px;
-            color: green;
-        }
-        #debug-info {
-            margin-top: 20px;
-            color: red;
-        }
-    </style>
+    <title>Fetch API Data</title>
 </head>
 <body>
 
-    <h1>Поиск товара</h1>
+<h1>Данные из API</h1>
+<div id="data"></div>
 
-    <!-- Выпадающий список для выбора столбца поиска -->
-    <label for="search-column">Выберите столбец для поиска:</label>
-    <select id="search-column"></select>
-    
-    <!-- Выпадающий список для выбора столбцов для вывода -->
-    <label for="output-columns">Выберите столбцы для вывода:</label>
-    <select id="output-columns" multiple></select>
+<script>
+    const url = 'https://script.google.com/macros/s/AKfycby4w6CJ-To4FDp4OfzXLaI9VcIbHye70IQSGPdUpEUstcm3jtguOYNdz4HntKhjEatd/exec';
 
-    <!-- Поле для ввода данных с автозаполнением -->
-    <label for="search-input">Введите значение для поиска:</label>
-    <div style="position: relative;">
-        <input type="text" id="search-input" placeholder="Введите значение">
-        <div id="autocomplete-list" class="autocomplete-items"></div>
-    </div>
-
-    <button onclick="performSearch()">Поиск</button>
-    <button onclick="resetSearch()">Сброс</button>
-
-    <!-- Индикатор загрузки -->
-    <div id="loading-indicator">Загрузка данных...</div>
-
-    <!-- Результаты поиска -->
-    <div id="search-results"></div>
-
-    <!-- Отладочная информация -->
-    <div id="debug-info"></div>
-
-    <script>
-        const googleWebAppURL = 'https://script.google.com/macros/s/AKfycby4w6CJ-To4FDp4OfzXLaI9VcIbHye70IQSGPdUpEUstcm3jtguOYNdz4HntKhjEatd/exec';
-
-        let data = [];
-        let headers = [];
-
-        // Загрузка данных из Google Apps Script
-        async function loadGoogleSheetData() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const debugInfo = document.getElementById('debug-info');
-            loadingIndicator.style.display = 'block';
-
-            try {
-                const response = await fetch(googleWebAppURL);
-                const jsonData = await response.json();
-                
-                if (jsonData && jsonData.length > 0) {
-                    headers = Object.keys(jsonData[0]);
-                    data = jsonData;
-
-                    debugInfo.textContent = `Данные загружены: ${headers.join(', ')}`; // Отображаем заголовки в блоке отладки
-                    console.log('Headers:', headers); // Логируем заголовки для проверки
-                    console.log('Data:', data); // Логируем данные
-
-                    populateDropdowns(); // Заполняем выпадающие списки
-                } else {
-                    debugInfo.textContent = 'Ошибка: данные не загружены или пусты';
+    // Функция для получения данных с использованием Fetch API
+    async function fetchData() {
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            } catch (error) {
-                console.error('Ошибка загрузки данных:', error);
-                debugInfo.textContent = `Ошибка загрузки данных: ${error}`;
-            } finally {
-                loadingIndicator.style.display = 'none';
-            }
-        }
-
-        // Заполнение выпадающих списков столбцами
-        function populateDropdowns() {
-            const searchColumnSelect = document.getElementById('search-column');
-            const outputColumnsSelect = document.getElementById('output-columns');
-
-            // Очищаем выпадающие списки перед заполнением
-            searchColumnSelect.innerHTML = '';
-            outputColumnsSelect.innerHTML = '';
-
-            headers.forEach(header => {
-                // Добавление опций для поиска
-                const searchOption = document.createElement('option');
-                searchOption.value = header;
-                searchOption.textContent = header;
-                searchColumnSelect.appendChild(searchOption);
-
-                // Добавление опций для вывода
-                const outputOption = document.createElement('option');
-                outputOption.value = header;
-                outputOption.textContent = header;
-                outputColumnsSelect.appendChild(outputOption);
             });
-
-            // Отладка: выводим сообщение, что выпадающие списки заполнены
-            console.log('Выпадающие списки заполнены:', headers);
-        }
-
-        // Фильтрация совпадающих значений для автозаполнения
-        function filterSuggestions() {
-            const input = document.getElementById('search-input').value.toLowerCase();
-            const searchColumn = document.getElementById('search-column').value;
-            const autocompleteList = document.getElementById('autocomplete-list');
-            autocompleteList.innerHTML = '';
-
-            if (!input || !searchColumn) {
-                return;
+            
+            if (!response.ok) {
+                throw new Error(`Ошибка HTTP: ${response.status}`);
             }
 
-            const filteredSuggestions = data.filter(item => item[searchColumn] && item[searchColumn].toLowerCase().includes(input));
-
-            filteredSuggestions.slice(0, 5).forEach(suggestion => {
-                const div = document.createElement('div');
-                div.classList.add('autocomplete-item');
-                div.textContent = suggestion[searchColumn];
-                div.addEventListener('click', () => {
-                    document.getElementById('search-input').value = suggestion[searchColumn];
-                    autocompleteList.innerHTML = '';
-                });
-                autocompleteList.appendChild(div);
-            });
+            const data = await response.json();
+            displayData(data); // Функция для вывода данных
+        } catch (error) {
+            console.error('Ошибка загрузки данных:', error);
+            document.getElementById('data').innerText = 'Ошибка загрузки данных: ' + error;
         }
+    }
 
-        // Выполнение поиска
-        function performSearch() {
-            const searchInput = document.getElementById('search-input').value.toLowerCase();
-            const searchColumn = document.getElementById('search-column').value;
-            const outputColumns = Array.from(document.getElementById('output-columns').selectedOptions)
-                                      .map(option => option.value);
-            const resultsContainer = document.getElementById('search-results');
-            resultsContainer.innerHTML = '';
+    // Функция для отображения данных на странице
+    function displayData(data) {
+        const dataDiv = document.getElementById('data');
+        dataDiv.innerHTML = JSON.stringify(data, null, 2); // Выводим данные на экран
+    }
 
-            const filteredData = data.filter(item => item[searchColumn] && item[searchColumn].toLowerCase() === searchInput);
-
-            if (filteredData.length > 0) {
-                let tableHTML = `<table border="1"><tr>`;
-                outputColumns.forEach(column => {
-                    tableHTML += `<th>${column}</th>`;
-                });
-                tableHTML += `</tr>`;
-
-                filteredData.forEach(item => {
-                    tableHTML += `<tr>`;
-                    outputColumns.forEach(column => {
-                        tableHTML += `<td>${item[column]}</td>`;
-                    });
-                    tableHTML += `</tr>`;
-                });
-
-                tableHTML += `</table>`;
-                resultsContainer.innerHTML = tableHTML;
-            } else {
-                resultsContainer.innerHTML = '<p>Ничего не найдено</p>';
-            }
-        }
-
-        // Сброс поиска
-        function resetSearch() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('autocomplete-list').innerHTML = '';
-            document.getElementById('search-results').innerHTML = '';
-        }
-
-        // Слушатель для автозаполнения
-        document.getElementById('search-input').addEventListener('input', filterSuggestions);
-
-        // Загружаем данные при загрузке страницы
-        loadGoogleSheetData();
-    </script>
+    // Загружаем данные при загрузке страницы
+    window.onload = fetchData;
+</script>
 
 </body>
 </html>
