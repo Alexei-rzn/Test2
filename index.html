@@ -74,7 +74,6 @@
                 
                 if (data.length === 0) throw new Error('Нет данных');
 
-                // Извлекаем заголовки из первого объекта
                 headers = Object.keys(data[0]);
                 populateDropdowns();
             } catch (error) {
