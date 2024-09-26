@@ -72,7 +72,6 @@
     <div id="search-results"></div>
 
     <script>
-        // URL веб-приложения Google Apps Script (замените на свой)
         const googleWebAppURL = 'https://script.google.com/macros/s/AKfycby4w6CJ-To4FDp4OfzXLaI9VcIbHye70IQSGPdUpEUstcm3jtguOYNdz4HntKhjEatd/exec';
 
         let data = [];
@@ -88,7 +87,7 @@
                 const jsonData = await response.json();
                 headers = Object.keys(jsonData[0]);
                 data = jsonData;
-                populateDropdowns();
+                populateDropdowns(); // Заполняем выпадающие списки
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
             } finally {
@@ -101,12 +100,18 @@
             const searchColumnSelect = document.getElementById('search-column');
             const outputColumnsSelect = document.getElementById('output-columns');
 
+            // Очищаем выпадающие списки перед заполнением
+            searchColumnSelect.innerHTML = '';
+            outputColumnsSelect.innerHTML = '';
+
             headers.forEach(header => {
+                // Добавление опций для поиска
                 const searchOption = document.createElement('option');
                 searchOption.value = header;
                 searchOption.textContent = header;
                 searchColumnSelect.appendChild(searchOption);
 
+                // Добавление опций для вывода
                 const outputOption = document.createElement('option');
                 outputOption.value = header;
                 outputOption.textContent = header;
