@@ -3,6 +3,9 @@ const scoreDisplay = document.getElementById("score");
 const balanceDisplay = document.getElementById("balance");
 const restartButton = document.getElementById("restart");
 const gameOverDisplay = document.getElementById("game-over");
+const deleteButton = document.getElementById("delete");
+const shuffleButton = document.getElementById("shuffle");
+const addFundsButton = document.getElementById("add-funds");
 
 let grid = [];
 let score = 0;
@@ -15,6 +18,7 @@ function initGame() {
     grid = Array.from({ length: 4 }, () => Array(4).fill(0));
     score = 0;
     history = []; // Сбрасываем историю
+    balance = 100; // Сбрасываем баланс
     addNewTile();
     addNewTile();
     updateGrid();
@@ -123,131 +127,125 @@ function move(direction) {
     updateGrid();
 }
 
-// Ход назад
-function undoMove() {
-    if (history.length > 0 && balance >= 25) {
-        grid = history.pop(); // Восстанавливаем последнее состояние
-        balance -= 25; // Списываем 25 очков
-        updateGrid();
-    }
-}
-
-// Удаление плитки
-function deleteTile(i, j) {
-    if (grid[i][j] !== 0 && balance >= 30) {
-        grid[i][j] = 0; // Удаляем плитку
-        balance -= 30; // Списываем 30 очков
-        updateGrid();
-    }
-}
-
-// Перемешивание плиток
-function shuffleTiles() {
-    if (balance >= 20) {
-        const flatGrid = grid.flat().filter(value => value !== 0); // Убираем нули
-        for (let i = flatGrid.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [flatGrid[i], flatGrid[j]] = [flatGrid[j], flatGrid[i]]; // Перемешиваем
-        }
-        // Заполняем сетку новыми перемешанными плитками
-        grid = Array.from({ length: 4 }, () => Array(4).fill(0));
-        flatGrid.forEach((value, index) => {
-            const row = Math.floor(index / 4);
-            const col = index % 4;
-            grid[row][col] = value;
-        });
-        balance -= 20; // Списываем 20 очков
-        updateGrid();
-    }
-}
-
-// Логика сдвига плиток в строке
-function slideRow(row, direction) {
-    let newRow = row.filter(value => value); // Удаляем нули
-    const emptySpaces = 4 - newRow.length; // Количество пустых мест
-    let moved = false;
-    let combined = false;
-
-    // Добавляем пустые места в конец или начало в зависимости от направления
-    if (direction === 'left') {
-        newRow = [...newRow, ...Array(emptySpaces).fill(0)];
-    } else {
-        newRow = [...Array(emptySpaces).fill(0), ...newRow];
-    }
-
-    // Складывание плиток
-    for (let i = 0; i < 3; i++) {
-        if (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
-            newRow[i] *= 2; // Складываем плитки
-            score += newRow[i]; // Увеличиваем счёт
-            newRow[i + 1] = 0; // Обнуляем следующую плитку
-            combined = true; // Отметить, что произошло складывание
+// Логика скольжения плиток в строке
+function slideRow(row) {
+    let newRow = row.filter(val => val); // Убираем все нули
+    for (let i = 0; i < newRow.length - 1; i++) {
+        if (newRow[i] === newRow[i + 1]) { // Суммируем плитки
+            newRow[i] *= 2;
+            score += newRow[i]; // Обновляем счёт
+            newRow.splice(i + 1, 1); // Удаляем вторую плитку
+            newRow.push(0); // Добавляем 0 в конец
         }
     }
+    while (newRow.length < 4) newRow.push(0); // Добавляем 0 в конец строки до длины 4
+    return {
+        newRow,
+        moved: row.some((val, idx) => val !== newRow[idx]), // Проверяем, было ли движение
+        combined: newRow.some((val, idx) => val !== row[idx] && val !== 0) // Проверяем, были ли сложены плитки
+    };
+}
 
-    // Проверка на движение
-    if (JSON.stringify(newRow) !== JSON.stringify(row)) {
-        moved = true; // Отметить, что произошло движение
+// Логика скольжения плиток в колонке вверх
+function slideColumnUp(column) {
+    let newColumn = column.filter(val => val);
+    for (let i = 0; i < newColumn.length - 1; i++) {
+        if (newColumn[i] === newColumn[i + 1]) {
+            newColumn[i] *= 2;
+            score += newColumn[i];
+            newColumn.splice(i + 1, 1);
+            newColumn.push(0);
+        }
     }
+    while (newColumn.length < 4) newColumn.push(0);
+    return {
+        newColumn,
+        moved: column.some((val, idx) => val !== newColumn[idx]),
+        combined: newColumn.some((val, idx) => val !== column[idx] && val !== 0)
+    };
+}
 
-    // Убираем нули после складывания
-    newRow = newRow.filter(value => value);
-    while (newRow.length < 4) newRow.push(0); // Заполняем до
-// Логика сдвига плиток в колонне вниз
+// Логика скольжения плиток в колонке вниз
 function slideColumnDown(column) {
-    let newColumn = column.filter(value => value); // Удаляем нули
-    let moved = false;
-    let combined = false;
-
-    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем нулями в начале
-
-    // Складывание плиток
-    for (let i = 3; i > 0; i--) {
-        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
-            newColumn[i] *= 2; // Складываем плитки
-            score += newColumn[i]; // Увеличиваем счёт
-            newColumn[i - 1] = 0; // Обнуляем предыдущую плитку
-            combined = true; // Отметить, что произошло складывание
+    let newColumn = column.filter(val => val);
+    for (let i = newColumn.length - 1; i > 0; i--) {
+        if (newColumn[i] === newColumn[i - 1]) {
+            newColumn[i] *= 2;
+            score += newColumn[i];
+            newColumn.splice(i - 1, 1);
+            newColumn.unshift(0);
         }
     }
-
-    // Проверка на движение
-    if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
-        moved = true; // Отметить, что произошло движение
-    }
-
-    // Убираем нули после складывания
-    newColumn = newColumn.filter(value => value);
-    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем нулями в начале
-
-    return { newColumn, moved, combined };
+    while (newColumn.length < 4) newColumn.unshift(0);
+    return {
+        newColumn,
+        moved: column.some((val, idx) => val !== newColumn[idx]),
+        combined: newColumn.some((val, idx) => val !== column[idx] && val !== 0)
+    };
 }
 
-// Обработка событий клавиатуры для управления игрой
-document.addEventListener("keydown", (event) => {
-    if (!gameOverDisplay.classList.contains("hidden")) return;
-
-    switch (event.key) {
-        case "ArrowLeft":
-            move('left');
-            break;
-        case "ArrowRight":
-            move('right');
-            break;
-        case "ArrowUp":
-            move('up');
-            break;
-        case "ArrowDown":
-            move('down');
-            break;
+// Обработчики клавиш для управления
+document.addEventListener("keydown", (e) => {
+    if (gameOverDisplay.classList.contains("hidden")) {
+        switch (e.key) {
+            case "ArrowLeft":
+                move("left");
+                break;
+            case "ArrowRight":
+                move("right");
+                break;
+            case "ArrowUp":
+                move("up");
+                break;
+            case "ArrowDown":
+                move("down");
+                break;
+        }
     }
 });
 
-// Перезапуск игры
+// Сброс игры
 restartButton.addEventListener("click", () => {
     gameOverDisplay.classList.add("hidden");
     initGame();
 });
 
-// Инициализация игры при первой загрузке
+// Перетасовка плиток (опционально)
+shuffleButton.addEventListener("click", () => {
+    if (balance >= 10) {
+        balance -= 10; // Снимаем 10 очков с баланса за перетасовку
+        grid = grid.flat().sort(() => Math.random() - 0.5).reduce((rows, key, index) => (index % 4 === 0 ? rows.push([key]) : rows[rows.length - 1].push(key)) && rows, []);
+        updateGrid();
+    }
+});
+
+// Добавление средств на счёт
+addFundsButton.addEventListener("click", () => {
+    balance += 50; // Добавляем 50 единиц к балансу
+    updateGrid();
+});
+
+// Удаление плитки (опционально)
+deleteButton.addEventListener("click", () => {
+    deleteMode = true;
+});
+
+gridContainer.addEventListener("click", (e) => {
+    if (deleteMode && balance >= 20) {
+        const tileElement = e.target;
+        if (tileElement.classList.contains("tile")) {
+            const index = Array.from(gridContainer.children).indexOf(tileElement);
+            const row = Math.floor(index / 4);
+            const col = index % 4;
+            if (grid[row][col] !== 0) {
+                grid[row][col] = 0; // Удаляем плитку
+                balance -= 20; // Снимаем 20 очков с баланса за удаление плитки
+                updateGrid();
+            }
+        }
+        deleteMode = false; // Выходим из режима удаления
+    }
+});
+
+// Инициализация игры при загрузке страницы
 initGame();
