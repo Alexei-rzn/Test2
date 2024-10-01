@@ -1,0 +1,72 @@
+body {
+    background-color: #8cceff; /* Цвет фона */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Arial', sans-serif;
+}
+
+.game-container {
+    text-align: center;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.score-container {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.restart-button {
+    font-size: 18px;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #f39c12; /* Цвет кнопки */
+    color: white;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.tile {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.tile-2 { background-color: #60b3d8; }
+.tile-4 { background-color: #65c4dc; }
+.tile-8 { background-color: #6ce7d3; }
+.tile-16 { background-color: #68e4ca; }
+.tile-32 { background-color: #1bc4c7; }
+.tile-64 { background-color: #1ab1b2; }
+.tile-128 { background-color: #0095f8; }
+.tile-256 { background-color: #0077bb; }
+.tile-512 { background-color: #005e99; }
+.tile-1024 { background-color: #004577; }
+.tile-2048 { background-color: #003858; }
+
+.game-over {
+    font-size: 24px;
+    color: red;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
