@@ -272,50 +272,24 @@ restartButton.addEventListener("click", () => {
 });
 
 // Пополнение баланса (для примера)
-const addFundsButton = document.createElement("button");
-addFundsButton.innerText = "Пополнить баланс на 50";
+const addFundsButton = document.getElementById("add-funds");
 addFundsButton.addEventListener("click", () => {
     balance += 50; // Добавляем 50 к балансу
     updateGrid();
 });
-document.body.appendChild(addFundsButton);
 
-// Создаем кнопки для дополнительных действий
-const undoButton = document.createElement("button");
-undoButton.innerText = "Ход назад";
+// Кнопки действий
+const undoButton = document.getElementById("undo");
 undoButton.addEventListener("click", undoMove);
-document.body.appendChild(undoButton);
 
-const deleteTileButton = document.createElement("button");
-deleteTileButton.innerText = "Удалить плитку";
+const deleteTileButton = document.getElementById("delete");
 deleteTileButton.addEventListener("click", () => {
     deleteMode = !deleteMode; // Переключаем режим удаления
     deleteTileButton.style.backgroundColor = deleteMode ? "lightcoral" : ""; // Меняем цвет кнопки для визуального обозначения
 });
-document.body.appendChild(deleteTileButton);
 
-const shuffleButton = document.createElement("button");
-shuffleButton.innerText = "Перемешать плитки";
+const shuffleButton = document.getElementById("shuffle");
 shuffleButton.addEventListener("click", shuffleTiles);
-document.body.appendChild(shuffleButton);
-
-// Создаем поле для отображения очков и баланса
-const scoreElement = document.createElement("div");
-scoreElement.id = "score";
-scoreElement.innerText = `Очки: ${score}`;
-scoreElement.style.fontSize = "20px";
-scoreElement.style.marginBottom = "10px";
-document.body.prepend(scoreElement);
-
-const balanceElement = document.createElement("div");
-balanceElement.id = "balance";
-balanceElement.innerText = `Баланс: ${balance}`;
-balanceElement.style.fontSize = "20px";
-balanceElement.style.marginBottom = "10px";
-balanceElement.style.position = "absolute";
-balanceElement.style.right = "10px";
-balanceElement.style.top = "10px";
-document.body.prepend(balanceElement);
 
 // Инициализация игры при загрузке
 initGame();
