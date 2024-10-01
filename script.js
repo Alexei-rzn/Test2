@@ -192,48 +192,14 @@ function slideRow(row, direction) {
 
     // Убираем нули после складывания
     newRow = newRow.filter(value => value);
-    while (newRow.length < 4) newRow.push(0); // Заполняем до 4
-
-    return { newRow, moved, combined };
-}
-
-// Логика сдвига плиток в колонне вверх
-function slideColumnUp(column) {
-    let newColumn = column.filter(value => value); // Удаляем нули
-    let moved = false;
-    let combined = false;
-
-    while (newColumn.length < 4) newColumn.push(0); // Заполняем до 4
-
-    // Складывание плиток
-    for (let i = 0; i < 3; i++) {
-        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
-            newColumn[i] *= 2; // Складываем плитки
-            score += newColumn[i]; // Увеличиваем счёт
-            newColumn[i + 1] = 0; // Обнуляем следующую плитку
-            combined = true; // Отметить, что произошло складывание
-        }
-    }
-
-    // Проверка на движение
-    if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
-        moved = true; // Отметить, что произошло движение
-    }
-
-    // Убираем нули после складывания
-    newColumn = newColumn.filter(value => value);
-    while (newColumn.length < 4) newColumn.push(0); // Заполняем до 4
-
-    return { newColumn, moved, combined };
-}
-
+    while (newRow.length < 4) newRow.push(0); // Заполняем до
 // Логика сдвига плиток в колонне вниз
 function slideColumnDown(column) {
     let newColumn = column.filter(value => value); // Удаляем нули
     let moved = false;
     let combined = false;
 
-    while (newColumn.length < 4) newColumn.unshift(0); // Добавляем нули в начало
+    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем нулями в начале
 
     // Складывание плиток
     for (let i = 3; i > 0; i--) {
@@ -252,7 +218,7 @@ function slideColumnDown(column) {
 
     // Убираем нули после складывания
     newColumn = newColumn.filter(value => value);
-    while (newColumn.length < 4) newColumn.unshift(0); // Добавляем нули в начало
+    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем нулями в начале
 
     return { newColumn, moved, combined };
 }
@@ -274,33 +240,14 @@ document.addEventListener("keydown", (event) => {
         case "ArrowDown":
             move('down');
             break;
-        case "u": // Назад (undo)
-            undoMove();
-            break;
-        case "s": // Перемешать плитки
-            shuffleTiles();
-            break;
-        case "d": // Включение режима удаления плитки
-            deleteMode = !deleteMode;
-            break;
     }
 });
 
-// Обработка кликов на плитки для удаления
-gridContainer.addEventListener("click", (event) => {
-    if (deleteMode) {
-        const tileIndex = Array.from(gridContainer.children).indexOf(event.target);
-        const row = Math.floor(tileIndex / 4);
-        const col = tileIndex % 4;
-        deleteTile(row, col);
-    }
-});
-
-// Сброс игры
+// Перезапуск игры
 restartButton.addEventListener("click", () => {
     gameOverDisplay.classList.add("hidden");
     initGame();
 });
 
-// Запуск игры при загрузке
+// Инициализация игры при первой загрузке
 initGame();
