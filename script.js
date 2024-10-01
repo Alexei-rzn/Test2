@@ -1,11 +1,14 @@
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
+const bonusScoreDisplay = document.getElementById("bonus-score");
 const restartButton = document.getElementById("restart");
 const gameOverDisplay = document.getElementById("game-over");
 
 let grid = [];
 let score = 0;
+let bonusScore = 100; // Начальный бонусный счет
 let history = []; // Стек для хранения предыдущих состояний
+let deleteMode = false; // Режим удаления плитки
 
 // Инициализация игры
 function initGame() {
@@ -46,6 +49,7 @@ function updateGrid() {
         });
     });
     scoreDisplay.innerText = score;
+    bonusScoreDisplay.innerText = bonusScore; // Обновляем бонусный счет
 
     if (checkGameOver()) {
         gameOverDisplay.classList.remove("hidden");
@@ -121,35 +125,40 @@ function move(direction) {
 
 // Ход назад
 function undoMove() {
-    if (history.length > 0) {
+    if (history.length > 0 && bonusScore >= 25) {
         grid = history.pop(); // Восстанавливаем последнее состояние
+        bonusScore -= 25; // Списываем 25 очков
         updateGrid();
     }
 }
 
-// Удаление выбранной плитки
+// Удаление плитки
 function deleteTile(i, j) {
-    if (grid[i][j] !== 0) {
+    if (grid[i][j] !== 0 && bonusScore >= 30) {
         grid[i][j] = 0; // Удаляем плитку
+        bonusScore -= 30; // Списываем 30 очков
         updateGrid();
     }
 }
 
 // Перемешивание плиток
 function shuffleTiles() {
-    const flatGrid = grid.flat().filter(value => value !== 0); // Убираем нули
-    for (let i = flatGrid.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [flatGrid[i], flatGrid[j]] = [flatGrid[j], flatGrid[i]]; // Перемешиваем
+    if (bonusScore >= 20) {
+        const flatGrid = grid.flat().filter(value => value !== 0); // Убираем нули
+        for (let i = flatGrid.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [flatGrid[i], flatGrid[j]] = [flatGrid[j], flatGrid[i]]; // Перемешиваем
+        }
+        // Заполняем сетку новыми перемешанными плитками
+        grid = Array.from({ length: 4 }, () => Array(4).fill(0));
+        flatGrid.forEach((value, index) => {
+            const row = Math.floor(index / 4);
+            const col = index % 4;
+            grid[row][col] = value;
+        });
+        bonusScore -= 20; // Списываем 20 очков
+        updateGrid();
     }
-    // Заполняем сетку новыми перемешанными плитками
-    grid = Array.from({ length: 4 }, () => Array(4).fill(0));
-    flatGrid.forEach((value, index) => {
-        const row = Math.floor(index / 4);
-        const col = index % 4;
-        grid[row][col] = value;
-    });
-    updateGrid();
 }
 
 // Логика сдвига плиток в строке
@@ -255,8 +264,11 @@ function handleSwipe(direction) {
 
 // Кнопка перезапуска игры
 restartButton.addEventListener("click", () => {
-    gameOverDisplay.classList.add("hidden");
-    initGame();
+    if (bonusScore >= 10) {
+        gameOverDisplay.classList.add("hidden");
+        bonusScore -= 10; // Списываем 10 очков
+        initGame();
+    }
 });
 
 // События касания
@@ -273,22 +285,47 @@ gridContainer.addEventListener("touchend", (event) => {
     const deltaX = endX - startX;
     const deltaY = endY - startY;
 
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Определяем горизонтальное движение
-        if (deltaX > 0) {
-            handleSwipe('right'); // Свайп вправо
-        } else {
-            handleSwipe('left'); // Свайп влево
+    if (deleteMode) {
+        // Выбор плитки для удаления
+        const tileToDelete = getTileFromTouch(startX, startY);
+                if (tileToDelete) {
+            const { row, col } = tileToDelete;
+            deleteTile(row, col);
+            deleteMode = false; // Выключаем режим удаления после удаления плитки
         }
     } else {
-        // Определяем вертикальное движение
-        if (deltaY > 0) {
-            handleSwipe('down'); // Свайп вниз
+        // Определяем движение
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            // Определяем горизонтальное движение
+            if (deltaX > 0) {
+                handleSwipe('right'); // Свайп вправо
+            } else {
+                handleSwipe('left'); // Свайп влево
+            }
         } else {
-            handleSwipe('up'); // Свайп вверх
+            // Определяем вертикальное движение
+            if (deltaY > 0) {
+                handleSwipe('down'); // Свайп вниз
+            } else {
+                handleSwipe('up'); // Свайп вверх
+            }
         }
     }
 });
+
+// Функция для получения координат плитки из касания
+function getTileFromTouch(x, y) {
+    const tileElements = document.getElementsByClassName("tile");
+    for (let i = 0; i < tileElements.length; i++) {
+        const rect = tileElements[i].getBoundingClientRect();
+        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+            const tileRow = Math.floor(i / 4);
+            const tileCol = i % 4;
+            return { row: tileRow, col: tileCol };
+        }
+    }
+    return null;
+}
 
 // Создаем кнопки для дополнительных действий
 const undoButton = document.createElement("button");
@@ -299,13 +336,8 @@ document.body.appendChild(undoButton);
 const deleteTileButton = document.createElement("button");
 deleteTileButton.innerText = "Удалить плитку";
 deleteTileButton.addEventListener("click", () => {
-    const tileToDelete = prompt("Введите координаты плитки для удаления (например, 1,2):");
-    const [row, col] = tileToDelete.split(',').map(Number);
-    if (row >= 0 && row < 4 && col >= 0 && col < 4) {
-        deleteTile(row, col);
-    } else {
-        alert("Некорректные координаты!");
-    }
+    deleteMode = !deleteMode; // Переключаем режим удаления
+    deleteTileButton.style.backgroundColor = deleteMode ? "lightcoral" : ""; // Меняем цвет кнопки для визуального обозначения
 });
 document.body.appendChild(deleteTileButton);
 
@@ -313,6 +345,14 @@ const shuffleButton = document.createElement("button");
 shuffleButton.innerText = "Перемешать плитки";
 shuffleButton.addEventListener("click", shuffleTiles);
 document.body.appendChild(shuffleButton);
+
+// Создаем поле для отображения бонусного счета
+const bonusScoreElement = document.createElement("div");
+bonusScoreElement.id = "bonus-score";
+bonusScoreElement.innerText = bonusScore;
+bonusScoreElement.style.fontSize = "20px";
+bonusScoreElement.style.marginBottom = "10px";
+document.body.prepend(bonusScoreElement);
 
 // Инициализация игры при загрузке
 initGame();
