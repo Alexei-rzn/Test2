@@ -233,7 +233,7 @@ function slideColumnDown(column) {
     let moved = false;
     let combined = false;
 
-    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем до 4 в начале
+    while (newColumn.length < 4) newColumn.unshift(0); // Добавляем нули в начало
 
     // Складывание плиток
     for (let i = 3; i > 0; i--) {
@@ -252,44 +252,55 @@ function slideColumnDown(column) {
 
     // Убираем нули после складывания
     newColumn = newColumn.filter(value => value);
-    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем до 4
+    while (newColumn.length < 4) newColumn.unshift(0); // Добавляем нули в начало
 
     return { newColumn, moved, combined };
 }
 
-// Обработка свайпов
-function handleSwipe(direction) {
-    move(direction);
-}
+// Обработка событий клавиатуры для управления игрой
+document.addEventListener("keydown", (event) => {
+    if (!gameOverDisplay.classList.contains("hidden")) return;
 
-// Кнопка перезапуска игры
-restartButton.addEventListener("click", () => {
-    if (balance >= 10) {
-        gameOverDisplay.classList.add("hidden");
-        balance -= 10; // Списываем 10 очков
-        initGame();
+    switch (event.key) {
+        case "ArrowLeft":
+            move('left');
+            break;
+        case "ArrowRight":
+            move('right');
+            break;
+        case "ArrowUp":
+            move('up');
+            break;
+        case "ArrowDown":
+            move('down');
+            break;
+        case "u": // Назад (undo)
+            undoMove();
+            break;
+        case "s": // Перемешать плитки
+            shuffleTiles();
+            break;
+        case "d": // Включение режима удаления плитки
+            deleteMode = !deleteMode;
+            break;
     }
 });
 
-// Пополнение баланса (для примера)
-const addFundsButton = document.getElementById("add-funds");
-addFundsButton.addEventListener("click", () => {
-    balance += 50; // Добавляем 50 к балансу
-    updateGrid();
+// Обработка кликов на плитки для удаления
+gridContainer.addEventListener("click", (event) => {
+    if (deleteMode) {
+        const tileIndex = Array.from(gridContainer.children).indexOf(event.target);
+        const row = Math.floor(tileIndex / 4);
+        const col = tileIndex % 4;
+        deleteTile(row, col);
+    }
 });
 
-// Кнопки действий
-const undoButton = document.getElementById("undo");
-undoButton.addEventListener("click", undoMove);
-
-const deleteTileButton = document.getElementById("delete");
-deleteTileButton.addEventListener("click", () => {
-    deleteMode = !deleteMode; // Переключаем режим удаления
-    deleteTileButton.style.backgroundColor = deleteMode ? "lightcoral" : ""; // Меняем цвет кнопки для визуального обозначения
+// Сброс игры
+restartButton.addEventListener("click", () => {
+    gameOverDisplay.classList.add("hidden");
+    initGame();
 });
 
-const shuffleButton = document.getElementById("shuffle");
-shuffleButton.addEventListener("click", shuffleTiles);
-
-// Инициализация игры при загрузке
+// Запуск игры при загрузке
 initGame();
