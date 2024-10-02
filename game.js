@@ -30,11 +30,11 @@ function addNewTile() {
     }
     if (emptyCells.length) {
         const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-        grid[i][j] = Math.random() < 0.8 ? 2 : 4;
+        grid[i][j] = Math.random() < 0.8 ? 2 : 4; // 80% вероятность 2, 20% - 4
     }
 }
 
-// Обновление отображения плиток
+// Обновление отображения плиток на экране
 function updateGrid() {
     gridContainer.innerHTML = '';
     grid.forEach(row => {
@@ -66,7 +66,6 @@ function checkGameOver() {
 
 // Логика перемещения плиток
 function move(direction) {
-    saveHistory();  // Сохраняем текущее состояние для функции "Ход назад"
     let moved = false;
     let combined = false;
 
@@ -122,12 +121,90 @@ function move(direction) {
     }
 }
 
-// Сохранение текущего состояния игры в историю
-function saveHistory() {
-    history.push(JSON.parse(JSON.stringify(grid)));
-    if (history.length > 10) {
-        history.shift();  // Ограничиваем историю 10 ходами
+// Логика сдвига плиток в строке
+function slideRow(row, direction) {
+    let newRow = row.filter(value => value);
+    const emptySpaces = 4 - newRow.length;
+    let moved = false;
+    let combined = false;
+
+    if (direction === 'left') {
+        newRow = [...newRow, ...Array(emptySpaces).fill(0)];
+    } else {
+        newRow = [...Array(emptySpaces).fill(0), ...newRow];
     }
+
+    for (let i = 0; i < 3; i++) {
+        if (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
+            newRow[i] *= 2;
+            score += newRow[i];
+            newRow[i + 1] = 0;
+            combined = true;
+        }
+    }
+
+    if (JSON.stringify(newRow) !== JSON.stringify(row)) {
+        moved = true;
+    }
+
+    newRow = newRow.filter(value => value);
+    while (newRow.length < 4) newRow.push(0);
+
+    return { newRow, moved, combined };
+}
+
+// Логика сдвига плиток в колонне вверх
+function slideColumnUp(column) {
+    let newColumn = column.filter(value => value);
+    let moved = false;
+    let combined = false;
+
+    while (newColumn.length < 4) newColumn.push(0);
+
+    for (let i = 0; i < 3; i++) {
+        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
+            newColumn[i] *= 2;
+            score += newColumn[i];
+            newColumn[i + 1] = 0;
+            combined = true;
+        }
+    }
+
+    if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
+        moved = true;
+    }
+
+    newColumn = newColumn.filter(value => value);
+    while (newColumn.length < 4) newColumn.push(0);
+
+    return { newColumn, moved, combined };
+}
+
+// Логика сдвига плиток в колонне вниз
+function slideColumnDown(column) {
+    let newColumn = column.filter(value => value);
+    let moved = false;
+    let combined = false;
+
+    while (newColumn.length < 4) newColumn.unshift(0);
+
+    for (let i = 3; i > 0; i--) {
+        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
+            newColumn[i] *= 2;
+            score += newColumn[i];
+            newColumn[i - 1] = 0;
+            combined = true;
+        }
+    }
+
+    if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
+        moved = true;
+    }
+
+    newColumn = newColumn.filter(value => value);
+    while (newColumn.length < 4) newColumn.unshift(0);
+
+    return { newColumn, moved, combined };
 }
 
 // События свайпа
@@ -165,4 +242,4 @@ restartButton.addEventListener("click", () => {
 });
 
 initGame();
-                               
+        
