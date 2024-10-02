@@ -3,8 +3,11 @@ const undoButton = document.getElementById("undo");
 const deleteTileButton = document.getElementById("delete");
 const shuffleButton = document.getElementById("shuffle");
 const addFundsButton = document.getElementById("add-funds");
+const gridContainer = document.getElementById("grid-container");
 
 let deleteMode = false; // Режим удаления плитки
+let history = []; // Стек для хранения предыдущих состояний
+let balance = 100; // Начальный баланс
 
 // Ход назад
 undoButton.addEventListener("click", () => {
@@ -43,6 +46,8 @@ deleteTileButton.addEventListener("click", () => {
 shuffleButton.addEventListener("click", () => {
     if (balance >= 20) {
         shuffleTiles();
+        balance -= 20; // Списываем 20 очков
+        updateGrid();
     }
 });
 
@@ -65,26 +70,17 @@ function getTileFromTouch(x, y) {
     }
     return null;
 }
-```
 
-### Замедление движения плиток
-
-Чтобы замедлить движение плиток, вы можете добавить небольшую задержку между обновлениями сетки после перемещения. Это можно сделать, добавив `setTimeout` в функцию `move`:
-
-```javascript
-function move(direction) {
-    let moved = false;
-    let combined = false;
-
-    switch (direction) {
-        // ... (ваш код)
-    }
-
-    // Добавляем новую плитку только если было движение или складывание
-    if (moved || combined) {
-        setTimeout(() => {
-            addNewTile();
-            updateGrid();
-        }, 200); // Задержка 200 мс
-    }
+// Обработка касаний для кнопок
+function addTouchListeners() {
+    const buttons = [undoButton, deleteTileButton, shuffleButton, addFundsButton];
+    buttons.forEach(button => {
+        button.addEventListener("touchstart", (event) => {
+            event.preventDefault(); // Предотвращаем возможные конфликты с другими событиями
+            button.click(); // Вызываем клик по кнопке
+        });
+    });
 }
+
+// Инициализация касаний для кнопок
+addTouchListeners();
