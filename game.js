@@ -110,8 +110,8 @@ function move(direction) {
     // Добавляем новую плитку только если было движение или складывание
     if (moved || combined) {
         addNewTile();
+        updateGrid();
     }
-    updateGrid();
 }
 
 // Логика сдвига плиток в строке
@@ -210,46 +210,10 @@ function slideColumnDown(column) {
     return { newColumn, moved, combined };
 }
 
-// Обработка свайпов
-function handleSwipe(direction) {
-    move(direction);
-}
-
 // Кнопка перезапуска игры
 restartButton.addEventListener("click", () => {
     gameOverDisplay.classList.add("hidden");
     initGame();
-});
-
-// События касания
-let startX, startY;
-gridContainer.addEventListener("touchstart", (event) => {
-    startX = event.touches[0].clientX;
-    startY = event.touches[0].clientY;
-});
-
-gridContainer.addEventListener("touchend", (event) => {
-    const endX = event.changedTouches[0].clientX;
-    const endY = event.changedTouches[0].clientY;
-
-    const deltaX = endX - startX;
-    const deltaY = endY - startY;
-
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Определяем горизонтальное движение
-        if (deltaX > 0) {
-            handleSwipe('right'); // Свайп вправо
-        } else {
-            handleSwipe('left'); // Свайп влево
-        }
-    } else {
-        // Определяем вертикальное движение
-        if (deltaY > 0) {
-            handleSwipe('down'); // Свайп вниз
-        } else {
-            handleSwipe('up'); // Свайп вверх
-        }
-    }
 });
 
 // Инициализация игры при загрузке
