@@ -1,83 +1,150 @@
-const gridContainer = document.getElementById("grid-container");
-const scoreDisplay = document.getElementById("score");
-const gameOverDisplay = document.getElementById("game-over");
+const boardSize = 4;
+let board = [];
+let hasMoved = false;
 
-let grid = [];
-let score = 0;
-let previousGrid = [];  // Для функции "Ход назад"
-
-// Инициализация игры
-function initGame() {
-    grid = Array.from({ length: 4 }, () => Array(4).fill(0));
-    score = 0;
+function initializeBoard() {
+    board = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
     addNewTile();
     addNewTile();
-    updateGrid();
+    renderBoard();
 }
 
-// Добавление новой плитки
-function addNewTile() {
-    let emptyCells = [];
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            if (grid[i][j] === 0) emptyCells.push({ i, j });
-        }
-    }
-    if (emptyCells.length) {
-        const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-        grid[i][j] = Math.random() < 0.8 ? 2 : 4;
-    }
-}
-
-// Обновление сетки
-function updateGrid() {
-    gridContainer.innerHTML = '';
-    grid.forEach(row => {
+function renderBoard() {
+    const gameBoard = document.getElementById('game-board');
+    gameBoard.innerHTML = ''; // Очистка предыдущего состояния
+    
+    board.forEach(row => {
         row.forEach(tile => {
-            const tileElement = document.createElement("div");
-            tileElement.classList.add("tile");
+            const tileElement = document.createElement('div');
+            tileElement.classList.add('tile');
             if (tile > 0) {
-                tileElement.classList.add(`tile-${tile}`);
                 tileElement.innerText = tile;
+                tileElement.setAttribute('data-value', tile);
             }
-            gridContainer.appendChild(tileElement);
+            gameBoard.appendChild(tileElement);
         });
     });
-    scoreDisplay.innerText = score;
+}
 
+function addNewTile() {
+    let emptyTiles = [];
+    
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            if (board[row][col] === 0) {
+                emptyTiles.push({ row, col });
+            }
+        }
+    }
+    
+    if (emptyTiles.length > 0) {
+        let { row, col } = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+        board[row][col] = Math.random() < 0.9 ? 2 : 4;
+    }
+}
+
+function moveTile(row, col, newRow, newCol) {
+    if (board[newRow][newCol] === 0 || board[newRow][newCol] === board[row][col]) {
+        if (board[newRow][newCol] === board[row][col]) {
+            board[newRow][newCol] *= 2; // Объединение плиток
+        } else {
+            board[newRow][newCol] = board[row][col];
+        }
+        board[row][col] = 0;
+        hasMoved = true;
+    }
+}
+
+function move(direction) {
+    hasMoved = false;
+    
+    switch (direction) {
+        case 'up':
+            for (let col = 0; col < boardSize; col++) {
+                for (let row = 1; row < boardSize; row++) {
+                    if (board[row][col] > 0) {
+                        let newRow = row;
+                        while (newRow > 0 && (board[newRow - 1][col] === 0 || board[newRow - 1][col] === board[newRow][col])) {
+                            newRow--;
+                        }
+                        if (newRow !== row) {
+                            moveTile(row, col, newRow, col);
+                        }
+                    }
+                }
+            }
+            break;
+        case 'down':
+            for (let col = 0; col < boardSize; col++) {
+                for (let row = boardSize - 2; row >= 0; row--) {
+                    if (board[row][col] > 0) {
+                        let newRow = row;
+                        while (newRow < boardSize - 1 && (board[newRow + 1][col] === 0 || board[newRow + 1][col] === board[newRow][col])) {
+                            newRow++;
+                        }
+                        if (newRow !== row) {
+                            moveTile(row, col, newRow, col);
+                        }
+                    }
+                }
+            }
+            break;
+        case 'left':
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = 1; col < boardSize; col++) {
+                    if (board[row][col] > 0) {
+                        let newCol = col;
+                        while (newCol > 0 && (board[row][newCol - 1] === 0 || board[row][newCol - 1] === board[row][newCol])) {
+                            newCol--;
+                        }
+                        if (newCol !== col) {
+                            moveTile(row, col, row, newCol);
+                        }
+                    }
+                }
+            }
+            break;
+        case 'right':
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = boardSize - 2; col >= 0; col--) {
+                    if (board[row][col] > 0) {
+                        let newCol = col;
+                        while (newCol < boardSize - 1 && (board[row][newCol + 1] === 0 || board[row][newCol + 1] === board[row][newCol])) {
+                            newCol++;
+                        }
+                        if (newCol !== col) {
+                            moveTile(row, col, row, newCol);
+                        }
+                    }
+                }
+            }
+            break;
+    }
+    
+    if (hasMoved) {
+        addNewTile();
+        renderBoard();
+    }
+    
     if (checkGameOver()) {
-        gameOverDisplay.classList.remove("hidden");
+        alert('Game Over!');
     }
 }
 
-// Удаление плитки
-function deleteTile(x, y) {
-    if (grid[x][y] !== 0) {
-        grid[x][y] = 0;  // Просто удаляем плитку, без добавления новых
-        updateGrid();
-    }
-}
-
-// Сохранение предыдущего состояния для "Ход назад"
-function savePreviousState() {
-    previousGrid = JSON.parse(JSON.stringify(grid));  // Сохраняем копию
-}
-
-// Возврат хода назад
-function undoMove() {
-    if (previousGrid.length) {
-        grid = JSON.parse(JSON.stringify(previousGrid));
-        updateGrid();
-    }
-}
-
-// Проверка на конец игры
 function checkGameOver() {
-    return grid.flat().every(cell => cell !== 0) &&
-        !grid.some((row, i) => row.some((cell, j) => 
-            (j < 3 && cell === row[j + 1]) || (i < 3 && cell === grid[i + 1][j])
-        ));
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            if (board[row][col] === 0) return false;
+            if (col < boardSize - 1 && board[row][col] === board[row][col + 1]) return false;
+            if (row < boardSize - 1 && board[row][col] === board[row + 1][col]) return false;
+        }
+    }
+    return true;
 }
 
-// Свайп и перемещения остались прежними (предположительно уже реализованы).
-// Не забывайте сохранять состояние перед каждым ходом через savePreviousState() перед move()
+function restartGame() {
+    initializeBoard();
+}
+
+initializeBoard();
+                 
