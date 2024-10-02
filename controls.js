@@ -1,67 +1,64 @@
-const balanceDisplay = document.getElementById("balance");
 const undoButton = document.getElementById("undo");
 const deleteTileButton = document.getElementById("delete");
 const shuffleButton = document.getElementById("shuffle");
 const addFundsButton = document.getElementById("add-funds");
 
-let deleteMode = false; // Режим удаления плитки
+let deleteMode = false;
 
 // Ход назад
 undoButton.addEventListener("click", () => {
     if (history.length > 0 && balance >= 25) {
-        grid = history.pop(); // Восстанавливаем последнее состояние
-        balance -= 25; // Списываем 25 очков
+        grid = history.pop();  // Восстанавливаем последнее состояние
+        balance -= 25;  // Списываем 25 баллов
         updateGrid();
     }
 });
 
 // Удаление плитки
 deleteTileButton.addEventListener("click", () => {
-    deleteMode = !deleteMode; // Переключаем режим удаления
-    deleteTileButton.style.backgroundColor = deleteMode ? "lightcoral" : ""; // Меняем цвет кнопки для визуального обозначения
+    deleteMode = !deleteMode;  // Переключаем режим удаления
+    deleteTileButton.style.backgroundColor = deleteMode ? "lightcoral" : "";
 
     if (deleteMode) {
-        gridContainer.addEventListener("click", (event) => {
-            const tileToDelete = getTileFromTouch(event.clientX, event.clientY);
-            if (tileToDelete) {
-                const { row, col } = tileToDelete;
-                deleteTile(row, col);
-            }
-        });
+        gridContainer.addEventListener("click", deleteTileFromGrid);
     } else {
-        gridContainer.removeEventListener("click", (event) => {
-            const tileToDelete = getTileFromTouch(event.clientX, event.clientY);
-            if (tileToDelete) {
-                const { row, col } = tileToDelete;
-                deleteTile(row, col);
-            }
-        });
+        gridContainer.removeEventListener("click", deleteTileFromGrid);
     }
 });
+
+// Функция удаления плитки по клику
+function deleteTileFromGrid(event) {
+    const tileElement = event.target;
+    if (tileElement.classList.contains("tile") && balance >= 10) {
+        const index = Array.from(gridContainer.children).indexOf(tileElement);
+        const row = Math.floor(index / 4);
+        const col = index % 4;
+        grid[row][col] = 0;  // Удаляем плитку
+        balance -= 10;  // Списываем 10 баллов
+        updateGrid();
+    }
+}
 
 // Перемешивание плиток
 shuffleButton.addEventListener("click", () => {
     if (balance >= 20) {
         shuffleTiles();
+        balance -= 20;
+        updateGrid();
     }
 });
+
+// Функция перемешивания плиток
+function shuffleTiles() {
+    const flattenedGrid = grid.flat();
+    flattenedGrid.sort(() => Math.random() - 0.5);  // Перемешиваем массив
+    for (let i = 0; i < 4; i++) {
+        grid[i] = flattenedGrid.slice(i * 4, (i + 1) * 4);
+    }
+}
 
 // Пополнение баланса
 addFundsButton.addEventListener("click", () => {
-    balance += 50; // Добавляем 50 к балансу
+    balance += 50;
     updateGrid();
 });
-
-// Функция для получения координат плитки из касания
-function getTileFromTouch(x, y) {
-    const tileElements = document.getElementsByClassName("tile");
-    for (let i = 0; i < tileElements.length; i++) {
-        const rect = tileElements[i].getBoundingClientRect();
-        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-            const tileRow = Math.floor(i / 4);
-            const tileCol = i % 4;
-            return { row: tileRow, col: tileCol };
-        }
-    }
-    return null;
-}
