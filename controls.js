@@ -65,3 +65,26 @@ function getTileFromTouch(x, y) {
     }
     return null;
 }
+```
+
+### Замедление движения плиток
+
+Чтобы замедлить движение плиток, вы можете добавить небольшую задержку между обновлениями сетки после перемещения. Это можно сделать, добавив `setTimeout` в функцию `move`:
+
+```javascript
+function move(direction) {
+    let moved = false;
+    let combined = false;
+
+    switch (direction) {
+        // ... (ваш код)
+    }
+
+    // Добавляем новую плитку только если было движение или складывание
+    if (moved || combined) {
+        setTimeout(() => {
+            addNewTile();
+            updateGrid();
+        }, 200); // Задержка 200 мс
+    }
+}
