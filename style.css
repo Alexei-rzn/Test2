@@ -42,8 +42,8 @@ body {
 }
 
 .tile {
-    width: 80px;
-    height: 80px;
+    width: 80px; /* Ширина плитки */
+    height: 80px; /* Высота плитки */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -51,10 +51,10 @@ body {
     border-radius: 5px;
     color: white;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Увеличиваем тени для объема */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Тень для плиток */
 }
 
-.tile-2 { background-color: #4db6e4; } /* Более насыщенный цвет */
+.tile-2 { background-color: #4db6e4; }
 .tile-4 { background-color: #4db6e4; }
 .tile-8 { background-color: #6ee7d3; }
 .tile-16 { background-color: #68e4ca; }
@@ -78,7 +78,8 @@ body {
 
 .button-container {
     display: flex;
-    justify-content: space-around;
+    flex-wrap: wrap; /* Позволяет кнопкам занимать свободное пространство */
+    justify-content: space-between; /* Равномерное распределение кнопок */
     margin-top: 20px;
 }
 
@@ -90,4 +91,6 @@ body {
     border-radius: 5px;
     background-color: #3498db; /* Цвет кнопки */
     color: white;
+    flex: 1; /* Кнопки занимают равное пространство */
+    margin: 5px; /* Отступы между кнопками */
 }
