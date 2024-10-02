@@ -17,25 +17,34 @@ undoButton.addEventListener("click", () => {
 // Удаление плитки
 deleteTileButton.addEventListener("click", () => {
     deleteMode = !deleteMode;
-    deleteTileButton.style.backgroundColor = deleteMode ? "lightcoral" : "";
-    
-    gridContainer.addEventListener("click", (event) => {
-        if (deleteMode) {
-            const tileToDelete = getTileFromTouch(event.clientX, event.clientY);
-            if (tileToDelete) {
-                const { row, col } = tileToDelete;
-                grid[row][col] = 0;
-                updateGrid();
-            }
+    deleteTileButton.style.backgroundColor = deleteMode ? "#ff6666" : "#8f7a66";
+});
+
+gridContainer.addEventListener("click", (event) => {
+    if (deleteMode && balance >= 50) {
+        const target = event.target;
+        if (target.classList.contains("tile") && target.innerText !== "") {
+            const index = Array.from(gridContainer.children).indexOf(target);
+            const i = Math.floor(index / 4);
+            const j = index % 4;
+            grid[i][j] = 0;
+            balance -= 50;
+            deleteMode = false;
+            deleteTileButton.style.backgroundColor = "#8f7a66";
+            updateGrid();
         }
-    });
+    }
 });
 
 // Перемешивание плиток
 shuffleButton.addEventListener("click", () => {
-    if (balance >= 20) {
-        balance -= 20;
-        shuffleTiles();
+    if (balance >= 100) {
+        grid = grid.flat().sort(() => Math.random() - 0.5).reduce((rows, value, index) => {
+            if (index % 4 === 0) rows.push([]);
+            rows[rows.length - 1].push(value);
+            return rows;
+        }, []);
+        balance -= 100;
         updateGrid();
     }
 });
@@ -45,24 +54,3 @@ addFundsButton.addEventListener("click", () => {
     balance += 50;
     updateGrid();
 });
-
-// Функция перемешивания плиток
-function shuffleTiles() {
-    const allTiles = grid.flat().filter(value => value !== 0);
-    grid = grid.map(row => row.map(() => 0));
-    allTiles.forEach(() => addNewTile());
-}
-
-// Получение координат плитки для удаления
-function getTileFromTouch(x, y) {
-    const tileElements = document.getElementsByClassName("tile");
-    for (let i = 0; i < tileElements.length; i++) {
-        const rect = tileElements[i].getBoundingClientRect();
-        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-            const tileRow = Math.floor(i / 4);
-            const tileCol = i % 4;
-            return { row: tileRow, col: tileCol };
-        }
-    }
-    return null;
-}
