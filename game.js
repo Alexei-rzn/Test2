@@ -1,20 +1,15 @@
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
-const balanceDisplay = document.getElementById("balance");
 const restartButton = document.getElementById("restart");
 const gameOverDisplay = document.getElementById("game-over");
 
 let grid = [];
 let score = 0;
-let balance = 100;
-let history = [];
 
 // Инициализация игры
 function initGame() {
     grid = Array.from({ length: 4 }, () => Array(4).fill(0));
     score = 0;
-    balance = 100;
-    history = [];
     addNewTile();
     addNewTile();
     updateGrid();
@@ -30,11 +25,11 @@ function addNewTile() {
     }
     if (emptyCells.length) {
         const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-        grid[i][j] = Math.random() < 0.8 ? 2 : 4;
+        grid[i][j] = Math.random() < 0.8 ? 2 : 4; // 80% вероятность 2, 20% - 4
     }
 }
 
-// Обновление отображения плиток
+// Обновление отображения плиток на экране
 function updateGrid() {
     gridContainer.innerHTML = '';
     grid.forEach(row => {
@@ -49,12 +44,9 @@ function updateGrid() {
         });
     });
     scoreDisplay.innerText = score;
-    balanceDisplay.innerText = balance;
 
     if (checkGameOver()) {
         gameOverDisplay.classList.remove("hidden");
-    } else {
-        gameOverDisplay.classList.add("hidden");
     }
 }
 
@@ -70,7 +62,6 @@ function checkGameOver() {
 function move(direction) {
     let moved = false;
     let combined = false;
-    saveHistory();
 
     switch (direction) {
         case 'left':
@@ -117,47 +108,137 @@ function move(direction) {
     }
 
     if (moved || combined) {
-        setTimeout(() => {
-            addNewTile();
-            updateGrid();
-        }, 200);
+        addNewTile();
     }
+    updateGrid();
 }
 
-// Сохранение состояния для Undo
-function saveHistory() {
-    history.push(grid.map(row => [...row]));
+// Логика сдвига плиток в строке
+function slideRow(row, direction) {
+    let newRow = row.filter(value => value);
+    const emptySpaces = 4 - newRow.length;
+    let moved = false;
+    let combined = false;
+
+    if (direction === 'left') {
+        newRow = [...newRow, ...Array(emptySpaces).fill(0)];
+    } else {
+        newRow = [...Array(emptySpaces).fill(0), ...newRow];
+    }
+
+    for (let i = 0; i < 3; i++) {
+        if (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
+            newRow[i] *= 2;
+            score += newRow[i];
+            newRow[i + 1] = 0;
+            combined = true;
+        }
+    }
+
+    if (JSON.stringify(newRow) !== JSON.stringify(row)) {
+        moved = true;
+    }
+
+    newRow = newRow.filter(value => value);
+    while (newRow.length < 4) newRow.push(0);
+
+    return { newRow, moved, combined };
 }
 
-// Добавим поддержку жестов для мобильных устройств
-let touchStartX = 0;
-let touchStartY = 0;
+// Логика сдвига плиток в колонне вверх
+function slideColumnUp(column) {
+    let newColumn = column.filter(value => value);
+    let moved = false;
+    let combined = false;
 
-gridContainer.addEventListener('touchstart', (event) => {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
+    while (newColumn.length < 4) newColumn.push(0);
+
+    for (let i = 0; i < 3; i++) {
+        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
+            newColumn[i] *= 2;
+            score += newColumn[i];
+            newColumn[i + 1] = 0;
+            combined = true;
+        }
+    }
+
+    if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
+        moved = true;
+    }
+
+    newColumn = newColumn.filter(value => value);
+    while (newColumn.length < 4) newColumn.push(0);
+
+    return { newColumn, moved, combined };
+}
+
+// Логика сдвига плиток в колонне вниз
+function slideColumnDown(column) {
+    let newColumn = column.filter(value => value);
+    let moved = false;
+    let combined = false;
+
+    while (newColumn.length < 4) newColumn.unshift(0);
+
+    for (let i = 3; i > 0; i--) {
+        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
+            newColumn[i] *= 2;
+            score += newColumn[i];
+            newColumn[i - 1] = 0;
+            combined = true;
+        }
+    }
+
+    if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
+        moved = true;
+    }
+
+    newColumn = newColumn.filter(value => value);
+    while (newColumn.length < 4) newColumn.unshift(0);
+
+    return { newColumn, moved, combined };
+}
+
+// Обработка свайпов
+function handleSwipe(direction) {
+    move(direction);
+}
+
+// Кнопка перезапуска игры
+restartButton.addEventListener("click", () => {
+    gameOverDisplay.classList.add("hidden");
+    initGame();
 });
 
-gridContainer.addEventListener('touchend', (event) => {
-    const touchEndX = event.changedTouches[0].clientX;
-    const touchEndY = event.changedTouches[0].clientY;
+// События касания
+let startX, startY;
+gridContainer.addEventListener("touchstart", (event) => {
+    startX = event.touches[0].clientX;
+    startY = event.touches[0].clientY;
+});
 
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
+gridContainer.addEventListener("touchend", (event) => {
+    const endX = event.changedTouches[0].clientX;
+    const endY = event.changedTouches[0].clientY;
+
+    const deltaX = endX - startX;
+    const deltaY = endY - startY;
 
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX > 0) move('right');
-        else move('left');
+        if (deltaX > 0) {
+            handleSwipe('right');
+        } else {
+            handleSwipe('left');
+        }
     } else {
-        if (deltaY > 0) move('down');
-        else move('up');
+        if (deltaY > 0) {
+            handleSwipe('down');
+        } else {
+            handleSwipe('up');
+        }
     }
 });
 
 // Инициализация игры при загрузке
 initGame();
-
-// Кнопка перезапуска
-restartButton.addEventListener("click", () => {
-    initGame();
-});
+                     
