@@ -4,6 +4,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0; /* Убираем отступы по умолчанию */
     font-family: 'Arial', sans-serif;
 }
 
@@ -13,6 +14,8 @@ body {
     padding: 20px;
     background-color: #ffffff; /* Цвет фона контейнера */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    width: 90vw; /* Ширина контейнера 90% от ширины экрана */
+    max-width: 400px; /* Максимальная ширина контейнера */
 }
 
 .score-container, .balance-container {
@@ -39,7 +42,7 @@ body {
 }
 
 .tile {
-    width: 80px;
+    width: 100%; /* 100% ширины родителя */
     height: 80px;
     display: flex;
     justify-content: center;
