@@ -34,7 +34,7 @@ function addNewTile() {
     }
 }
 
-// Обновление отображения плиток на экране
+// Обновление отображения плиток
 function updateGrid() {
     gridContainer.innerHTML = '';
     grid.forEach(row => {
@@ -124,18 +124,40 @@ function move(direction) {
     }
 }
 
-// Сохранение текущего состояния для хода назад
+// Сохранение состояния для Undo
 function saveHistory() {
     history.push(grid.map(row => [...row]));
 }
 
-// Логика для других кнопок перемещена в controls.js
+// Добавим поддержку жестов для мобильных устройств
+let touchStartX = 0;
+let touchStartY = 0;
 
-// Кнопка перезапуска игры
-restartButton.addEventListener("click", () => {
-    initGame();
+gridContainer.addEventListener('touchstart', (event) => {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+});
+
+gridContainer.addEventListener('touchend', (event) => {
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0) move('right');
+        else move('left');
+    } else {
+        if (deltaY > 0) move('down');
+        else move('up');
+    }
 });
 
 // Инициализация игры при загрузке
 initGame();
-                
+
+// Кнопка перезапуска
+restartButton.addEventListener("click", () => {
+    initGame();
+});
