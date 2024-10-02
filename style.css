@@ -16,6 +16,9 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     width: 90vw; /* Ширина контейнера 90% от ширины экрана */
     max-width: 400px; /* Максимальная ширина контейнера */
+    display: flex;
+    flex-direction: column; /* Вертикальное выравнивание */
+    align-items: center; /* Центрируем элементы по горизонтали */
 }
 
 .score-container, .balance-container {
