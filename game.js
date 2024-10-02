@@ -130,14 +130,7 @@ function saveHistory() {
     }
 }
 
-// Остальная логика для свайпов, касаний и обновлений оставляем без изменений.
-
-restartButton.addEventListener("click", () => {
-    gameOverDisplay.classList.add("hidden");
-    initGame();
-});
-
-// События касания
+// События свайпа
 let startX, startY;
 gridContainer.addEventListener("touchstart", (event) => {
     startX = event.touches[0].clientX;
@@ -153,17 +146,23 @@ gridContainer.addEventListener("touchend", (event) => {
 
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
         if (deltaX > 0) {
-            handleSwipe('right');
+            move('right');
         } else {
-            handleSwipe('left');
+            move('left');
         }
     } else {
         if (deltaY > 0) {
-            handleSwipe('down');
+            move('down');
         } else {
-            handleSwipe('up');
+            move('up');
         }
     }
 });
 
+restartButton.addEventListener("click", () => {
+    gameOverDisplay.classList.add("hidden");
+    initGame();
+});
+
 initGame();
+                               
