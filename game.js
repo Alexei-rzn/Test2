@@ -1,19 +1,15 @@
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
-const balanceDisplay = document.getElementById("balance");
 const restartButton = document.getElementById("restart");
 const gameOverDisplay = document.getElementById("game-over");
 
 let grid = [];
 let score = 0;
-let balance = 100; // Начальный баланс
-let history = []; // Стек для хранения предыдущих состояний
 
 // Инициализация игры
 function initGame() {
     grid = Array.from({ length: 4 }, () => Array(4).fill(0));
     score = 0;
-    history = []; // Сбрасываем историю
     addNewTile();
     addNewTile();
     updateGrid();
@@ -29,7 +25,7 @@ function addNewTile() {
     }
     if (emptyCells.length) {
         const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-        grid[i][j] = Math.random() < 0.9 ? 2 : 4; // 90% вероятность 2, 10% - 4
+        grid[i][j] = Math.random() < 0.8 ? 2 : 4; // 80% вероятность 2, 20% - 4
     }
 }
 
@@ -48,7 +44,6 @@ function updateGrid() {
         });
     });
     scoreDisplay.innerText = score;
-    balanceDisplay.innerText = balance; // Обновляем баланс
 
     if (checkGameOver()) {
         gameOverDisplay.classList.remove("hidden");
@@ -67,9 +62,6 @@ function checkGameOver() {
 function move(direction) {
     let moved = false;
     let combined = false;
-
-    // Сохраняем текущее состояние в историю
-    history.push(JSON.parse(JSON.stringify(grid)));
 
     switch (direction) {
         case 'left':
@@ -213,7 +205,7 @@ function slideColumnDown(column) {
 
     // Убираем нули после складывания
     newColumn = newColumn.filter(value => value);
-    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем до 4
+    while (newColumn.length < 4) newColumn.unshift(0); // Заполняем до 4 в начале
 
     return { newColumn, moved, combined };
 }
@@ -259,5 +251,6 @@ gridContainer.addEventListener("touchend", (event) => {
         }
     }
 });
+
 // Инициализация игры при загрузке
 initGame();
