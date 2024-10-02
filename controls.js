@@ -1,11 +1,27 @@
-// Получаем кнопки управления
-const upButton = document.getElementById("up");
-const downButton = document.getElementById("down");
-const leftButton = document.getElementById("left");
-const rightButton = document.getElementById("right");
+const restartButton = document.getElementById("restart");
+const undoButton = document.getElementById("undo");
+const deleteButton = document.getElementById("delete");
+const shuffleButton = document.getElementById("shuffle");
+const addFundsButton = document.getElementById("add-funds");
+const balanceDisplay = document.getElementById("balance");
 
-// Назначаем обработчики событий для кнопок
-upButton.addEventListener("click", () => handleSwipe('up'));
-downButton.addEventListener("click", () => handleSwipe('down'));
-leftButton.addEventListener("click", () => handleSwipe('left'));
-rightButton.addEventListener("click", () => handleSwipe('right'));
+restartButton.addEventListener("click", () => {
+    initGame();
+});
+
+undoButton.addEventListener("click", () => {
+    // Добавьте здесь логику для хода назад
+});
+
+deleteButton.addEventListener("click", () => {
+    // Добавьте здесь логику для удаления плитки
+});
+
+shuffleButton.addEventListener("click", () => {
+    // Добавьте здесь логику для перемешивания плиток
+});
+
+addFundsButton.addEventListener("click", () => {
+    balance += 50;
+    balanceDisplay.textContent = balance;
+});
