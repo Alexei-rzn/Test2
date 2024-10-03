@@ -4,24 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2048</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> <!-- Подключение файла стилей -->
 </head>
 <body>
     <div class="game-container">
         <div class="score-container">Счёт: <span id="score">0</span></div>
         <div class="balance-container">Баланс: <span id="balance">100</span></div>
-        <button id="restart" class="restart-button">Рестарт</button>
+        
+        <button id="restart" class="restart-button">
+            <img src="path/to/your/restart-button.png" alt="Рестарт" />
+        </button>
+
         <div class="grid-container" id="grid-container">
             <!-- Плитки будут динамически добавлены через JavaScript -->
         </div>
+
         <div id="game-over" class="game-over hidden">
             Игра окончена! Попробуйте снова!
         </div>
+
         <div class="button-container">
-            <button id="undo" class="action-button">Ход назад</button>
-            <button id="delete" class="action-button" id="delete-button">Удалить плитку</button>
-            <button id="shuffle" class="action-button">Перемешать плитки</button>
-            <button id="add-funds" class="action-button">Пополнить баланс на 50</button>
+            <button id="undo" class="action-button">
+                <img src="path/to/your/undo-button.png" alt="Ход назад" />
+            </button>
+            <button id="delete" class="action-button">
+                <img src="path/to/your/delete-button.png" alt="Удалить плитку" />
+            </button>
+            <button id="shuffle" class="action-button">
+                <img src="path/to/your/shuffle-button.png" alt="Перемешать плитки" />
+            </button>
+            <button id="add-funds" class="action-button">
+                <img src="path/to/your/add-funds-button.png" alt="Пополнить баланс" />
+            </button>
         </div>
     </div>
     <script src="game.js"></script>
