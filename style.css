@@ -13,7 +13,7 @@ body {
     border-radius: 10px;
     padding: 20px;
     background-color: #ffffff; /* Цвет фона контейнера */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     width: 90vw; /* Ширина контейнера 90% от ширины экрана */
     max-width: 400px; /* Максимальная ширина контейнера */
     display: flex;
@@ -34,8 +34,11 @@ body {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    background-color: #f39c12; /* Цвет кнопки */
-    color: white;
+    background-image: url('path/to/your/restart-button.png'); /* Путь к изображению */
+    background-size: cover; /* Убедитесь, что изображение полностью заполняет кнопку */
+    color: transparent; /* Прячем текст */
+    height: 50px; /* Высота кнопки */
+    width: 100%; /* Ширина кнопки */
 }
 
 .grid-container {
@@ -51,10 +54,16 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 32px;
-    border-radius: 5px;
+    border-radius: 10px;
     color: white;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Тень для плиток */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5),
+                inset 0 2px 10px rgba(255, 255, 255, 0.3); /* Внутренние тени для объемности */
+    transition: transform 0.2s; /* Плавный переход для эффекта нажатия */
+}
+
+.tile:hover {
+    transform: scale(1.05); /* Эффект увеличения при наведении */
 }
 
 .tile-2 { background-color: #4db6e4; }
@@ -92,11 +101,17 @@ body {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    background-color: #3498db; /* Цвет кнопки */
-    color: white;
+    background-image: url('path/to/your/action-button.png'); /* Путь к изображению */
+    background-size: cover;
+    color: transparent; /* Прячем текст */
     flex: 1; /* Кнопки занимают равное пространство */
     margin: 5px; /* Отступы между кнопками */
-    transition: background-color 0.3s; /* Плавный переход цвета фона */
+    height: 50px; /* Высота кнопки */
+    transition: transform 0.3s; /* Плавный переход увеличения */
+}
+
+.action-button:hover {
+    transform: scale(1.05); /* Увеличиваем кнопку при наведении */
 }
 
 .action-button.active {
