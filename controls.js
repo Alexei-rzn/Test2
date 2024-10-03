@@ -5,16 +5,12 @@ const addFundsButton = document.getElementById("add-funds");
 const restartButton = document.getElementById("restart");
 
 let deleteMode = false;
-let history = [];
-let balance = 100; // Изначальный баланс, например, 100
-let grid = []; // Изначальная сетка, определите её в initGame()
 
 // Ход назад
 undoButton.addEventListener("click", () => {
-    if (history.length > 0) {
-        const previousState = history.pop();  // Восстанавливаем последнее состояние
-        grid = previousState.grid; // Восстанавливаем состояние сетки
-        balance += previousState.balanceChange; // Возвращаем изменения в балансе
+    if (history.length > 0 && balance >= 30) {
+        grid = history.pop();  // Восстанавливаем последнее состояние
+        balance -= 30;  // Списываем 30 баллов
         updateGrid(); // Обновление интерфейса
     }
 });
@@ -34,7 +30,7 @@ function deleteTile() {
                     updateGrid(); // Обновление интерфейса
 
                     // Сохраняем состояние после удаления
-                    saveState(-50); 
+                    saveState(); 
                 }
             }, { once: true });
         });
@@ -69,7 +65,7 @@ shuffleButton.addEventListener("click", () => {
         updateGrid(); // Обновление интерфейса
 
         // Сохраняем состояние после перемешивания
-        saveState(-20);
+        saveState();
     }
 });
 
@@ -88,16 +84,17 @@ addFundsButton.addEventListener("click", () => {
     updateGrid(); // Обновление интерфейса
 });
 
-// Перезапуск игры (только обновление игрового поля)
+// Перезапуск игры
 restartButton.addEventListener("click", () => {
     gameOverDisplay.classList.add("hidden");
-    initGame(); // Инициализация новой игры, баланс остается прежним
+    initGame(); // Инициализация новой игры
 });
 
 // Сохранение состояния игры в истории
-function saveState(balanceChange) {
+function saveState() {
     if (history.length >= 10) {
+
         history.shift(); // Удаляем самый старый элемент, если их стало больше 10
     }
-    history.push({ grid: JSON.parse(JSON.stringify(grid)), balanceChange }); // Сохраняем текущее состояние игры и изменение баланса
-                                                   }
+    history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
+}
