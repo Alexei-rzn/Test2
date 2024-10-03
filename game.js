@@ -1,7 +1,6 @@
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
 const balanceDisplay = document.getElementById("balance");
-const restartButton = document.getElementById("restart");
 const gameOverDisplay = document.getElementById("game-over");
 
 let grid = [];
@@ -11,13 +10,13 @@ let history = [];
 
 // Инициализация игры
 function initGame() {
-    grid = Array.from({ length: 4 }, () => Array(4).fill(0));
-    score = 0;
-    balance = 100;
-    history = [];
-    addNewTile();
-    addNewTile();
-    updateGrid();
+    grid = Array.from({ length: 4 }, () => Array(4).fill(0));  // Создаем пустое игровое поле
+    score = 0; 
+    balance = 100; 
+    history = [];  // Обнуляем историю
+    addNewTile(); // Добавляем первую плитку
+    addNewTile(); // Добавляем вторую плитку
+    updateGrid(); // Обновляем отображение
 }
 
 // Добавление новой плитки
@@ -31,6 +30,7 @@ function addNewTile() {
     if (emptyCells.length) {
         const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
         grid[i][j] = Math.random() < 0.8 ? 2 : 4; // 80% вероятность 2, 20% - 4
+        saveState(); // Сохраняем состояние после добавления новой плитки
     }
 }
 
@@ -64,7 +64,7 @@ function checkGameOver() {
         ));
 }
 
-// Логика перемещения плиток
+// Логика сдвига плиток
 function move(direction) {
     let moved = false;
     let combined = false;
@@ -91,7 +91,7 @@ function move(direction) {
         case 'up':
             for (let j = 0; j < 4; j++) {
                 const column = [grid[0][j], grid[1][j], grid[2][j], grid[3][j]];
-                const result = slideColumnUp(column);
+                const result = slideColumn(column, 'up');
                 for (let i = 0; i < 4; i++) {
                     grid[i][j] = result.newColumn[i];
                 }
@@ -103,7 +103,7 @@ function move(direction) {
         case 'down':
             for (let j = 0; j < 4; j++) {
                 const column = [grid[0][j], grid[1][j], grid[2][j], grid[3][j]];
-                const result = slideColumnDown(column);
+                const result = slideColumn(column, 'down');
                 for (let i = 0; i < 4; i++) {
                     grid[i][j] = result.newColumn[i];
                 }
@@ -115,8 +115,8 @@ function move(direction) {
 
     if (moved || combined) {
         setTimeout(() => {
-            addNewTile();
-            updateGrid();
+            addNewTile(); // Добавляем новую плитку после хода
+            updateGrid(); // Обновляем интерфейс
         }, 200);
     }
 }
@@ -128,11 +128,9 @@ function slideRow(row, direction) {
     let moved = false;
     let combined = false;
 
-    if (direction === 'left') {
-        newRow = [...newRow, ...Array(emptySpaces).fill(0)];
-    } else {
-        newRow = [...Array(emptySpaces).fill(0), ...newRow];
-    }
+    newRow = direction === 'left' 
+        ? [...newRow, ...Array(emptySpaces).fill(0)] 
+        : [...Array(emptySpaces).fill(0), ...newRow];
 
     for (let i = 0; i < 3; i++) {
         if (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
@@ -153,20 +151,33 @@ function slideRow(row, direction) {
     return { newRow, moved, combined };
 }
 
-// Логика сдвига плиток в колонне вверх
-function slideColumnUp(column) {
+// Логика сдвига плиток в колонне
+function slideColumn(column, direction) {
     let newColumn = column.filter(value => value);
     let moved = false;
     let combined = false;
 
-    while (newColumn.length < 4) newColumn.push(0);
+    while (newColumn.length < 4) {
+        direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
+    }
 
-    for (let i = 0; i < 3; i++) {
-        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
-            newColumn[i] *= 2;
-            score += newColumn[i];
-            newColumn[i + 1] = 0;
-            combined = true;
+    if (direction === 'up') {
+        for (let i = 0; i < 3; i++) {
+            if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
+                newColumn[i] *= 2;
+                score += newColumn[i];
+                newColumn[i + 1] = 0;
+                combined = true;
+            }
+        }
+    } else { // down
+        for (let i = 3; i > 0; i--) {
+            if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
+                newColumn[i] *= 2;
+                score += newColumn[i];
+                newColumn[i - 1] = 0;
+                combined = true;
+            }
         }
     }
 
@@ -175,59 +186,51 @@ function slideColumnUp(column) {
     }
 
     newColumn = newColumn.filter(value => value);
-    while (newColumn.length < 4) newColumn.push(0);
+    while (newColumn.length < 4) {
+        direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
+    }
 
     return { newColumn, moved, combined };
 }
 
-// Логика сдвига плиток в колонне вниз
-function slideColumnDown(column) {
-    let newColumn = column.filter(value => value);
-    let moved = false;
-    let combined = false;
-
-    while (newColumn.length < 4) newColumn.unshift(0);
-
-    for (let i = 3; i > 0; i--) {
-        if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
-            newColumn[i] *= 2;
-            score += newColumn[i];
-            newColumn[i - 1] = 0;
-            combined = true;
-        }
+// Сохранение состояния игры в истории
+function saveState() {
+    if (history.length >= 10) {
+        history.shift(); // Удаляем самый старый элемент, если их стало больше 10
     }
-
-    if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
-        moved = true;
-    }
-
-    newColumn = newColumn.filter(value => value);
-    while (newColumn.length < 4) newColumn.unshift(0);
-
-    return { newColumn, moved, combined };
+    history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
 }
 
-// События свайпа
-let startX, startY;
-gridContainer.addEventListener("touchstart", (event) => {
-    startX = event.touches[0].clientX;
-    startY = event.touches[0].clientY;
+// Сенсорное управление
+let touchStartX = 0;
+let touchStartY = 0;
+
+gridContainer.addEventListener('touchstart', (event) => {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
 });
 
-gridContainer.addEventListener("touchend", (event) => {
-    const endX = event.changedTouches[0].clientX;
-    const endY = event.changedTouches[0].clientY;
+gridContainer.addEventListener('touchmove', (event) => {
+    event.preventDefault(); // предотвращаем прокрутку страницы
+});
 
-    const deltaX = endX - startX;
-    const deltaY = endY - startY;
+gridContainer.addEventListener('touchend', (event) => {
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
 
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+
+    if (absDeltaX > absDeltaY && absDeltaX > 30) {
         if (deltaX > 0) {
             move('right');
         } else {
             move('left');
         }
-    } else {
+    } else if (absDeltaY > absDeltaX && absDeltaY > 30) {
         if (deltaY > 0) {
             move('down');
         } else {
@@ -236,9 +239,4 @@ gridContainer.addEventListener("touchend", (event) => {
     }
 });
 
-restartButton.addEventListener("click", () => {
-    gameOverDisplay.classList.add("hidden");
-    initGame();
-});
-
-initGame();                                     
+initGame(); // Начало игры
