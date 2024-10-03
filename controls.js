@@ -5,25 +5,21 @@ const addFundsButton = document.getElementById("add-funds");
 const restartButton = document.getElementById("restart");
 
 let deleteMode = false;
-
-// Huidige balans
-let balance = 0;
-
-// Geschiedenis voor undo
 let history = [];
+let balance = 100; // Изначальный баланс, например, 100
+let grid = []; // Изначальная сетка, определите её в initGame()
 
-// Huidige rooster
-let grid = [];
-
-// Teruggaan
+// Ход назад
 undoButton.addEventListener("click", () => {
     if (history.length > 0) {
-        grid = history.pop(); // Herstel de laatste status
-        updateGrid(); // Update de interface
+        const previousState = history.pop();  // Восстанавливаем последнее состояние
+        grid = previousState.grid; // Восстанавливаем состояние сетки
+        balance += previousState.balanceChange; // Возвращаем изменения в балансе
+        updateGrid(); // Обновление интерфейса
     }
 });
 
-// Verwijder tegel
+// Удаление плитки
 function deleteTile() {
     if (balance >= 50) {
         const tiles = document.querySelectorAll(".tile");
@@ -32,20 +28,20 @@ function deleteTile() {
                 const tileValue = parseInt(tile.innerText);
                 if (tileValue > 0) {
                     const [rowIndex, colIndex] = getTileIndex(tile);
-                    grid[rowIndex][colIndex] = 0; // Verwijder tegel
-                    tile.innerText = ''; // Update de interface
-                    balance -= 50; // Aftrek 50
-                    updateGrid(); // Update de interface
+                    grid[rowIndex][colIndex] = 0; // Удаляем плитку
+                    tile.innerText = ''; // Обновляем интерфейс
+                    balance -= 50; // Списываем 50
+                    updateGrid(); // Обновление интерфейса
 
-                    // Sla de status op na verwijdering
-                    saveState(); 
+                    // Сохраняем состояние после удаления
+                    saveState(-50); 
                 }
             }, { once: true });
         });
     }
 }
 
-// Toon en verberg verwijdermodus
+// Показать и скрыть режим удаления плиток
 deleteTileButton.addEventListener("mousedown", () => {
     deleteTileButton.classList.add("active");
     deleteMode = true;
@@ -57,7 +53,7 @@ deleteTileButton.addEventListener("mouseup", () => {
     deleteMode = false;
 });
 
-// Logica om de index van de tegel te krijgen
+// Логика получения индекса плитки
 function getTileIndex(tile) {
     const index = Array.from(tile.parentNode.children).indexOf(tile);
     const rowIndex = Math.floor(index / 4);
@@ -65,43 +61,43 @@ function getTileIndex(tile) {
     return [rowIndex, colIndex];
 }
 
-// Schud tegels
+// Перемешивание плиток
 shuffleButton.addEventListener("click", () => {
     if (balance >= 20) {
         shuffleTiles();
-        balance -= 20; // Balans wordt opnieuw geüpdatet
-        updateGrid(); // Update de interface
+        balance -= 20;
+        updateGrid(); // Обновление интерфейса
 
-        // Sla de status op na het schudden
-        saveState();
+        // Сохраняем состояние после перемешивания
+        saveState(-20);
     }
 });
 
-// Logica om tegels te schudden
+// Логика перемешивания плиток
 function shuffleTiles() {
     const flattenedGrid = grid.flat();
-    flattenedGrid.sort(() => Math.random() - 0.5); // Schud de array
+    flattenedGrid.sort(() => Math.random() - 0.5); // Перемешиваем массив
     for (let i = 0; i < 4; i++) {
         grid[i] = flattenedGrid.slice(i * 4, (i + 1) * 4);
     }
 }
 
-// Voeg geld toe
+// Пополнение баланса
 addFundsButton.addEventListener("click", () => {
     balance += 50;
-    updateGrid(); // Update de interface
+    updateGrid(); // Обновление интерфейса
 });
 
-// Herstart het spel (enkel het rooster resetten)
+// Перезапуск игры (только обновление игрового поля)
 restartButton.addEventListener("click", () => {
     gameOverDisplay.classList.add("hidden");
-    initGame(); // Herstart een nieuwe game
+    initGame(); // Инициализация новой игры, баланс остается прежним
 });
 
-// Sla de huidige staat van het spel op in de geschiedenis
-function saveState() {
+// Сохранение состояния игры в истории
+function saveState(balanceChange) {
     if (history.length >= 10) {
-        history.shift(); // Verwijder het oudste element als er meer dan 10 zijn
+        history.shift(); // Удаляем самый старый элемент, если их стало больше 10
     }
-    history.push(JSON.parse(JSON.stringify(grid))); // Sla de huidige status van het spel op
-}
+    history.push({ grid: JSON.parse(JSON.stringify(grid)), balanceChange }); // Сохраняем текущее состояние игры и изменение баланса
+                                                   }
