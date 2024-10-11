@@ -1,45 +1,47 @@
-let startX, startY;
+const undoButton = document.getElementById("undo");
+const deleteTileButton = document.getElementById("delete");
+const shuffleButton = document.getElementById("shuffle");
+const addFundsButton = document.getElementById("add-funds");
+const restartButton = document.getElementById("restart");
 
-function handleTouchStart(evt) {
-    const touch = evt.touches[0];
-    startX = touch.clientX;
-    startY = touch.clientY;
-}
-
-function handleTouchEnd(evt) {
-    const touch = evt.changedTouches[0];
-    const diffX = touch.clientX - startX;
-    const diffY = touch.clientY - startY;
-
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 50) swipeRight();
-        if (diffX < -50) swipeLeft();
-    } else {
-        if (diffY > 50) swipeDown();
-        if (diffY < -50) swipeUp();
+// Ход назад
+undoButton.addEventListener("click", () => {
+    if (history.length > 0) {
+        grid = history.pop();  // Восстанавливаем последнее состояние
+        updateGrid(); 
+        saveGame(); // Сохраняем после undo
     }
-}
+});
 
-document.addEventListener('touchstart', handleTouchStart, false);
-document.addEventListener('touchend', handleTouchEnd, false);
+// Удаление плитки
+deleteTileButton.addEventListener("click", () => {
+    if (balance >= 50 && removeTileLimit > 0) {
+        removeTileLimit--; // Уменьшаем лимит на удаление
+        deleteTile();
+    } else {
+        alert("Лимит на удаление исчерпан или недостаточно баланса.");
+    }
+});
 
-// Функции для свайпов
-function swipeLeft() {
-    console.log("Свайп влево");
-    // Логика перемещения плиток влево
-}
+// Перемешивание плиток
+shuffleButton.addEventListener("click", () => {
+    if (balance >= 50 && shuffleLimit > 0) {
+        shuffleLimit--; // Уменьшаем лимит на перемешивание
+        shuffleTiles(); 
+    } else {
+        alert("Лимит на перемешивание исчерпан или недостаточно баланса.");
+    }
+});
 
-function swipeRight() {
-    console.log("Свайп вправо");
-    // Логика перемещения плиток вправо
-}
+// Пополнение баланса
+addFundsButton.addEventListener("click", () => {
+    balance += 50;
+    updateGrid();
+    saveGame(); // Сохраняем после пополнения баланса
+});
 
-function swipeUp() {
-    console.log("Свайп вверх");
-    // Логика перемещения плиток вверх
-}
-
-function swipeDown() {
-    console.log("Свайп вниз");
-    // Логика перемещения плиток вниз
-}
+// Рестарт игры
+restartButton.addEventListener("click", () => {
+    initGame();
+    saveGame(); // Сохраняем после рестарта
+});
