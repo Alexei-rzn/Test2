@@ -1,106 +1,95 @@
-let removalLimit = 1;  // Ограничение на удаление плиток
-let shuffleLimit = 1;  // Ограничение на перемешивание
-let removalCount = 0;  // Счетчик удалений в текущем ходу
-let shuffleCount = 0;  // Счетчик перемешиваний в текущем ходу
-let undoUsed = false;  // Контроль использования функции "ход назад"
+const gridContainer = document.getElementById("grid-container");
+const scoreDisplay = document.getElementById("score");
+const balanceDisplay = document.getElementById("balance");
+const gameOverDisplay = document.getElementById("game-over");
 
-// Основные переменные для игры
 let grid = [];
 let score = 0;
 let balance = 100;
-let previousState = {};
+let history = [];
+let removeTileLimit = 3; // Лимит удалений за ход
+let shuffleLimit = 3; // Лимит перемешиваний за ход
 
-// Логика удаления плиток
-function removeTile() {
-    if (removalCount < removalLimit) {
-        // Логика удаления плитки
-        console.log("Tile removed");
-        removalCount++;
-    } else {
-        alert("Превышено количество удалений плиток за ход.");
-    }
+// Инициализация игры
+function initGame() {
+    grid = Array.from({ length: 4 }, () => Array(4).fill(0));  
+    score = 0; 
+    balance = 100; 
+    removeTileLimit = 3; // Сбрасываем лимит
+    shuffleLimit = 3; // Сбрасываем лимит
+    history = [];  
+    addNewTile(); 
+    addNewTile(); 
+    updateGrid();
 }
 
-// Логика перемешивания плиток
-function shuffleTiles() {
-    if (shuffleCount < shuffleLimit) {
-        // Логика перемешивания плиток
-        console.log("Tiles shuffled");
-        shuffleCount++;
-    } else {
-        alert("Превышено количество перемешиваний плиток за ход.");
-    }
-}
-
-// Логика отката хода
-function undoMove() {
-    if (!undoUsed) {
-        // Восстановление предыдущего состояния
-        restorePreviousState();
-        balance--;  // Баланс списывается один раз
-        console.log("Ход отменен");
-        undoUsed = true;
-    }
-}
-
-// Восстановление предыдущего состояния (перед каждым ходом сохраняй его)
-function savePreviousState() {
-    previousState.grid = JSON.parse(JSON.stringify(grid));
-    previousState.score = score;
-    previousState.balance = balance;
-}
-
-function restorePreviousState() {
-    grid = JSON.parse(JSON.stringify(previousState.grid));
-    score = previousState.score;
-    balance = previousState.balance;
-    updateGameBoard();
-}
-
-// Логика конца хода
-function endTurn() {
-    removalCount = 0;
-    shuffleCount = 0;
-    undoUsed = false;
-    console.log("Ход завершен");
-}
-
-// Сохранение игры с помощью localStorage
+// Сохранение состояния игры в localStorage
 function saveGame() {
-    const gameState = {
-        grid: JSON.stringify(grid),
-        score: score,
-        balance: balance
-    };
-    localStorage.setItem('gameState', JSON.stringify(gameState));
-    alert("Игра сохранена!");
+    localStorage.setItem('2048game', JSON.stringify({
+        grid,
+        score,
+        balance,
+        history
+    }));
 }
 
 // Загрузка игры из localStorage
 function loadGame() {
-    const savedState = localStorage.getItem('gameState');
-    if (savedState) {
-        const gameState = JSON.parse(savedState);
-        grid = JSON.parse(gameState.grid);
-        score = gameState.score;
-        balance = gameState.balance;
-        updateGameBoard();
-        alert("Игра загружена!");
-    } else {
-        alert("Сохраненная игра не найдена.");
+    const savedGame = localStorage.getItem('2048game');
+    if (savedGame) {
+        const { grid: savedGrid, score: savedScore, balance: savedBalance, history: savedHistory } = JSON.parse(savedGame);
+        grid = savedGrid;
+        score = savedScore;
+        balance = savedBalance;
+        history = savedHistory;
+        updateGrid();
     }
 }
 
-// Обновление визуального отображения игрового поля
-function updateGameBoard() {
-    // Логика для обновления отображения сетки игры
-    console.log("Игровое поле обновлено");
+// Обновление отображения плиток
+function updateGrid() {
+    gridContainer.innerHTML = '';
+    grid.forEach(row => {
+        row.forEach(tile => {
+            const tileElement = document.createElement("div");
+            tileElement.classList.add("tile");
+            if (tile > 0) {
+                tileElement.classList.add(`tile-${tile}`);
+                tileElement.innerText = tile;
+            }
+            gridContainer.appendChild(tileElement);
+        });
+    });
+    scoreDisplay.innerText = score;
+    balanceDisplay.innerText = balance;
+
+    if (checkGameOver()) {
+        gameOverDisplay.classList.remove("hidden");
+    }
 }
 
-// Логика перемещения плиток с анимацией
-function moveTile(tile, x, y) {
-    tile.style.setProperty('--moveX', x + 'px');
-    tile.style.setProperty('--moveY', y + 'px');
-    tile.classList.add('moving');
-    setTimeout(() => tile.classList.remove('moving'), 200); // Удаление класса после анимации
+// Добавление новой плитки
+function addNewTile() {
+    let emptyCells = [];
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (grid[i][j] === 0) emptyCells.push({ i, j });
+        }
+    }
+    if (emptyCells.length) {
+        const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        grid[i][j] = Math.random() < 0.8 ? 2 : 4; 
+        saveState(); 
+    }
+    saveGame(); // Сохранение игры после добавления новой плитки
 }
+
+// Проверка окончания игры
+function checkGameOver() {
+    return grid.flat().every(cell => cell !== 0) &&
+        !grid.some((row, i) => row.some((cell, j) => 
+            (j < 3 && cell === row[j + 1]) || (i < 3 && cell === grid[i + 1][j])
+        ));
+}
+
+initGame();
