@@ -1,56 +1,71 @@
-let removalLimit = 1;
-let shuffleLimit = 1;
-let removalCount = 0;
-let shuffleCount = 0;
-let undoUsed = false;
+let removalLimit = 1;  // Ограничение на удаление плиток
+let shuffleLimit = 1;  // Ограничение на перемешивание
+let removalCount = 0;  // Счетчик удалений в текущем ходу
+let shuffleCount = 0;  // Счетчик перемешиваний в текущем ходу
+let undoUsed = false;  // Контроль использования функции "ход назад"
 
-// Grid and game state management
+// Основные переменные для игры
 let grid = [];
 let score = 0;
 let balance = 100;
+let previousState = {};
 
-// Tile removal logic
+// Логика удаления плиток
 function removeTile() {
     if (removalCount < removalLimit) {
-        // Existing remove tile logic
+        // Логика удаления плитки
         console.log("Tile removed");
         removalCount++;
     } else {
-        alert("You've reached the limit for tile removals this turn.");
+        alert("Превышено количество удалений плиток за ход.");
     }
 }
 
-// Shuffle tiles logic
+// Логика перемешивания плиток
 function shuffleTiles() {
     if (shuffleCount < shuffleLimit) {
-        // Existing shuffle logic
+        // Логика перемешивания плиток
         console.log("Tiles shuffled");
         shuffleCount++;
     } else {
-        alert("You've reached the limit for shuffles this turn.");
+        alert("Превышено количество перемешиваний плиток за ход.");
     }
 }
 
-// Undo move logic
+// Логика отката хода
 function undoMove() {
     if (!undoUsed) {
-        // Perform the undo
-        restorePreviousState(); // Custom function to load the previous state
-        balance--;  // Deduct balance once
-        console.log("Move undone");
+        // Восстановление предыдущего состояния
+        restorePreviousState();
+        balance--;  // Баланс списывается один раз
+        console.log("Ход отменен");
         undoUsed = true;
     }
 }
 
-// End turn reset
+// Восстановление предыдущего состояния (перед каждым ходом сохраняй его)
+function savePreviousState() {
+    previousState.grid = JSON.parse(JSON.stringify(grid));
+    previousState.score = score;
+    previousState.balance = balance;
+}
+
+function restorePreviousState() {
+    grid = JSON.parse(JSON.stringify(previousState.grid));
+    score = previousState.score;
+    balance = previousState.balance;
+    updateGameBoard();
+}
+
+// Логика конца хода
 function endTurn() {
     removalCount = 0;
     shuffleCount = 0;
     undoUsed = false;
-    console.log("Turn ended");
+    console.log("Ход завершен");
 }
 
-// Save game state to localStorage
+// Сохранение игры с помощью localStorage
 function saveGame() {
     const gameState = {
         grid: JSON.stringify(grid),
@@ -58,10 +73,10 @@ function saveGame() {
         balance: balance
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
-    alert("Game saved!");
+    alert("Игра сохранена!");
 }
 
-// Load game state from localStorage
+// Загрузка игры из localStorage
 function loadGame() {
     const savedState = localStorage.getItem('gameState');
     if (savedState) {
@@ -69,23 +84,23 @@ function loadGame() {
         grid = JSON.parse(gameState.grid);
         score = gameState.score;
         balance = gameState.balance;
-        updateGameBoard(); // Ensure to update the visuals
-        alert("Game loaded!");
+        updateGameBoard();
+        alert("Игра загружена!");
     } else {
-        alert("No saved game found.");
+        alert("Сохраненная игра не найдена.");
     }
 }
 
-// Update game board UI
+// Обновление визуального отображения игрового поля
 function updateGameBoard() {
-    // Logic to refresh the visual representation of the grid
-    console.log("Game board updated");
+    // Логика для обновления отображения сетки игры
+    console.log("Игровое поле обновлено");
 }
 
-// Tile movement with animation
+// Логика перемещения плиток с анимацией
 function moveTile(tile, x, y) {
     tile.style.setProperty('--moveX', x + 'px');
     tile.style.setProperty('--moveY', y + 'px');
     tile.classList.add('moving');
-    setTimeout(() => tile.classList.remove('moving'), 200); // Remove class after animation
+    setTimeout(() => tile.classList.remove('moving'), 200); // Удаление класса после анимации
 }
