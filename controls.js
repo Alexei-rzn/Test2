@@ -23,23 +23,23 @@ function handleTouchEnd(evt) {
 document.addEventListener('touchstart', handleTouchStart, false);
 document.addEventListener('touchend', handleTouchEnd, false);
 
-// Functions for swiping
+// Функции для свайпов
 function swipeLeft() {
-    console.log("Swiped left");
-    // Logic for moving tiles left
+    console.log("Свайп влево");
+    // Логика перемещения плиток влево
 }
 
 function swipeRight() {
-    console.log("Swiped right");
-    // Logic for moving tiles right
+    console.log("Свайп вправо");
+    // Логика перемещения плиток вправо
 }
 
 function swipeUp() {
-    console.log("Swiped up");
-    // Logic for moving tiles up
+    console.log("Свайп вверх");
+    // Логика перемещения плиток вверх
 }
 
 function swipeDown() {
-    console.log("Swiped down");
-    // Logic for moving tiles down
+    console.log("Свайп вниз");
+    // Логика перемещения плиток вниз
 }
