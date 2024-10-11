@@ -1,4 +1,56 @@
-/* Общие стили для кнопок */
+/* Общие стили для игры */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+}
+
+/* Стили игрового поля */
+#game-container {
+    width: 400px; /* Ширина игрового поля */
+    height: 400px; /* Высота игрового поля */
+    background-color: #bbada0; /* Цвет фона игрового поля */
+    border-radius: 10px; /* Скругление углов игрового поля */
+    position: relative; /* Для размещения плиток */
+    display: flex; /* Включение flex-контейнера для плиток */
+    flex-wrap: wrap; /* Позволяет плиткам располагаться в несколько строк */
+    padding: 10px; /* Отступы внутри игрового поля */
+}
+
+/* Стили для плиток */
+.tile {
+    width: 90px; /* Ширина плитки */
+    height: 90px; /* Высота плитки */
+    background-color: #eee4da; /* Цвет плитки */
+    border-radius: 5px; /* Скругление углов плитки */
+    display: flex; /* Включение flex-контейнера для текста */
+    align-items: center; /* Вертикальное центрирование текста */
+    justify-content: center; /* Горизонтальное центрирование текста */
+    font-size: 32px; /* Размер шрифта */
+    color: #776e65; /* Цвет текста */
+    position: absolute; /* Позволяет точно позиционировать плитки */
+    transition: transform 0.2s ease; /* Плавный переход для движения плиток */
+}
+
+/* Цвета для значений плиток */
+.tile-2 { background-color: #eee4da; }
+.tile-4 { background-color: #ede0c8; }
+.tile-8 { background-color: #f2b179; }
+.tile-16 { background-color: #f59563; }
+.tile-32 { background-color: #f67c5f; }
+.tile-64 { background-color: #f67c5f; }
+.tile-128 { background-color: #f9f68f; }
+.tile-256 { background-color: #d7f9c1; }
+.tile-512 { background-color: #c6e8f5; }
+.tile-1024 { background-color: #8fcfef; }
+.tile-2048 { background-color: #f2b179; }
+
+/* Стили для кнопок */
 .action-button {
     font-size: 16px;
     padding: 10px 15px;
@@ -14,16 +66,6 @@
 
 .action-button:hover {
     background-color: #2980b9; /* Цвет кнопки при наведении */
-}
-
-/* Стиль для активных кнопок */
-.action-button.active {
-    background-color: lightcoral; /* Цвет кнопки при активном состоянии */
-}
-
-/* Анимация для плиток */
-.tile {
-    transition: transform 0.2s ease; /* Плавный переход для движения плиток */
 }
 
 /* Анимация при слиянии плиток */
