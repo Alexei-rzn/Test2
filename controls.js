@@ -1,100 +1,45 @@
-const undoButton = document.getElementById("undo");
-const deleteTileButton = document.getElementById("delete");
-const shuffleButton = document.getElementById("shuffle");
-const addFundsButton = document.getElementById("add-funds");
-const restartButton = document.getElementById("restart");
+let startX, startY;
 
-let deleteMode = false;
+function handleTouchStart(evt) {
+    const touch = evt.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+}
 
-// Ход назад
-undoButton.addEventListener("click", () => {
-    if (history.length > 0 && balance >= 30) {
-        grid = history.pop();  // Восстанавливаем последнее состояние
-        balance -= 30;  // Списываем 30 баллов
-        updateGrid(); // Обновление интерфейса
-    }
-});
+function handleTouchEnd(evt) {
+    const touch = evt.changedTouches[0];
+    const diffX = touch.clientX - startX;
+    const diffY = touch.clientY - startY;
 
-// Удаление плитки
-function deleteTile() {
-    if (balance >= 50) {
-        const tiles = document.querySelectorAll(".tile");
-        tiles.forEach(tile => {
-            tile.addEventListener("click", () => {
-                const tileValue = parseInt(tile.innerText);
-                if (tileValue > 0) {
-                    const [rowIndex, colIndex] = getTileIndex(tile);
-                    grid[rowIndex][colIndex] = 0; // Удаляем плитку
-                    tile.innerText = ''; // Обновляем интерфейс
-                    balance -= 50; // Списываем 50
-                    updateGrid(); // Обновление интерфейса
-
-                    // Сохраняем состояние после удаления
-                    saveState(); 
-                }
-            }, { once: true });
-        });
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX > 50) swipeRight();
+        if (diffX < -50) swipeLeft();
+    } else {
+        if (diffY > 50) swipeDown();
+        if (diffY < -50) swipeUp();
     }
 }
 
-// Показать и скрыть режим удаления плиток
-deleteTileButton.addEventListener("mousedown", () => {
-    deleteTileButton.classList.add("active");
-    deleteMode = true;
-    deleteTile();
-});
+document.addEventListener('touchstart', handleTouchStart, false);
+document.addEventListener('touchend', handleTouchEnd, false);
 
-deleteTileButton.addEventListener("mouseup", () => {
-    deleteTileButton.classList.remove("active");
-    deleteMode = false;
-});
-
-// Логика получения индекса плитки
-function getTileIndex(tile) {
-    const index = Array.from(tile.parentNode.children).indexOf(tile);
-    const rowIndex = Math.floor(index / 4);
-    const colIndex = index % 4;
-    return [rowIndex, colIndex];
+// Functions for swiping
+function swipeLeft() {
+    console.log("Swiped left");
+    // Logic for moving tiles left
 }
 
-// Перемешивание плиток
-shuffleButton.addEventListener("click", () => {
-    if (balance >= 20) {
-        shuffleTiles();
-        balance -= 20;
-        updateGrid(); // Обновление интерфейса
-
-        // Сохраняем состояние после перемешивания
-        saveState();
-    }
-});
-
-// Логика перемешивания плиток
-function shuffleTiles() {
-    const flattenedGrid = grid.flat();
-    flattenedGrid.sort(() => Math.random() - 0.5); // Перемешиваем массив
-    for (let i = 0; i < 4; i++) {
-        grid[i] = flattenedGrid.slice(i * 4, (i + 1) * 4);
-    }
+function swipeRight() {
+    console.log("Swiped right");
+    // Logic for moving tiles right
 }
 
-// Пополнение баланса
-addFundsButton.addEventListener("click", () => {
-    balance += 50;
-    updateGrid(); // Обновление интерфейса
-});
+function swipeUp() {
+    console.log("Swiped up");
+    // Logic for moving tiles up
+}
 
-// Перезапуск игры
-restartButton.addEventListener("click", () => {
-    gameOverDisplay.classList.add("hidden");
-    initGame(); // Инициализация новой игры
-});
-
-// Сохранение состояния игры в истории
-function saveState() {
-    if (history.length >= 10) {
-
-        history.shift(); // Удаляем самый старый элемент, если их стало больше 10
-    }
-    history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
+function swipeDown() {
+    console.log("Swiped down");
+    // Logic for moving tiles down
 }
