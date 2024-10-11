@@ -1,41 +1,52 @@
-body {
-    font-family: Arial, sans-serif;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 100px);
-    grid-gap: 10px;
-    margin: 20px;
-}
-
-.tile {
-    width: 100px;
-    height: 100px;
-    background-color: #ccc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    transition: transform 0.2s ease-in-out;
-}
-
-.tile.moving {
-    animation: moveTile 0.2s forwards;
-}
-
-@keyframes moveTile {
-    from {
-        transform: translate(0, 0);
-    }
-    to {
-        transform: translate(var(--moveX), var(--moveY));
-    }
-}
-
-button {
-    width: 100px;
-    height: 40px;
-    margin: 5px;
+/* Общие стили для кнопок */
+.action-button {
     font-size: 16px;
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db; /* Цвет кнопки */
+    color: white;
+    flex: 1; /* Кнопки занимают равное пространство */
+    margin: 5px; /* Отступы между кнопками */
+    transition: background-color 0.3s; /* Плавный переход цвета фона */
+}
+
+.action-button:hover {
+    background-color: #2980b9; /* Цвет кнопки при наведении */
+}
+
+/* Стиль для активных кнопок */
+.action-button.active {
+    background-color: lightcoral; /* Цвет кнопки при активном состоянии */
+}
+
+/* Анимация для плиток */
+.tile {
+    transition: transform 0.2s ease; /* Плавный переход для движения плиток */
+}
+
+/* Анимация при слиянии плиток */
+.tile.merge {
+    animation: merge-animation 0.5s forwards; /* Анимация слияния */
+}
+
+@keyframes merge-animation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Стиль для кнопок в контейнере */
+.button-container {
+    display: flex;
+    flex-wrap: wrap; /* Позволяет кнопкам занимать свободное пространство */
+    justify-content: space-between; /* Равномерное распределение кнопок */
+    margin-top: 20px;
 }
