@@ -1,119 +1,41 @@
 body {
-    background-color: #8cceff; /* Цвет фона */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0; /* Убираем отступы по умолчанию */
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
-.game-container {
-    text-align: center;
-    border-radius: 10px;
-    padding: 20px;
-    background-color: #ffffff; /* Цвет фона контейнера */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    width: 90vw; /* Ширина контейнера 90% от ширины экрана */
-    max-width: 400px; /* Максимальная ширина контейнера */
-    display: flex;
-    flex-direction: column; /* Вертикальное выравнивание */
-    align-items: center; /* Центрируем элементы по горизонтали */
-}
-
-.score-container, .balance-container {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.restart-button {
-    font-size: 18px;
-    padding: 10px 20px;
-    margin-bottom: 20px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-image: url('path/to/your/restart-button.png'); /* Путь к изображению */
-    background-size: cover; /* Убедитесь, что изображение полностью заполняет кнопку */
-    color: transparent; /* Прячем текст */
-    height: 50px; /* Высота кнопки */
-    width: 100%; /* Ширина кнопки */
-}
-
-.grid-container {
+.grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(4, 100px);
+    grid-gap: 10px;
+    margin: 20px;
 }
 
 .tile {
-    width: 80px; /* Ширина плитки */
-    height: 80px; /* Высота плитки */
+    width: 100px;
+    height: 100px;
+    background-color: #ccc;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 32px;
-    border-radius: 10px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5),
-                inset 0 2px 10px rgba(255, 255, 255, 0.3); /* Внутренние тени для объемности */
-    transition: transform 0.2s; /* Плавный переход для эффекта нажатия */
-}
-
-.tile:hover {
-    transform: scale(1.05); /* Эффект увеличения при наведении */
-}
-
-.tile-2 { background-color: #4db6e4; }
-.tile-4 { background-color: #4db6e4; }
-.tile-8 { background-color: #6ee7d3; }
-.tile-16 { background-color: #68e4ca; }
-.tile-32 { background-color: #1bc4c7; }
-.tile-64 { background-color: #1ab1b2; }
-.tile-128 { background-color: #0095f8; }
-.tile-256 { background-color: #0077bb; }
-.tile-512 { background-color: #005e99; }
-.tile-1024 { background-color: #004577; }
-.tile-2048 { background-color: #003858; }
-
-.game-over {
     font-size: 24px;
-    color: red;
-    margin-top: 20px;
+    transition: transform 0.2s ease-in-out;
 }
 
-.hidden {
-    display: none;
+.tile.moving {
+    animation: moveTile 0.2s forwards;
 }
 
-.button-container {
-    display: flex;
-    flex-wrap: wrap; /* Позволяет кнопкам занимать свободное пространство */
-    justify-content: space-between; /* Равномерное распределение кнопок */
-    margin-top: 20px;
+@keyframes moveTile {
+    from {
+        transform: translate(0, 0);
+    }
+    to {
+        transform: translate(var(--moveX), var(--moveY));
+    }
 }
 
-.action-button {
+button {
+    width: 100px;
+    height: 40px;
+    margin: 5px;
     font-size: 16px;
-    padding: 10px 15px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-image: url('path/to/your/action-button.png'); /* Путь к изображению */
-    background-size: cover;
-    color: transparent; /* Прячем текст */
-    flex: 1; /* Кнопки занимают равное пространство */
-    margin: 5px; /* Отступы между кнопками */
-    height: 50px; /* Высота кнопки */
-    transition: transform 0.3s; /* Плавный переход увеличения */
-}
-
-.action-button:hover {
-    transform: scale(1.05); /* Увеличиваем кнопку при наведении */
-}
-
-.action-button.active {
-    background-color: lightcoral; /* Цвет кнопки при активном состоянии */
 }
