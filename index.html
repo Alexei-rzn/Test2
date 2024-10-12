@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
     <link rel="stylesheet" href="style.css">
-    <title>2048 Game</title>
 </head>
 <body>
     <div class="game-container">
-        <div class="grid-container">
-            <!-- Контейнер для сетки игрового поля -->
-            <div id="game-grid"></div>
+        <div class="score-container">Счёт: <span id="score">0</span></div>
+        <div class="balance-container">Баланс: <span id="balance">100</span></div>
+        <button id="restart" class="restart-button">Рестарт</button>
+        <div class="grid-container" id="grid-container">
+            <!-- Плитки будут динамически добавлены через JavaScript -->
         </div>
-        <div class="controls-container">
-            <!-- Кнопки управления -->
-            <button id="undo-btn">Undo</button>
-            <button id="delete-btn">Delete Tile</button>
-            <button id="shuffle-btn">Shuffle</button>
-            <button id="save-btn">Save Game</button>
-            <button id="load-btn">Load Game</button>
+        <div id="game-over" class="game-over hidden">
+            Игра окончена! Попробуйте снова!
+        </div>
+        <div class="button-container">
+            <button id="undo" class="action-button">Ход назад</button>
+            <button id="delete" class="action-button" id="delete-button">Удалить плитку</button>
+            <button id="shuffle" class="action-button">Перемешать плитки</button>
+            <button id="add-funds" class="action-button">Пополнить баланс на 50</button>
         </div>
     </div>
-    <script src="game.js"></script>
-    <script src="controls.js"></script>
-</body>
-</html>
+    <script src="game.js"></script
