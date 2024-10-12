@@ -1,47 +1,19 @@
-const undoButton = document.getElementById("undo");
-const deleteTileButton = document.getElementById("delete");
-const shuffleButton = document.getElementById("shuffle");
-const addFundsButton = document.getElementById("add-funds");
-const restartButton = document.getElementById("restart");
+document.getElementById('undo-button').addEventListener('click', undoMove);
+document.getElementById('delete-button').addEventListener('click', deleteTile);
+document.getElementById('shuffle-button').addEventListener('click', shuffleBoard);
+"""
 
-// Ход назад
-undoButton.addEventListener("click", () => {
-    if (history.length > 0) {
-        grid = history.pop();  // Восстанавливаем последнее состояние
-        updateGrid(); 
-        saveGame(); // Сохраняем после undo
-    }
-});
+# Save the files to the filesystem
+with open("/mnt/data/index.html", "w") as file:
+    file.write(html_content)
 
-// Удаление плитки
-deleteTileButton.addEventListener("click", () => {
-    if (balance >= 50 && removeTileLimit > 0) {
-        removeTileLimit--; // Уменьшаем лимит на удаление
-        deleteTile();
-    } else {
-        alert("Лимит на удаление исчерпан или недостаточно баланса.");
-    }
-});
+with open("/mnt/data/styles.css", "w") as file:
+    file.write(css_content)
 
-// Перемешивание плиток
-shuffleButton.addEventListener("click", () => {
-    if (balance >= 50 && shuffleLimit > 0) {
-        shuffleLimit--; // Уменьшаем лимит на перемешивание
-        shuffleTiles(); 
-    } else {
-        alert("Лимит на перемешивание исчерпан или недостаточно баланса.");
-    }
-});
+with open("/mnt/data/game.js", "w") as file:
+    file.write(game_js_content)
 
-// Пополнение баланса
-addFundsButton.addEventListener("click", () => {
-    balance += 50;
-    updateGrid();
-    saveGame(); // Сохраняем после пополнения баланса
-});
+with open("/mnt/data/controls.js", "w") as file:
+    file.write(controls_js_content)
 
-// Рестарт игры
-restartButton.addEventListener("click", () => {
-    initGame();
-    saveGame(); // Сохраняем после рестарта
-});
+"/mnt/data/index.html", "/mnt/data/styles.css", "/mnt/data/game.js", "/mnt/data/controls.js"
