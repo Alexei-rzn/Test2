@@ -108,6 +108,15 @@ function saveState() {
 // Правила игры
 const rulesModal = document.getElementById("rules-modal");
 const closeButton = document.querySelector(".close-button");
+const rulesContent = document.getElementById("rules-content");
+
+// Загрузка правил из файла
+fetch('rules.txt')
+    .then(response => response.text())
+    .then(data => {
+        rulesContent.innerHTML = data;
+    })
+    .catch(error => console.error('Ошибка загрузки правил:', error));
 
 rulesButton.addEventListener("click", () => {
     rulesModal.classList.remove("hidden");
