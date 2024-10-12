@@ -3,8 +3,8 @@ const deleteTileButton = document.getElementById("delete");
 const shuffleButton = document.getElementById("shuffle");
 const addFundsButton = document.getElementById("add-funds");
 const restartButton = document.getElementById("restart");
-const saveGameButton = document.getElementById("save-game");
-const loadGameButton = document.getElementById("load-game");
+const rulesButton = document.getElementById("rules");
+const shareButton = document.getElementById("share");
 
 let deleteMode = false;
 let deleteCount = 0;
@@ -15,6 +15,7 @@ let undoAvailable = false; // Флаг для отслеживания дост�
 undoButton.addEventListener("click", () => {
     if (undoAvailable) {
         grid = history.pop();  // Восстанавливаем последнее состояние
+        balance -= 30; // Списываем 30 баллов
         updateGrid(); // Обновление интерфейса
         undoAvailable = false; // Сбрасываем флаг
     }
@@ -69,8 +70,6 @@ shuffleButton.addEventListener("click", () => {
         shuffleTiles();
         balance -= 20;
         updateGrid(); // Обновление интерфейса
-
-        // Сохраняем состояние после перемешивания
         saveState();
         shuffleCount++; // Увеличиваем счетчик перемешиваний
     }
@@ -106,26 +105,24 @@ function saveState() {
     undoAvailable = true; // Устанавливаем флаг доступности хода назад
 }
 
-// Сохранение игры в localStorage
-saveGameButton.addEventListener("click", () => {
-    const gameState = {
-        grid,
-        score,
-        balance,
-        history
-    };
-    localStorage.setItem('2048-game', JSON.stringify(gameState));
+// Правила игры
+const rulesModal = document.getElementById("rules-modal");
+const closeButton = document.querySelector(".close-button");
+
+rulesButton.addEventListener("click", () => {
+    rulesModal.classList.remove("hidden");
 });
 
-// Загрузка игры из localStorage
-loadGameButton.addEventListener("click", () => {
-    const savedGame = localStorage.getItem('2048-game');
-    if (savedGame) {
-        const gameState = JSON.parse(savedGame);
-        grid = gameState.grid;
-        score = gameState.score;
-        balance = gameState.balance;
-        history = gameState.history;
-        updateGrid(); // Обновление интерфейса
-    }
+closeButton.addEventListener("click", () => {
+    rulesModal.classList.add("hidden");
+});
+
+// Поделиться
+shareButton.addEventListener("click", () => {
+    const shareText = "Я сыграл в 2048! Попробуйте и вы!";
+    navigator.share({
+        title: '2048',
+        text: shareText,
+        url: window.location.href
+    }).catch(console.error);
 });
