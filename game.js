@@ -1,74 +1,82 @@
-let gameBoard = [];
-let score = 0;
-let bestScore = 0;
-const boardSize = 4;
-
-window.onload = function () {
-    initGame();
-    loadGame();
-};
+let gameState = [];
+let undoStack = [];
 
 function initGame() {
-    for (let i = 0; i < boardSize * boardSize; i++) {
-        gameBoard[i] = 0;
-    }
+    // Инициализация игры
+    gameState = [...Array(4)].map(() => Array(4).fill(null));
     addRandomTile();
     addRandomTile();
-    renderBoard();
+    renderGrid();
+    saveGameState();
 }
 
-function renderBoard() {
-    const gameBoardElement = document.getElementById("game-board");
-    gameBoardElement.innerHTML = '';
-    gameBoard.forEach((tileValue, index) => {
-        const tileElement = document.createElement("div");
-        tileElement.classList.add("tile");
-        if (tileValue) {
-            tileElement.innerText = tileValue;
-        }
-        gameBoardElement.appendChild(tileElement);
+function renderGrid() {
+    const gridContainer = document.getElementById('game-grid');
+    gridContainer.innerHTML = '';
+
+    gameState.forEach((row, rowIndex) => {
+        row.forEach((tile, colIndex) => {
+            const tileElement = document.createElement('div');
+            tileElement.classList.add('tile');
+            tileElement.style.transform = `translate(${colIndex * 110}px, ${rowIndex * 110}px)`;
+            if (tile !== null) {
+                tileElement.textContent = tile;
+            }
+            gridContainer.appendChild(tileElement);
+        });
     });
-    updateScore();
 }
 
 function addRandomTile() {
+    // Логика добавления случайного тайла
     let emptyTiles = [];
-    gameBoard.forEach((tile, index) => {
-        if (tile === 0) {
-            emptyTiles.push(index);
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (gameState[i][j] === null) {
+                emptyTiles.push([i, j]);
+            }
         }
-    });
-
+    }
     if (emptyTiles.length > 0) {
-        let randomIndex = Math.floor(Math.random() * emptyTiles.length);
-        gameBoard[emptyTiles[randomIndex]] = Math.random() > 0.5 ? 2 : 4;
+        let [row, col] = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+        gameState[row][col] = Math.random() > 0.1 ? 2 : 4;
     }
 }
 
-function updateScore() {
-    document.getElementById("score").innerText = score;
-    if (score > bestScore) {
-        bestScore = score;
-        document.getElementById("best-score").innerText = bestScore;
-    }
-    saveGame();
+function move(direction) {
+    // Логика перемещения тайлов
+    undoStack.push(JSON.parse(JSON.stringify(gameState)));
+    // Реализация движения в зависимости от направления
+    renderGrid();
+    addRandomTile();
+    saveGameState();
 }
 
-function saveGame() {
-    localStorage.setItem("gameBoard", JSON.stringify(gameBoard));
-    localStorage.setItem("score", score);
-    localStorage.setItem("bestScore", bestScore);
+function saveGameState() {
+    localStorage.setItem('gameState', JSON.stringify(gameState));
 }
 
-function loadGame() {
-    const savedBoard = localStorage.getItem("gameBoard");
-    const savedScore = localStorage.getItem("score");
-    const savedBestScore = localStorage.getItem("bestScore");
-
-    if (savedBoard) {
-        gameBoard = JSON.parse(savedBoard);
-        score = parseInt(savedScore);
-        bestScore = parseInt(savedBestScore);
-        renderBoard();
+function loadGameState() {
+    const savedState = JSON.parse(localStorage.getItem('gameState'));
+    if (savedState) {
+        gameState = savedState;
+        renderGrid();
     }
 }
+
+function undoMove() {
+    if (undoStack.length > 0) {
+        gameState = undoStack.pop();
+        renderGrid();
+    }
+}
+
+// Пример использования событий клавиш для управления
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp') move('up');
+    else if (event.key === 'ArrowDown') move('down');
+    else if (event.key === 'ArrowLeft') move('left');
+    else if (event.key === 'ArrowRight') move('right');
+});
+
+initGame();
