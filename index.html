@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2048 Game</title>
     <link rel="stylesheet" href="style.css">
+    <title>2048 Game</title>
 </head>
 <body>
-    <div id="game-container">
-        <h1>2048 Game</h1>
-        <div id="game-board">
-            <!-- Tiles will be dynamically added here -->
+    <div class="game-container">
+        <div class="grid-container">
+            <!-- Контейнер для сетки игрового поля -->
+            <div id="game-grid"></div>
         </div>
-        <div id="controls">
-            <button id="undo">Undo</button>
-            <button id="delete-tile">Delete Tile</button>
-            <button id="shuffle">Shuffle</button>
-        </div>
-        <div id="scoreboard">
-            <div>Score: <span id="score">0</span></div>
-            <div>Best Score: <span id="best-score">0</span></div>
+        <div class="controls-container">
+            <!-- Кнопки управления -->
+            <button id="undo-btn">Undo</button>
+            <button id="delete-btn">Delete Tile</button>
+            <button id="shuffle-btn">Shuffle</button>
+            <button id="save-btn">Save Game</button>
+            <button id="load-btn">Load Game</button>
         </div>
     </div>
-    <script src="controls.js"></script>
     <script src="game.js"></script>
+    <script src="controls.js"></script>
 </body>
 </html>
