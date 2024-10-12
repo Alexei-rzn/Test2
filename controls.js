@@ -3,15 +3,18 @@ const deleteTileButton = document.getElementById("delete");
 const shuffleButton = document.getElementById("shuffle");
 const addFundsButton = document.getElementById("add-funds");
 const restartButton = document.getElementById("restart");
+const saveGameButton = document.getElementById("save-game");
+const loadGameButton = document.getElementById("load-game");
 
 let deleteMode = false;
+let deleteCount = 0;
+let shuffleCount = 0;
 
 // Ход назад
 let undoAvailable = false; // Флаг для отслеживания доступности хода назад
 undoButton.addEventListener("click", () => {
-    if (undoAvailable && balance >= 30) {
+    if (undoAvailable) {
         grid = history.pop();  // Восстанавливаем последнее состояние
-        balance -= 30;  // Списываем 30 баллов
         updateGrid(); // Обновление интерфейса
         undoAvailable = false; // Сбрасываем флаг
     }
@@ -19,7 +22,7 @@ undoButton.addEventListener("click", () => {
 
 // Удаление плитки
 function deleteTile() {
-    if (balance >= 50) {
+    if (balance >= 50 && deleteCount < 1) { // Ограничение на одно удаление за ход
         const tiles = document.querySelectorAll(".tile");
         tiles.forEach(tile => {
             tile.addEventListener("click", () => {
@@ -32,7 +35,8 @@ function deleteTile() {
                     updateGrid(); // Обновление интерфейса
 
                     // Сохраняем состояние после удаления
-                    saveState(); 
+                    saveState();
+                    deleteCount++; // Увеличиваем счетчик удалений
                 }
             }, { once: true });
         });
@@ -61,13 +65,14 @@ function getTileIndex(tile) {
 
 // Перемешивание плиток
 shuffleButton.addEventListener("click", () => {
-    if (balance >= 20) {
+    if (balance >= 20 && shuffleCount < 1) { // Ограничение на одно перемешивание за ход
         shuffleTiles();
         balance -= 20;
         updateGrid(); // Обновление интерфейса
 
         // Сохраняем состояние после перемешивания
         saveState();
+        shuffleCount++; // Увеличиваем счетчик перемешиваний
     }
 });
 
@@ -100,3 +105,27 @@ function saveState() {
     history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
     undoAvailable = true; // Устанавливаем флаг доступности хода назад
 }
+
+// Сохранение игры в localStorage
+saveGameButton.addEventListener("click", () => {
+    const gameState = {
+        grid,
+        score,
+        balance,
+        history
+    };
+    localStorage.setItem('2048-game', JSON.stringify(gameState));
+});
+
+// Загрузка игры из localStorage
+loadGameButton.addEventListener("click", () => {
+    const savedGame = localStorage.getItem('2048-game');
+    if (savedGame) {
+        const gameState = JSON.parse(savedGame);
+        grid = gameState.grid;
+        score = gameState.score;
+        balance = gameState.balance;
+        history = gameState.history;
+        updateGrid(); // Обновление интерфейса
+    }
+});
