@@ -1,119 +1,74 @@
 body {
-
     font-family: Arial, sans-serif;
-
-    text-align: center;
-
-    background-color: #faf8ef;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
-
-    padding: 0;
-
+    background-color: #faf8ef;
 }
 
-
-
-h1 {
-
-    font-size: 80px;
-
-    color: #776e65;
-
+#game-container {
+    text-align: center;
 }
-
-
 
 #game-board {
-
-    width: 500px;
-
-    height: 500px;
-
-    margin: 0 auto;
-
     display: grid;
-
-    grid-template-columns: repeat(4, 1fr);
-
-    grid-gap: 10px;
-
-    padding: 10px;
-
-    background-color: #bbada0;
-
-    border-radius: 10px;
-
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 100px);
+    gap: 10px;
+    margin-bottom: 20px;
 }
-
-
 
 .tile {
-
     width: 100px;
-
     height: 100px;
-
-    background-color: #cdc1b4;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    font-size: 24px;
-
-    font-weight: bold;
-
+    background-color: #eee4da;
+    font-size: 2em;
+    text-align: center;
+    line-height: 100px;
     border-radius: 5px;
-
+    transition: all 0.2s ease-in-out;
 }
 
+.tile.new-tile {
+    animation: tile-enter 0.2s ease-in-out;
+}
 
+@keyframes tile-enter {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 
 #controls {
-
-    margin-top: 20px;
-
+    margin-bottom: 20px;
 }
 
-
-
-button {
-
-    padding: 10px 20px;
-
-    font-size: 18px;
-
+#controls button {
+    padding: 10px 15px;
+    font-size: 16px;
     margin: 5px;
-
-    border: none;
-
-    border-radius: 5px;
-
-    background-color: #8f7a66;
-
-    color: white;
-
     cursor: pointer;
-
+    background-color: #8f7a66;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 120px;
+    height: 50px;
 }
 
-
-
-button:hover {
-
-    background-color: #776e65;
-
+#controls button:disabled {
+    background-color: #ccc;
 }
 
+#scoreboard {
+    font-size: 18px;
+}
 
-
-@keyframes moveTile {
-
-    0% { transform: translate(0, 0); }
-
-    100% { transform: translate(100px, 0); }
-
+#scoreboard span {
+    font-weight: bold;
 }
