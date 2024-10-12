@@ -1,95 +1,179 @@
-const gridContainer = document.getElementById("grid-container");
-const scoreDisplay = document.getElementById("score");
-const balanceDisplay = document.getElementById("balance");
-const gameOverDisplay = document.getElementById("game-over");
+const boardSize = 4;
 
-let grid = [];
+let board = [];
+
+let previousState = [];
+
 let score = 0;
-let balance = 100;
-let history = [];
-let removeTileLimit = 3; // Лимит удалений за ход
-let shuffleLimit = 3; // Лимит перемешиваний за ход
 
-// Инициализация игры
-function initGame() {
-    grid = Array.from({ length: 4 }, () => Array(4).fill(0));  
-    score = 0; 
-    balance = 100; 
-    removeTileLimit = 3; // Сбрасываем лимит
-    shuffleLimit = 3; // Сбрасываем лимит
-    history = [];  
-    addNewTile(); 
-    addNewTile(); 
-    updateGrid();
+let movesHistory = [];
+
+let maxUndo = 3;
+
+
+
+window.onload = function() {
+
+    initializeBoard();
+
+    loadGame();
+
+    renderBoard();
+
+};
+
+
+
+function initializeBoard() {
+
+    board = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+
+    generateRandomTile();
+
+    generateRandomTile();
+
 }
 
-// Сохранение состояния игры в localStorage
-function saveGame() {
-    localStorage.setItem('2048game', JSON.stringify({
-        grid,
-        score,
-        balance,
-        history
-    }));
-}
 
-// Загрузка игры из localStorage
-function loadGame() {
-    const savedGame = localStorage.getItem('2048game');
-    if (savedGame) {
-        const { grid: savedGrid, score: savedScore, balance: savedBalance, history: savedHistory } = JSON.parse(savedGame);
-        grid = savedGrid;
-        score = savedScore;
-        balance = savedBalance;
-        history = savedHistory;
-        updateGrid();
-    }
-}
 
-// Обновление отображения плиток
-function updateGrid() {
-    gridContainer.innerHTML = '';
-    grid.forEach(row => {
-        row.forEach(tile => {
-            const tileElement = document.createElement("div");
-            tileElement.classList.add("tile");
-            if (tile > 0) {
-                tileElement.classList.add(`tile-${tile}`);
-                tileElement.innerText = tile;
-            }
-            gridContainer.appendChild(tileElement);
-        });
-    });
-    scoreDisplay.innerText = score;
-    balanceDisplay.innerText = balance;
+function renderBoard() {
 
-    if (checkGameOver()) {
-        gameOverDisplay.classList.remove("hidden");
-    }
-}
+    const gameBoard = document.getElementById('game-board');
 
-// Добавление новой плитки
-function addNewTile() {
-    let emptyCells = [];
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            if (grid[i][j] === 0) emptyCells.push({ i, j });
+    gameBoard.innerHTML = '';
+
+    for (let row = 0; row < boardSize; row++) {
+
+        for (let col = 0; col < boardSize; col++) {
+
+            const tile = document.createElement('div');
+
+            tile.classList.add('tile');
+
+            tile.textContent = board[row][col] === 0 ? '' : board[row][col];
+
+            gameBoard.appendChild(tile);
+
         }
+
     }
-    if (emptyCells.length) {
-        const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-        grid[i][j] = Math.random() < 0.8 ? 2 : 4; 
-        saveState(); 
-    }
-    saveGame(); // Сохранение игры после добавления новой плитки
+
 }
 
-// Проверка окончания игры
-function checkGameOver() {
-    return grid.flat().every(cell => cell !== 0) &&
-        !grid.some((row, i) => row.some((cell, j) => 
-            (j < 3 && cell === row[j + 1]) || (i < 3 && cell === grid[i + 1][j])
-        ));
+
+
+function generateRandomTile() {
+
+    let emptyTiles = [];
+
+    for (let row = 0; row < boardSize; row++) {
+
+        for (let col = 0; col < boardSize; col++) {
+
+            if (board[row][col] === 0) {
+
+                emptyTiles.push({ row, col });
+
+            }
+
+        }
+
+    }
+
+    if (emptyTiles.length > 0) {
+
+        let { row, col } = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+
+        board[row][col] = Math.random() < 0.9 ? 2 : 4;
+
+    }
+
 }
 
-initGame();
+
+
+function saveGame() {
+
+    localStorage.setItem('board', JSON.stringify(board));
+
+    localStorage.setItem('score', score);
+
+}
+
+
+
+function loadGame() {
+
+    const savedBoard = localStorage.getItem('board');
+
+    const savedScore = localStorage.getItem('score');
+
+    if (savedBoard) {
+
+        board = JSON.parse(savedBoard);
+
+        score = savedScore ? parseInt(savedScore) : 0;
+
+    }
+
+}
+
+
+
+function undoMove() {
+
+    if (movesHistory.length > 0 && maxUndo > 0) {
+
+        board = movesHistory.pop();
+
+        renderBoard();
+
+        maxUndo--;
+
+    }
+
+}
+
+
+
+function deleteTile() {
+
+    let maxTile = Math.max(...board.flat());
+
+    if (maxTile > 0) {
+
+        for (let row = 0; row < boardSize; row++) {
+
+            for (let col = 0; col < boardSize; col++) {
+
+                if (board[row][col] === maxTile) {
+
+                    board[row][col] = 0;
+
+                    renderBoard();
+
+                    return;
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+
+
+function shuffleBoard() {
+
+    let tiles = board.flat().filter(tile => tile !== 0);
+
+    board = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+
+    tiles.forEach(tile => generateRandomTile());
+
+    renderBoard();
+
+}
