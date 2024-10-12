@@ -55,6 +55,7 @@ body {
     color: white;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Тень для плиток */
+    transition: transform 0.2s ease; /* Плавный переход при перемещении */
 }
 
 .tile-2 { background-color: #4db6e4; }
@@ -97,6 +98,7 @@ body {
     flex: 1; /* Кнопки занимают равное пространство */
     margin: 5px; /* Отступы между кнопками */
     transition: background-color 0.3s; /* Плавный переход цвета фона */
+    min-width: 150px; /* Минимальная ширина кнопок */
 }
 
 .action-button.active {
