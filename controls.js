@@ -17,7 +17,10 @@ undoButton.addEventListener("click", () => {
         const previousState = history.pop();  // Восстанавливаем последнее состояние
         if (previousState) {
             grid = previousState;  // Восстанавливаем состояние
-            balance = Math.max(balance - 30, 0); // Списываем 30 баллов, не позволяя балансу быть отрицательным
+            const cost = 30;
+            if (balance >= cost) {
+                balance -= cost; // Списываем 30 баллов, если баланс позволяет
+            }
             updateGrid(); // Обновление интерфейса
             undoAvailable = history.length > 0; // Проверяем доступность следующего хода назад
         }
@@ -114,9 +117,20 @@ rulesButton.addEventListener("click", () => {
 // Поделиться
 shareButton.addEventListener("click", () => {
     const shareText = "Я сыграл в 2048! Попробуйте и вы!";
-    navigator.clipboard.writeText(window.location.href)
+    const url = window.location.href;
+    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
+    const viberUrl = `viber://forward?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
+
+    // Копируем ссылку в буфер обмена
+    navigator.clipboard.writeText(url)
         .then(() => {
-            alert("Ссылка скопирована в буфер обмена!"); // Сообщение об успешном копировании
+            alert("Ссылка на игру скопирована в буфер обмена!");
         })
         .catch(err => console.error('Ошибка копирования:', err));
+
+    // Открываем ссылки в новых вкладках
+    window.open(telegramUrl, '_blank');
+    window.open(whatsappUrl, '_blank');
+    window.open(viberUrl, '_blank');
 });
