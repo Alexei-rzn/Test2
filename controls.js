@@ -17,7 +17,7 @@ undoButton.addEventListener("click", () => {
         grid = history.pop();  // Восстанавливаем последнее состояние
         balance -= 30; // Списываем 30 баллов
         updateGrid(); // Обновление интерфейса
-        undoAvailable = false; // Сбрасываем флаг
+        undoAvailable = history.length > 0; // Проверяем доступность следующего хода назад
     }
 });
 
@@ -106,32 +106,16 @@ function saveState() {
 }
 
 // Правила игры
-const rulesModal = document.getElementById("rules-modal");
-const closeButton = document.querySelector(".close-button");
-const rulesContent = document.getElementById("rules-content");
-
-// Загрузка правил из файла
-fetch('rules.txt')
-    .then(response => response.text())
-    .then(data => {
-        rulesContent.innerHTML = data;
-    })
-    .catch(error => console.error('Ошибка загрузки правил:', error));
-
 rulesButton.addEventListener("click", () => {
-    rulesModal.classList.remove("hidden");
-});
-
-closeButton.addEventListener("click", () => {
-    rulesModal.classList.add("hidden");
+    window.location.href = "rules.html"; // Переход на страницу правил
 });
 
 // Поделиться
 shareButton.addEventListener("click", () => {
     const shareText = "Я сыграл в 2048! Попробуйте и вы!";
-    navigator.share({
-        title: '2048',
-        text: shareText,
-        url: window.location.href
-    }).catch(console.error);
+    navigator.clipboard.writeText(window.location.href)
+        .then(() => {
+            alert("Ссылка скопирована в буфер обмена!"); // Сообщение об успешном копировании
+        })
+        .catch(err => console.error('Ошибка копирования:', err));
 });
