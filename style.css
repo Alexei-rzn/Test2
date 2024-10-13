@@ -6,6 +6,7 @@ body {
     height: 100vh;
     margin: 0; /* Убираем отступы по умолчанию */
     font-family: 'Arial', sans-serif;
+    overflow: hidden; /* Убираем прокрутку */
 }
 
 .game-container, .rules-container {
@@ -16,6 +17,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     width: 90vw; /* Ширина контейнера 90% от ширины экрана */
     max-width: 400px; /* Максимальная ширина контейнера */
+    height: 90vh; /* Высота контейнера 90% от высоты экрана */
+    overflow-y: auto; /* Прокрутка по вертикали для правил */
 }
 
 .score-container, .balance-container {
