@@ -117,7 +117,6 @@ function move(direction) {
         setTimeout(() => {
             addNewTile(); // Добавляем новую плитку после хода
             updateGrid(); // Обновляем интерфейс
-            toggleActionButtons(true); // Активируем кнопки после перемещения
         }, 200);
     }
 }
@@ -200,7 +199,6 @@ function saveState() {
         history.shift(); // Удаляем самый старый элемент, если их стало больше 10
     }
     history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
-    undoAvailable = true; // Устанавливаем флаг доступности хода назад
 }
 
 // Сенсорное управление
@@ -241,14 +239,5 @@ gridContainer.addEventListener('touchend', (event) => {
     }
 });
 
-// Функция для активации/деактивации кнопок
-function toggleActionButtons(active) {
-    const buttons = [undoButton, deleteTileButton, shuffleButton];
-    buttons.forEach(button => {
-        button.disabled = !active;
-    });
-}
-
 // Инициализация игры
 initGame(); // Начало игры
-toggleActionButtons(true); // Активируем кнопки при старте
