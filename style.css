@@ -6,7 +6,6 @@ body {
     height: 100vh;
     margin: 0; /* Убираем отступы по умолчанию */
     font-family: 'Arial', sans-serif;
-    overflow: hidden; /* Убираем прокрутку */
 }
 
 .game-container, .rules-container {
