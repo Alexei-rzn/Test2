@@ -14,16 +14,19 @@ let shuffleCount = 0;
 let undoAvailable = false; // Флаг для отслеживания доступности хода назад
 undoButton.addEventListener("click", () => {
     if (undoAvailable) {
-        grid = history.pop();  // Восстанавливаем последнее состояние
-        balance -= 30; // Списываем 30 баллов
-        updateGrid(); // Обновление интерфейса
-        undoAvailable = history.length > 0; // Проверяем доступность следующего хода назад
+        const previousState = history.pop();  // Восстанавливаем последнее состояние
+        if (previousState) {
+            grid = previousState;  // Восстанавливаем состояние
+            balance = Math.max(balance - 30, 0); // Списываем 30 баллов, не позволяя балансу быть отрицательным
+            updateGrid(); // Обновление интерфейса
+            undoAvailable = history.length > 0; // Проверяем доступность следующего хода назад
+        }
     }
 });
 
 // Удаление плитки
 function deleteTile() {
-    if (balance >= 50 && deleteCount < 1) { // Ограничение на одно удаление за ход
+    if (balance >= 50) { // Проверяем, достаточно ли баланса
         const tiles = document.querySelectorAll(".tile");
         tiles.forEach(tile => {
             tile.addEventListener("click", () => {
@@ -37,7 +40,6 @@ function deleteTile() {
 
                     // Сохраняем состояние после удаления
                     saveState();
-                    deleteCount++; // Увеличиваем счетчик удалений
                 }
             }, { once: true });
         });
@@ -66,12 +68,11 @@ function getTileIndex(tile) {
 
 // Перемешивание плиток
 shuffleButton.addEventListener("click", () => {
-    if (balance >= 20 && shuffleCount < 1) { // Ограничение на одно перемешивание за ход
+    if (balance >= 20) { // Проверяем, достаточно ли баланса
         shuffleTiles();
         balance -= 20;
         updateGrid(); // Обновление интерфейса
-        saveState();
-        shuffleCount++; // Увеличиваем счетчик перемешиваний
+        saveState(); // Сохраняем состояние после перемешивания
     }
 });
 
