@@ -2,15 +2,11 @@ const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
 const balanceDisplay = document.getElementById("balance");
 const gameOverDisplay = document.getElementById("game-over");
-const tournamentTable = document.querySelector(".tournament-table table");
 
 let grid = [];
 let score = 0;
 let balance = 100;
 let history = [];
-let undoCount = 0;
-let deleteCount = 0;
-let shuffleCount = 0;
 
 // Инициализация игры
 function initGame() {
@@ -57,7 +53,6 @@ function updateGrid() {
 
     if (checkGameOver()) {
         gameOverDisplay.classList.remove("hidden");
-        checkTournament(); // Проверка на попадание в турнирную таблицу
     }
 }
 
@@ -122,7 +117,6 @@ function move(direction) {
         setTimeout(() => {
             addNewTile(); // Добавляем новую плитку после хода
             updateGrid(); // Обновляем интерфейс
-            checkWin(); // Проверка на победу
         }, 200);
     }
 }
@@ -244,40 +238,6 @@ gridContainer.addEventListener('touchend', (event) => {
         }
     }
 });
-
-// Проверка на победу
-function checkWin() {
-    if (grid.flat().includes(2048)) {
-        alert("Победа!");
-        window.location.href = "victory.html"; // Переход на страницу победы
-    }
-}
-
-// Проверка на попадание в турнирную таблицу
-function checkTournament() {
-    const scores = Array.from(tournamentTable.rows).slice(1).map(row => parseInt(row.cells[1].innerText));
-    const minScore = Math.min(...scores);
-
-    if (score > minScore) {
-        // Если пользователь попадает в тройку, показать форму для ввода имени
-        const playerName = prompt("Введите ваше имя:");
-        if (playerName) {
-            // Заменить минимальный счет и добавить имя
-            const minScoreRow = tournamentTable.querySelector(`tr:has(td:contains('${minScore}'))`);
-            minScoreRow.cells[0].innerText = playerName;
-            minScoreRow.cells[1].innerText = score;
-            // Отсортировать таблицу
-            sortTournamentTable();
-        }
-    }
-}
-
-// Сортировка турнира по убыванию
-function sortTournamentTable() {
-    const rows = Array.from(tournamentTable.rows).slice(1);
-    rows.sort((a, b) => parseInt(b.cells[1].innerText) - parseInt(a.cells[1].innerText));
-    rows.forEach(row => tournamentTable.appendChild(row));
-}
 
 // Инициализация игры
 initGame(); // Начало игры
