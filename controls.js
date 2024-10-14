@@ -94,14 +94,6 @@ restartButton.addEventListener("click", () => {
     initGame(); // Инициализация новой игры
 });
 
-// Сохранение состояния игры в истории
-function saveState() {
-    if (history.length >= 10) {
-        history.shift(); // Удаляем самый старый элемент, если их стало больше 10
-    }
-    history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
-}
-
 // Правила игры
 rulesButton.addEventListener("click", () => {
     window.location.href = "rules.html"; // Переход на страницу правил
