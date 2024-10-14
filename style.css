@@ -8,16 +8,10 @@ body {
     font-family: 'Arial', sans-serif;
 }
 
-.game-container, .rules-container {
-    text-align: center;
-    border-radius: 10px;
-    padding: 20px;
-    background-color: #ffffff; /* Цвет фона контейнера */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    width: 90vw; /* Ширина контейнера 90% от ширины экрана */
-    max-width: 400px; /* Максимальная ширина контейнера */
-    height: 90vh; /* Высота контейнера 90% от высоты экрана */
-    overflow-y: auto; /* Прокрутка по вертикали для правил */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .score-container, .balance-container {
@@ -27,12 +21,10 @@ body {
 }
 
 .restart-button {
-    font-size: 18px;
-    padding: 10px 20px;
-    margin-bottom: 20px;
+    width: 80px; /* Ширина кнопки */
+    height: 80px; /* Высота кнопки */
+    border-radius: 50%; /* Круглая кнопка */
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
     background-color: #f39c12; /* Цвет кнопки */
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
@@ -88,24 +80,20 @@ body {
 
 .button-container {
     display: flex;
-    flex-wrap: wrap; /* Позволяет кнопкам занимать свободное пространство */
     justify-content: space-between; /* Равномерное распределение кнопок */
     margin-top: 20px;
 }
 
 .action-button {
-    font-size: 16px;
-    padding: 10px 15px;
+    width: 80px; /* Ширина кнопки */
+    height: 80px; /* Высота кнопки */
     cursor: pointer;
     border: none;
     border-radius: 5px;
     background-color: #3498db; /* Цвет кнопки */
     color: white;
-    flex: 1; /* Кнопки занимают равное пространство */
-    margin: 5px; /* Отступы между кнопками */
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
-    min-width: 150px; /* Минимальная ширина кнопок */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
 }
 
 .action-button:hover {
@@ -113,6 +101,41 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-.action-button.active {
-    background-color: lightcoral; /* Цвет кнопки при активном состоянии */
+.top-buttons {
+    display: flex;
+    justify-content: space-between; /* Равномерное распределение кнопок */
+    width: 100%; /* Ширина блока кнопок */
+    margin-top: 10px;
+}
+
+.small-button {
+    width: 20px; /* Ширина маленькой кнопки */
+    height: 20px; /* Высота маленькой кнопки */
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db; /* Цвет кнопки */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
+}
+
+.small-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.tournament-table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tournament-table th, .tournament-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.tournament-table th {
+    background-color: #f2f2f2;
 }
