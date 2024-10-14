@@ -8,10 +8,6 @@
 </head>
 <body>
     <div class="game-container">
-        <div class="top-buttons">
-            <button id="rules" class="small-button">Правила игры</button>
-            <button id="share" class="small-button">Поделиться</button>
-        </div>
         <div class="score-container">Счёт: <span id="score">0</span></div>
         <div class="balance-container">Баланс: <span id="balance">100</span></div>
         <button id="restart" class="restart-button">Рестарт</button>
@@ -27,25 +23,22 @@
             <button id="shuffle" class="action-button">Перемешать плитки</button>
             <button id="add-funds" class="action-button">Пополнить баланс на 50</button>
         </div>
-        <div class="tournament-table">
+        <div class="top-buttons">
+            <button id="rules" class="small-button">Правила игры</button>
+            <button id="share" class="small-button">Поделиться</button>
+        </div>
+        <div id="tournament-table" class="tournament-table hidden">
             <h3>Турнирная таблица</h3>
             <table>
                 <tr>
                     <th>Имя</th>
                     <th>Счёт</th>
+                    <th>Дата</th>
+                    <th>Ходы назад</th>
+                    <th>Удаления</th>
+                    <th>Перемешивания</th>
                 </tr>
-                <tr>
-                    <td>Иван</td>
-                    <td>4000</td>
-                </tr>
-                <tr>
-                    <td>Варя</td>
-                    <td>2000</td>
-                </tr>
-                <tr>
-                    <td>Vert</td>
-                    <td>100</td>
-                </tr>
+                <!-- Данные будут динамически добавлены через JavaScript -->
             </table>
         </div>
     </div>
