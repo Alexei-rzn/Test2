@@ -12,12 +12,17 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-radius: 20px; /* Гладкие границы контейнера */
+    padding: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.8); /* Полупрозрачный фон */
 }
 
 .score-container, .balance-container {
     font-size: 24px;
     color: #333;
     margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); /* Тень текста */
 }
 
 .restart-button {
@@ -25,21 +30,22 @@ body {
     height: 80px; /* Высота кнопки */
     border-radius: 50%; /* Круглая кнопка */
     cursor: pointer;
-    background-color: #f39c12; /* Цвет кнопки */
+    background: linear-gradient(145deg, #f39c12, #e57c00); /* Градиент цвета кнопки */
     color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), inset 5px 5px 10px rgba(255, 255, 255, 0.3);
     transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .restart-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.3);
 }
 
 .grid-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 15px; /* Увеличенный промежуток между плитками */
+    margin-top: 20px;
 }
 
 .tile {
@@ -49,16 +55,16 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 32px;
-    border-radius: 5px;
+    border-radius: 10px; /* Гладкие границы плитки */
     color: white;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Тень для плиток */
-    transition: transform 0.2s ease; /* Плавный переход при перемещении */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Тень для плиток */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Плавный переход при перемещении */
 }
 
-.tile-2 { background-color: #4db6e4; }
-.tile-4 { background-color: #4db6e4; }
-.tile-8 { background-color: #6ee7d3; }
+.tile-2 { background-color: #f9c9b6; }
+.tile-4 { background-color: #f39c12; }
+.tile-8 { background-color: #f5b55a; }
 .tile-16 { background-color: #68e4ca; }
 .tile-32 { background-color: #1bc4c7; }
 .tile-64 { background-color: #1ab1b2; }
@@ -67,6 +73,10 @@ body {
 .tile-512 { background-color: #005e99; }
 .tile-1024 { background-color: #004577; }
 .tile-2048 { background-color: #003858; }
+
+.tile:hover {
+    transform: scale(1.05); /* Увеличение плитки при наведении */
+}
 
 .game-over {
     font-size: 24px;
@@ -89,16 +99,16 @@ body {
     height: 80px; /* Высота кнопки */
     cursor: pointer;
     border: none;
-    border-radius: 5px;
-    background-color: #3498db; /* Цвет кнопки */
+    border-radius: 10px; /* Гладкие границы */
+    background: linear-gradient(145deg, #3498db, #2980b9); /* Градиент цвета кнопки */
     color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
 }
 
 .action-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.3);
 }
 
 .top-buttons {
@@ -113,16 +123,16 @@ body {
     height: 40px; /* Высота маленькой кнопки */
     cursor: pointer;
     border: none;
-    border-radius: 5px;
-    background-color: #3498db; /* Цвет кнопки */
+    border-radius: 10px; /* Гладкие границы */
+    background: linear-gradient(145deg, #3498db, #2980b9); /* Градиент цвета кнопки */
     color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
 }
 
 .small-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.3);
 }
 
 .tournament-table {
@@ -134,6 +144,7 @@ body {
 .tournament-table th, .tournament-table td {
     border: 1px solid #ddd;
     padding: 8px;
+    border-radius: 5px; /* Гладкие границы ячеек */
 }
 
 .tournament-table th {
