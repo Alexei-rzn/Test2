@@ -11,19 +11,11 @@ let deleteCount = 0;
 let shuffleCount = 0;
 
 // Ход назад
-let undoAvailable = false; // Флаг для отслеживания доступности хода назад
 undoButton.addEventListener("click", () => {
-    if (undoAvailable) {
-        const previousState = history.pop();  // Восстанавливаем последнее состояние
-        if (previousState) {
-            grid = previousState;  // Восстанавливаем состояние
-            const cost = 30;
-            if (balance >= cost) {
-                balance -= cost; // Списываем 30 баллов, если баланс позволяет
-            }
-            updateGrid(); // Обновление интерфейса
-            undoAvailable = history.length > 0; // Проверяем доступность следующего хода назад
-        }
+    if (history.length > 0 && balance >= 30) {
+        grid = history.pop();  // Восстанавливаем последнее состояние
+        balance -= 30;  // Списываем 30 баллов
+        updateGrid(); // Обновление интерфейса
     }
 });
 
@@ -42,7 +34,7 @@ function deleteTile() {
                     updateGrid(); // Обновление интерфейса
 
                     // Сохраняем состояние после удаления
-                    saveState();
+                    saveState(); 
                 }
             }, { once: true });
         });
@@ -71,11 +63,13 @@ function getTileIndex(tile) {
 
 // Перемешивание плиток
 shuffleButton.addEventListener("click", () => {
-    if (balance >= 20) { // Проверяем, достаточно ли баланса
+    if (balance >= 20) {
         shuffleTiles();
         balance -= 20;
         updateGrid(); // Обновление интерфейса
-        saveState(); // Сохраняем состояние после перемешивания
+
+        // Сохраняем состояние после перемешивания
+        saveState();
     }
 });
 
@@ -106,7 +100,6 @@ function saveState() {
         history.shift(); // Удаляем самый старый элемент, если их стало больше 10
     }
     history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
-    undoAvailable = true; // Устанавливаем флаг доступности хода назад
 }
 
 // Правила игры
@@ -122,15 +115,15 @@ shareButton.addEventListener("click", () => {
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
     const viberUrl = `viber://forward?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
 
+    // Открываем ссылки в новых вкладках
+    window.open(telegramUrl, '_blank');
+    window.open(whatsappUrl, '_blank');
+    window.open(viberUrl, '_blank');
+
     // Копируем ссылку в буфер обмена
     navigator.clipboard.writeText(url)
         .then(() => {
             alert("Ссылка на игру скопирована в буфер обмена!");
         })
         .catch(err => console.error('Ошибка копирования:', err));
-
-    // Открываем ссылки в новых вкладках
-    window.open(telegramUrl, '_blank');
-    window.open(whatsappUrl, '_blank');
-    window.open(viberUrl, '_blank');
 });
