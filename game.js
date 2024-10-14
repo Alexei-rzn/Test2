@@ -262,10 +262,10 @@ function checkTournament() {
         // Если пользователь попадает в тройку, показать форму для ввода имени
         const playerName = prompt("Введите ваше имя:");
         if (playerName) {
-            // Добавить имя и счет в таблицу
-            const newRow = tournamentTable.insertRow();
-            newRow.insertCell(0).innerText = playerName;
-            newRow.insertCell(1).innerText = score;
+            // Заменить минимальный счет и добавить имя
+            const minScoreRow = tournamentTable.querySelector(`tr:has(td:contains('${minScore}'))`);
+            minScoreRow.cells[0].innerText = playerName;
+            minScoreRow.cells[1].innerText = score;
             // Отсортировать таблицу
             sortTournamentTable();
         }
