@@ -109,8 +109,8 @@ body {
 }
 
 .small-button {
-    width: 20px; /* Ширина маленькой кнопки */
-    height: 20px; /* Высота маленькой кнопки */
+    width: 80px; /* Ширина маленькой кнопки */
+    height: 40px; /* Высота маленькой кнопки */
     cursor: pointer;
     border: none;
     border-radius: 5px;
