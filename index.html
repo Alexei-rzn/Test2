@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2048</title>
+    <meta name="description" content="Игра 2048 - объединяйте плитки и достигайте 2048!">
+    <title>2048 - Игра</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Добавление иконки -->
 </head>
 <body>
     <div class="game-container">
@@ -42,6 +44,9 @@
             </table>
         </div>
     </div>
+    <audio id="move-sound" src="move.mp3" preload="auto"></audio> <!-- Звуки -->
+    <audio id="merge-sound" src="merge.mp3" preload="auto"></audio>
+    <audio id="game-over-sound" src="game-over.mp3" preload="auto"></audio>
 
     <script src="game.js"></script>
     <script src="controls.js"></script>
