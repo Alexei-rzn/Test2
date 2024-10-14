@@ -14,6 +14,13 @@ body {
     align-items: center;
 }
 
+.top-buttons {
+    display: flex;
+    justify-content: space-between; /* Равномерное распределение кнопок */
+    width: 100%; /* Ширина блока кнопок */
+    margin-bottom: 10px;
+}
+
 .score-container, .balance-container {
     font-size: 24px;
     color: #333;
@@ -101,15 +108,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-.top-buttons {
-    display: flex;
-    justify-content: space-between; /* Равномерное распределение кнопок */
-    width: 100%; /* Ширина блока кнопок */
-    margin-top: 10px;
-}
-
 .small-button {
-    width: 20px; /* Ширина маленькой кнопки */
+    width: 80px; /* Ширина маленькой кнопки */
     height: 20px; /* Высота маленькой кнопки */
     cursor: pointer;
     border: none;
@@ -118,11 +118,6 @@ body {
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
-}
-
-.small-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .tournament-table {
