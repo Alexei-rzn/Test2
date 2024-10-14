@@ -2,6 +2,9 @@ const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
 const balanceDisplay = document.getElementById("balance");
 const gameOverDisplay = document.getElementById("game-over");
+const moveSound = document.getElementById("move-sound");
+const mergeSound = document.getElementById("merge-sound");
+const gameOverSound = document.getElementById("game-over-sound");
 
 let grid = [];
 let score = 0;
@@ -53,6 +56,7 @@ function updateGrid() {
 
     if (checkGameOver()) {
         gameOverDisplay.classList.remove("hidden");
+        gameOverSound.play(); // Звук окончания игры
     }
 }
 
@@ -114,6 +118,7 @@ function move(direction) {
     }
 
     if (moved || combined) {
+        moveSound.play(); // Звук передвижения плиток
         setTimeout(() => {
             addNewTile(); // Добавляем новую плитку после хода
             updateGrid(); // Обновляем интерфейс
@@ -138,6 +143,7 @@ function slideRow(row, direction) {
             score += newRow[i];
             newRow[i + 1] = 0;
             combined = true;
+            mergeSound.play(); // Звук слияния плиток
         }
     }
 
@@ -168,6 +174,7 @@ function slideColumn(column, direction) {
                 score += newColumn[i];
                 newColumn[i + 1] = 0;
                 combined = true;
+                mergeSound.play(); // Звук слияния плиток
             }
         }
     } else { // down
@@ -177,6 +184,7 @@ function slideColumn(column, direction) {
                 score += newColumn[i];
                 newColumn[i - 1] = 0;
                 combined = true;
+                mergeSound.play(); // Звук слияния плиток
             }
         }
     }
