@@ -19,12 +19,28 @@
         </div>
         <div class="button-container">
             <button id="undo" class="action-button">Ход назад</button>
-            <button id="delete" class="action-button" id="delete-button">Удалить плитку</button>
+            <button id="delete" class="action-button">Удалить плитку</button>
             <button id="shuffle" class="action-button">Перемешать плитки</button>
             <button id="add-funds" class="action-button">Пополнить баланс на 50</button>
         </div>
-        <button id="rules" class="action-button">Правила игры</button>
-        <button id="share" class="action-button">Поделиться</button>
+        <div class="top-buttons">
+            <button id="rules" class="small-button">Правила игры</button>
+            <button id="share" class="small-button">Поделиться</button>
+        </div>
+        <div id="tournament-table" class="tournament-table hidden">
+            <h3>Турнирная таблица</h3>
+            <table>
+                <tr>
+                    <th>Имя</th>
+                    <th>Счёт</th>
+                    <th>Дата</th>
+                    <th>Ходы назад</th>
+                    <th>Удаления</th>
+                    <th>Перемешивания</th>
+                </tr>
+                <!-- Данные будут динамически добавлены через JavaScript -->
+            </table>
+        </div>
     </div>
 
     <script src="game.js"></script>
