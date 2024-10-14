@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Победа в 2048</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="victory-container">
+        <h2>Победа!</h2>
+        <p>Введите ваше имя и номер телефона для записи в таблицу:</p>
+        <form id="victory-form">
+            <input type="text" id="player-name" placeholder="Ваше имя" required>
+            <input type="text" id="player-phone" placeholder="Номер телефона" required>
+            <button type="submit">Отправить</button>
+        </form>
+        <button id="back-button" class="action-button">Назад к игре</button>
+    </div>
+
+    <script>
+        document.getElementById("back-button").addEventListener("click", () => {
+            window.location.href = "index.html"; // Переход обратно к игре
+        });
+
+        document.getElementById("victory-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            // Здесь можно добавить код для сохранения данных в таблицу
+            const name = document.getElementById("player-name").value;
+            const phone = document.getElementById("player-phone").value;
+            const score = /* Получить текущий счет */;
+            const date = new Date().toLocaleString();
+            const undoCount = /* Получить количество использованных кнопок отмены */;
+            const deleteCount = /* Получить количество удалений */;
+            const shuffleCount = /* Получить количество перемешиваний */;
+            
+            // Сохранить данные в таблицу
+            // Здесь можно добавить логику для записи данных
+
+            alert("Ваши данные сохранены!");
+        });
+    </script>
+</body>
+</html>
