@@ -8,7 +8,7 @@ body {
     font-family: 'Arial', sans-serif;
 }
 
-.game-container, .victory-container {
+.game-container, .victory-container, .rules-container {
     display: flex;
     flex-direction: column;
     align-items: center;
