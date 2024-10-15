@@ -16,6 +16,7 @@ undoButton.addEventListener("click", () => {
     if (history.length > 0 && balance >= 30) {
         grid = history.pop();  // Восстанавливаем последнее состояние
         balance -= 30;  // Списываем 30 баллов
+        additionalClicks++; // Увеличиваем счетчик нажатий
         updateGrid(); // Обновление интерфейса
     }
 });
@@ -32,6 +33,7 @@ function deleteTile() {
                     grid[rowIndex][colIndex] = 0; // Удаляем плитку
                     tile.innerText = ''; // Обновляем интерфейс
                     balance -= 50; // Списываем 50
+                    additionalClicks++; // Увеличиваем счетчик нажатий
                     updateGrid(); // Обновление интерфейса
 
                     // Сохраняем состояние после удаления
@@ -67,6 +69,7 @@ shuffleButton.addEventListener("click", () => {
     if (balance >= 20) {
         shuffleTiles();
         balance -= 20;
+        additionalClicks++; // Увеличиваем счетчик нажатий
         updateGrid(); // Обновление интерфейса
 
         // Сохраняем состояние после перемешивания
@@ -86,6 +89,7 @@ function shuffleTiles() {
 // Пополнение баланса
 addFundsButton.addEventListener("click", () => {
     balance += 50;
+    additionalClicks++; // Увеличиваем счетчик нажатий
     updateGrid(); // Обновление интерфейса
 });
 
