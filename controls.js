@@ -5,10 +5,10 @@ const addFundsButton = document.getElementById("add-funds");
 const restartButton = document.getElementById("restart");
 const rulesButton = document.getElementById("rules");
 const shareButton = document.getElementById("share");
+const soundButton = document.getElementById("sound");
+const soundIcon = document.getElementById("sound-icon");
 
 let deleteMode = false;
-let deleteCount = 0;
-let shuffleCount = 0;
 
 // Ход назад
 undoButton.addEventListener("click", () => {
@@ -118,4 +118,10 @@ shareButton.addEventListener("click", () => {
             alert("Ссылка на игру скопирована в буфер обмена!");
         })
         .catch(err => console.error('Ошибка копирования:', err));
+});
+
+// Управление звуком
+soundButton.addEventListener("click", () => {
+    soundEnabled = !soundEnabled; // Переключаем состояние звука
+    soundIcon.src = soundEnabled ? "sound-on.png" : "sound-off.png"; // Меняем иконку
 });
