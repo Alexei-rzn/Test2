@@ -5,6 +5,8 @@ const gameOverDisplay = document.getElementById("game-over");
 const finalScoreDisplay = document.getElementById("final-score-value");
 const playerNameInput = document.getElementById("player-name");
 const submitScoreButton = document.getElementById("submit-score");
+const controlToggleButton = document.getElementById("control-toggle");
+const controlIcon = document.getElementById("control-icon");
 
 const moveSound = document.getElementById("move-sound");
 const mergeSound = document.getElementById("merge-sound");
@@ -19,6 +21,7 @@ let tileColor = "#4db6e4"; // Цвет плитки
 let backgroundColor = "#8cceff"; // Цвет фона
 let maxTile = 0; // Макс. собранная плитка
 let additionalClicks = 0; // Сумма нажатий на дополнительные кнопки
+let controlMode = "touch"; // Режим управления
 
 // Инициализация игры
 function initGame() {
@@ -271,7 +274,7 @@ submitScoreButton.addEventListener("click", () => {
         loadLeaderboard(); // Перезагружаем таблицу лидеров
         gameOverDisplay.classList.add("hidden"); // Скрываем окно окончания игры
         submitScoreButton.disabled = true; // Запрещаем повторное нажатие
-        window.location.href = "victory.html"; // Переход на страницу таблицы лидеров
+        initGame(); // Начинаем новую игру
     } else {
         alert("Пожалуйста, введите ваше имя!");
     }
@@ -314,3 +317,19 @@ function saveToLeaderboard(name) {
 // Инициализация игры
 initGame(); // Начало игры
 loadLeaderboard(); // Загрузка таблицы лидеров
+
+// Управление режимами
+controlToggleButton.addEventListener("click", () => {
+    if (controlMode === "touch") {
+        controlMode = "keyboard";
+        controlIcon.src = "keyboard-control.png"; // Изменяем изображение
+        // Добавьте логику управления с клавиатуры
+    } else if (controlMode === "keyboard") {
+        controlMode = "voice";
+        controlIcon.src = "voice-control.png"; // Изменяем изображение
+        // Добавьте логику голосового управления
+    } else {
+        controlMode = "touch";
+        controlIcon.src = "touch-control.png"; // Изменяем изображение
+    }
+});
