@@ -40,6 +40,19 @@ body {
     transition: transform 0.2s ease; /* Плавный переход при перемещении */
 }
 
+/* Цвета плиток от бледно-оранжевого до бардового */
+.tile-2 { background-color: #ffecb3; }
+.tile-4 { background-color: #ffe0b2; }
+.tile-8 { background-color: #ffcc80; }
+.tile-16 { background-color: #ffb74d; }
+.tile-32 { background-color: #ffa726; }
+.tile-64 { background-color: #fb8c00; }
+.tile-128 { background-color: #f57c00; }
+.tile-256 { background-color: #ef6c00; }
+.tile-512 { background-color: #e65100; }
+.tile-1024 { background-color: #bf360c; }
+.tile-2048 { background-color: #b71c1c; }
+
 .game-over {
     font-size: 24px;
     color: red;
