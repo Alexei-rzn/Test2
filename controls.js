@@ -7,6 +7,7 @@ const rulesButton = document.getElementById("rules");
 const shareButton = document.getElementById("share");
 const soundButton = document.getElementById("sound");
 const soundIcon = document.getElementById("sound-icon");
+const ratingButton = document.getElementById("rating");
 
 let deleteMode = false;
 
@@ -124,4 +125,9 @@ shareButton.addEventListener("click", () => {
 soundButton.addEventListener("click", () => {
     soundEnabled = !soundEnabled; // Переключаем состояние звука
     soundIcon.src = soundEnabled ? "sound-on.png" : "sound-off.png"; // Меняем иконку
+});
+
+// Переход на страницу с таблицей лидеров
+ratingButton.addEventListener("click", () => {
+    window.location.href = "victory.html"; // Переход на страницу таблицы лидеров
 });
