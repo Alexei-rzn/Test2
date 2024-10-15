@@ -17,6 +17,8 @@ let history = [];
 let soundEnabled = true; // Переменная для управления звуком
 let tileColor = "#4db6e4"; // Цвет плитки
 let backgroundColor = "#8cceff"; // Цвет фона
+let maxTile = 0; // Макс. собранная плитка
+let additionalClicks = 0; // Сумма нажатий на дополнительные кнопки
 
 // Инициализация игры
 function initGame() {
@@ -24,6 +26,8 @@ function initGame() {
     score = 0; 
     balance = 100; 
     history = [];  // Обнуляем историю
+    maxTile = 0; // Обнуляем максимальную плитку
+    additionalClicks = 0; // Обнуляем количество дополнительных нажатий
     addNewTile(); // Добавляем первую плитку
     addNewTile(); // Добавляем вторую плитку
     updateGrid(); // Обновляем отображение
@@ -54,6 +58,7 @@ function updateGrid() {
             tileElement.style.backgroundColor = tile > 0 ? tileColor : backgroundColor; // Установка цвета плитки
             if (tile > 0) {
                 tileElement.innerText = tile;
+                if (tile > maxTile) maxTile = tile; // Обновляем максимальную плитку
             }
             gridContainer.appendChild(tileElement);
         });
@@ -265,6 +270,8 @@ submitScoreButton.addEventListener("click", () => {
         playerNameInput.value = ''; // Очищаем поле ввода
         loadLeaderboard(); // Перезагружаем таблицу лидеров
         gameOverDisplay.classList.add("hidden"); // Скрываем окно окончания игры
+        submitScoreButton.disabled = true; // Запрещаем повторное нажатие
+        window.location.href = "victory.html"; // Переход на страницу таблицы лидеров
     } else {
         alert("Пожалуйста, введите ваше имя!");
     }
@@ -279,11 +286,14 @@ function loadLeaderboard() {
             <th>Имя</th>
             <th>Счёт</th>
             <th>Дата</th>
+            <th>Макс. плитка</th>
+            <th>Доп. кнопки</th>
         </tr>
     `;
+    leaderboard.sort((a, b) => b.tile - a.tile); // Фильтруем по максимальной плитке
     leaderboard.forEach(entry => {
         const row = document.createElement('tr');
-        row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td>`;
+        row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.additionalClicks}</td>`;
         leaderboardTable.appendChild(row);
     });
 }
@@ -291,7 +301,13 @@ function loadLeaderboard() {
 // Сохранение результата в таблицу лидеров
 function saveToLeaderboard(name) {
     const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-    leaderboard.push({ name, score, date: new Date().toLocaleString() });
+    leaderboard.push({ 
+        name, 
+        score, 
+        date: new Date().toLocaleString(), 
+        tile: maxTile, 
+        additionalClicks 
+    });
     localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
 }
 
