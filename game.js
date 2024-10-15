@@ -2,6 +2,10 @@ const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
 const balanceDisplay = document.getElementById("balance");
 const gameOverDisplay = document.getElementById("game-over");
+const finalScoreDisplay = document.getElementById("final-score-value");
+const playerNameInput = document.getElementById("player-name");
+const submitScoreButton = document.getElementById("submit-score");
+
 const moveSound = document.getElementById("move-sound");
 const mergeSound = document.getElementById("merge-sound");
 const gameOverSound = document.getElementById("game-over-sound");
@@ -10,6 +14,9 @@ let grid = [];
 let score = 0;
 let balance = 100;
 let history = [];
+let soundEnabled = true; // Переменная для управления звуком
+let tileColor = "#4db6e4"; // Цвет плитки
+let backgroundColor = "#8cceff"; // Цвет фона
 
 // Инициализация игры
 function initGame() {
@@ -44,8 +51,8 @@ function updateGrid() {
         row.forEach(tile => {
             const tileElement = document.createElement("div");
             tileElement.classList.add("tile");
+            tileElement.style.backgroundColor = tile > 0 ? tileColor : backgroundColor; // Установка цвета плитки
             if (tile > 0) {
-                tileElement.classList.add(`tile-${tile}`);
                 tileElement.innerText = tile;
             }
             gridContainer.appendChild(tileElement);
@@ -56,7 +63,10 @@ function updateGrid() {
 
     if (checkGameOver()) {
         gameOverDisplay.classList.remove("hidden");
-        gameOverSound.play(); // Звук окончания игры
+        finalScoreDisplay.innerText = score; // Отображаем финальный счёт
+        if (soundEnabled) gameOverSound.play(); // Звук окончания игры
+        playerNameInput.classList.remove("hidden"); // Показываем поле для ввода имени
+        submitScoreButton.classList.remove("hidden"); // Показываем кнопку сохранения результата
     }
 }
 
@@ -118,7 +128,7 @@ function move(direction) {
     }
 
     if (moved || combined) {
-        moveSound.play(); // Звук передвижения плиток
+        if (soundEnabled) moveSound.play(); // Звук передвижения плиток
         setTimeout(() => {
             addNewTile(); // Добавляем новую плитку после хода
             updateGrid(); // Обновляем интерфейс
@@ -143,7 +153,7 @@ function slideRow(row, direction) {
             score += newRow[i];
             newRow[i + 1] = 0;
             combined = true;
-            mergeSound.play(); // Звук слияния плиток
+            if (soundEnabled) mergeSound.play(); // Звук слияния плиток
         }
     }
 
@@ -174,7 +184,7 @@ function slideColumn(column, direction) {
                 score += newColumn[i];
                 newColumn[i + 1] = 0;
                 combined = true;
-                mergeSound.play(); // Звук слияния плиток
+                if (soundEnabled) mergeSound.play(); // Звук слияния плиток
             }
         }
     } else { // down
@@ -184,7 +194,7 @@ function slideColumn(column, direction) {
                 score += newColumn[i];
                 newColumn[i - 1] = 0;
                 combined = true;
-                mergeSound.play(); // Звук слияния плиток
+                if (soundEnabled) mergeSound.play(); // Звук слияния плиток
             }
         }
     }
@@ -247,5 +257,44 @@ gridContainer.addEventListener('touchend', (event) => {
     }
 });
 
+// Сохранение результата в таблицу лидеров
+submitScoreButton.addEventListener("click", () => {
+    const name = playerNameInput.value.trim();
+    if (name) {
+        saveToLeaderboard(name);
+        playerNameInput.value = ''; // Очищаем поле ввода
+        loadLeaderboard(); // Перезагружаем таблицу лидеров
+        gameOverDisplay.classList.add("hidden"); // Скрываем окно окончания игры
+    } else {
+        alert("Пожалуйста, введите ваше имя!");
+    }
+});
+
+// Загрузка таблицы лидеров (например, из локального хранилища)
+function loadLeaderboard() {
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    const leaderboardTable = document.getElementById('leaderboard');
+    leaderboardTable.innerHTML = `
+        <tr>
+            <th>Имя</th>
+            <th>Счёт</th>
+            <th>Дата</th>
+        </tr>
+    `;
+    leaderboard.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td>`;
+        leaderboardTable.appendChild(row);
+    });
+}
+
+// Сохранение результата в таблицу лидеров
+function saveToLeaderboard(name) {
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    leaderboard.push({ name, score, date: new Date().toLocaleString() });
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+}
+
 // Инициализация игры
 initGame(); // Начало игры
+loadLeaderboard(); // Загрузка таблицы лидеров
