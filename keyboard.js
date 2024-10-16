@@ -1,4 +1,3 @@
-// keyboard.js
 // Файл для управления с клавиатуры
 
 document.addEventListener("keydown", (event) => {
