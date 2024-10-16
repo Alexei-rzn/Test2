@@ -6,12 +6,11 @@
     <meta name="description" content="Турнирная таблица игры 2048">
     <title>Турнирная таблица 2048</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Подключение Bootstrap -->
 </head>
 <body>
     <div class="victory-container">
         <h2>Турнирная таблица</h2>
-        <table id="leaderboard" class="table table-bordered">
+        <table id="leaderboard">
             <tr>
                 <th>Имя</th>
                 <th>Счёт</th>
@@ -21,7 +20,7 @@
             </tr>
             <!-- Данные будут динамически добавлены через JavaScript -->
         </table>
-        <button id="back-button" class="btn btn-primary">Назад к игре</button>
+        <button id="back-button" class="back-button">Назад к игре</button>
     </div>
 
     <script>
