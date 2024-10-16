@@ -71,8 +71,13 @@ function updateGrid() {
     grid.forEach(row => {
         row.forEach(tile => {
             const tileElement = document.createElement("div");
-            tileElement.classList.add("tile", `tile-${tile}`); // Устанавливаем класс в зависимости от номинала плитки
-            tileElement.innerText = tile > 0 ? tile : '';
+            tileElement.classList.add("tile");
+            if (tile > 0) {
+                tileElement.classList.add(`tile-${tile}`); // Устанавливаем класс в зависимости от номинала плитки
+                tileElement.innerText = tile; // Устанавливаем текст плитки
+            } else {
+                tileElement.innerText = ''; // Очищаем текст для пустых плиток
+            }
             gridContainer.appendChild(tileElement);
         });
     });
