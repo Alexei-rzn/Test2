@@ -31,7 +31,7 @@ function initGame() {
     updateGrid(); // Обновляем отображение
 }
 
-// Функция обновления цвета фона
+// Обновление цвета фона
 function updateBackgroundColor(maxTileValue) {
     const bodyStyle = document.body.style;
     switch(maxTileValue) {
@@ -190,6 +190,8 @@ function slideRow(row, direction) {
     newRow = newRow.filter(value => value);
     while (newRow.length < 4) newRow.push(0);
 
+    maxTile = Math.max(maxTile, ...newRow); // Обновляем максимальную плитку
+
     return { newRow, moved, combined };
 }
 
@@ -233,6 +235,8 @@ function slideColumn(column, direction) {
     while (newColumn.length < 4) {
         direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
     }
+
+    maxTile = Math.max(maxTile, ...newColumn); // Обновляем максимальную плитку
 
     return { newColumn, moved, combined };
 }
