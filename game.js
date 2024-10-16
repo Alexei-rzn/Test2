@@ -33,6 +33,25 @@ function initGame() {
     updateGrid(); // Обновляем отображение
 }
 
+// Функция обновления цвета фона
+function updateBackgroundColor(maxTileValue) {
+    const bodyStyle = document.body.style;
+    switch(maxTileValue) {
+        case 2: bodyStyle.backgroundColor = '#ffecb3'; break;
+        case 4: bodyStyle.backgroundColor = '#ffe0b2'; break;
+        case 8: bodyStyle.backgroundColor = '#ffcc80'; break;
+        case 16: bodyStyle.backgroundColor = '#ffb74d'; break;
+        case 32: bodyStyle.backgroundColor = '#ffa726'; break;
+        case 64: bodyStyle.backgroundColor = '#fb8c00'; break;
+        case 128: bodyStyle.backgroundColor = '#f57c00'; break;
+        case 256: bodyStyle.backgroundColor = '#ef6c00'; break;
+        case 512: bodyStyle.backgroundColor = '#e65100'; break;
+        case 1024: bodyStyle.backgroundColor = '#bf360c'; break;
+        case 2048: bodyStyle.backgroundColor = '#b71c1c'; break;
+        default: bodyStyle.backgroundColor = '#8cceff'; // Цвет по умолчанию
+    }
+}
+
 // Добавление новой плитки
 function addNewTile() {
     let emptyCells = [];
@@ -65,6 +84,9 @@ function updateGrid() {
     });
     scoreDisplay.innerText = score;
     balanceDisplay.innerText = balance;
+
+    // Обновляем цвет фона в зависимости от максимальной плитки
+    updateBackgroundColor(maxTile);
 
     if (checkGameOver()) {
         gameOverDisplay.classList.remove("hidden");
