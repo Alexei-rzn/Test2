@@ -314,6 +314,61 @@ function saveToLeaderboard(name) {
     localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
 }
 
+// Обработка клавиатуры
+document.addEventListener("keydown", (event) => {
+    if (controlMode === "keyboard") {
+        switch(event.key) {
+            case "w":
+            case "ArrowUp":
+                move('up');
+                break;
+            case "s":
+            case "ArrowDown":
+                move('down');
+                break;
+            case "d":
+            case "ArrowRight":
+                move('right');
+                break;
+            case "a":
+            case "ArrowLeft":
+                move('left');
+                break;
+        }
+    }
+});
+
+// Обработка голосового управления
+if ('webkitSpeechRecognition' in window) {
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+        const command = event.results[0][0].transcript.toLowerCase();
+        switch (command) {
+            case "up":
+                move('up');
+                break;
+            case "down":
+                move('down');
+                break;
+            case "right":
+                move('right');
+                break;
+            case "left":
+                move('left');
+                break;
+        }
+    };
+
+    recognition.onend = () => {
+        recognition.start(); // Перезапускаем распознавание
+    };
+
+    recognition.start(); // Начинаем распознавание
+}
+
 // Инициализация игры
 initGame(); // Начало игры
 loadLeaderboard(); // Загрузка таблицы лидеров
@@ -323,11 +378,9 @@ controlToggleButton.addEventListener("click", () => {
     if (controlMode === "touch") {
         controlMode = "keyboard";
         controlIcon.src = "keyboard-control.png"; // Изменяем изображение
-        // Добавьте логику управления с клавиатуры
     } else if (controlMode === "keyboard") {
         controlMode = "voice";
         controlIcon.src = "voice-control.png"; // Изменяем изображение
-        // Добавьте логику голосового управления
     } else {
         controlMode = "touch";
         controlIcon.src = "touch-control.png"; // Изменяем изображение
