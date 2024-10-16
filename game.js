@@ -15,8 +15,6 @@ let score = 0;
 let balance = 100;
 let history = [];
 let soundEnabled = true; // Переменная для управления звуком
-let tileColor = "#4db6e4"; // Цвет плитки
-let backgroundColor = "#8cceff"; // Цвет фона
 let maxTile = 0; // Макс. собранная плитка
 let additionalClicks = 0; // Сумма нажатий на дополнительные кнопки
 
@@ -73,12 +71,8 @@ function updateGrid() {
     grid.forEach(row => {
         row.forEach(tile => {
             const tileElement = document.createElement("div");
-            tileElement.classList.add("tile");
-            tileElement.style.backgroundColor = tile > 0 ? tileColor : backgroundColor; // Установка цвета плитки
-            if (tile > 0) {
-                tileElement.innerText = tile;
-                if (tile > maxTile) maxTile = tile; // Обновляем максимальную плитку
-            }
+            tileElement.classList.add("tile", `tile-${tile}`); // Устанавливаем класс в зависимости от номинала плитки
+            tileElement.innerText = tile > 0 ? tile : '';
             gridContainer.appendChild(tileElement);
         });
     });
