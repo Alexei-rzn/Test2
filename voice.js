@@ -1,4 +1,3 @@
-// voice.js
 // Файл для управления голосом
 
 if ('webkitSpeechRecognition' in window) {
@@ -25,7 +24,9 @@ if ('webkitSpeechRecognition' in window) {
     };
 
     recognition.onend = () => {
-        recognition.start(); // Перезапускаем распознавание
+        if (controlMode === "voice") {
+            recognition.start(); // Перезапускаем распознавание
+        }
     };
 
     recognition.start(); // Начинаем распознавание
