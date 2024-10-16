@@ -1,3 +1,5 @@
+// Основной файл для логики игры 2048
+
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
 const balanceDisplay = document.getElementById("balance");
@@ -17,8 +19,6 @@ let score = 0;
 let balance = 100;
 let history = [];
 let soundEnabled = true; // Переменная для управления звуком
-let tileColor = "#4db6e4"; // Цвет плитки
-let backgroundColor = "#8cceff"; // Цвет фона
 let maxTile = 0; // Макс. собранная плитка
 let additionalClicks = 0; // Сумма нажатий на дополнительные кнопки
 let controlMode = "touch"; // Режим управления
@@ -58,7 +58,7 @@ function updateGrid() {
         row.forEach(tile => {
             const tileElement = document.createElement("div");
             tileElement.classList.add("tile");
-            tileElement.style.backgroundColor = tile > 0 ? tileColor : backgroundColor; // Установка цвета плитки
+            tileElement.style.backgroundColor = tile > 0 ? getTileColor(tile) : "#8cceff"; // Установка цвета плитки
             if (tile > 0) {
                 tileElement.innerText = tile;
                 if (tile > maxTile) maxTile = tile; // Обновляем максимальную плитку
@@ -75,6 +75,24 @@ function updateGrid() {
         if (soundEnabled) gameOverSound.play(); // Звук окончания игры
         playerNameInput.classList.remove("hidden"); // Показываем поле для ввода имени
         submitScoreButton.classList.remove("hidden"); // Показываем кнопку сохранения результата
+    }
+}
+
+// Получение цвета плитки в зависимости от её значения
+function getTileColor(value) {
+    switch(value) {
+        case 2: return "#ffecb3";
+        case 4: return "#ffe0b2";
+        case 8: return "#ffcc80";
+        case 16: return "#ffb74d";
+        case 32: return "#ffa726";
+        case 64: return "#fb8c00";
+        case 128: return "#f57c00";
+        case 256: return "#ef6c00";
+        case 512: return "#e65100";
+        case 1024: return "#bf360c";
+        case 2048: return "#b71c1c";
+        default: return "#8cceff"; // Цвет фона
     }
 }
 
@@ -227,162 +245,5 @@ function saveState() {
     history.push(JSON.parse(JSON.stringify(grid))); // Сохраняем текущее состояние игры
 }
 
-// Сенсорное управление
-let touchStartX = 0;
-let touchStartY = 0;
-
-gridContainer.addEventListener('touchstart', (event) => {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
-});
-
-gridContainer.addEventListener('touchmove', (event) => {
-    event.preventDefault(); // предотвращаем прокрутку страницы
-});
-
-gridContainer.addEventListener('touchend', (event) => {
-    const touchEndX = event.changedTouches[0].clientX;
-    const touchEndY = event.changedTouches[0].clientY;
-
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-
-    const absDeltaX = Math.abs(deltaX);
-    const absDeltaY = Math.abs(deltaY);
-
-    if (absDeltaX > absDeltaY && absDeltaX > 30) {
-        if (deltaX > 0) {
-            move('right');
-        } else {
-            move('left');
-        }
-    } else if (absDeltaY > absDeltaX && absDeltaY > 30) {
-        if (deltaY > 0) {
-            move('down');
-        } else {
-            move('up');
-        }
-    }
-});
-
-// Сохранение результата в таблицу лидеров
-submitScoreButton.addEventListener("click", () => {
-    const name = playerNameInput.value.trim();
-    if (name) {
-        saveToLeaderboard(name);
-        playerNameInput.value = ''; // Очищаем поле ввода
-        loadLeaderboard(); // Перезагружаем таблицу лидеров
-        gameOverDisplay.classList.add("hidden"); // Скрываем окно окончания игры
-        submitScoreButton.disabled = true; // Запрещаем повторное нажатие
-        initGame(); // Начинаем новую игру
-    } else {
-        alert("Пожалуйста, введите ваше имя!");
-    }
-});
-
-// Загрузка таблицы лидеров (например, из локального хранилища)
-function loadLeaderboard() {
-    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-    const leaderboardTable = document.getElementById('leaderboard');
-    leaderboardTable.innerHTML = `
-        <tr>
-            <th>Имя</th>
-            <th>Счёт</th>
-            <th>Дата</th>
-            <th>Макс. плитка</th>
-            <th>Доп. кнопки</th>
-        </tr>
-    `;
-    leaderboard.sort((a, b) => b.tile - a.tile); // Фильтруем по максимальной плитке
-    leaderboard.forEach(entry => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.additionalClicks}</td>`;
-        leaderboardTable.appendChild(row);
-    });
-}
-
-// Сохранение результата в таблицу лидеров
-function saveToLeaderboard(name) {
-    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-    leaderboard.push({ 
-        name, 
-        score, 
-        date: new Date().toLocaleString(), 
-        tile: maxTile, 
-        additionalClicks 
-    });
-    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-}
-
-// Обработка клавиатуры
-document.addEventListener("keydown", (event) => {
-    if (controlMode === "keyboard") {
-        switch(event.key) {
-            case "w":
-            case "ArrowUp":
-                move('up');
-                break;
-            case "s":
-            case "ArrowDown":
-                move('down');
-                break;
-            case "d":
-            case "ArrowRight":
-                move('right');
-                break;
-            case "a":
-            case "ArrowLeft":
-                move('left');
-                break;
-        }
-    }
-});
-
-// Обработка голосового управления
-if ('webkitSpeechRecognition' in window) {
-    const recognition = new webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onresult = (event) => {
-        const command = event.results[0][0].transcript.toLowerCase();
-        switch (command) {
-            case "up":
-                move('up');
-                break;
-            case "down":
-                move('down');
-                break;
-            case "right":
-                move('right');
-                break;
-            case "left":
-                move('left');
-                break;
-        }
-    };
-
-    recognition.onend = () => {
-        recognition.start(); // Перезапускаем распознавание
-    };
-
-    recognition.start(); // Начинаем распознавание
-}
-
 // Инициализация игры
 initGame(); // Начало игры
-loadLeaderboard(); // Загрузка таблицы лидеров
-
-// Управление режимами
-controlToggleButton.addEventListener("click", () => {
-    if (controlMode === "touch") {
-        controlMode = "keyboard";
-        controlIcon.src = "keyboard-control.png"; // Изменяем изображение
-    } else if (controlMode === "keyboard") {
-        controlMode = "voice";
-        controlIcon.src = "voice-control.png"; // Изменяем изображение
-    } else {
-        controlMode = "touch";
-        controlIcon.src = "touch-control.png"; // Изменяем изображение
-    }
-});
