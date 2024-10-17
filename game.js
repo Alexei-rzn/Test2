@@ -19,6 +19,7 @@ class Game2048 {
         this.soundEnabled = true;
         this.maxTile = 0;
         this.additionalClicks = 0;
+        this.difficultyLevel = 1; // Уровень сложности
 
         this.initGame();
     }
@@ -63,8 +64,19 @@ class Game2048 {
         }
         if (emptyCells.length) {
             const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            this.grid[i][j] = Math.random() < 0.8 ? 2 : 4;
+            this.grid[i][j] = Math.random() < this.getTileProbability() ? 2 : 4;
             this.saveState();
+        }
+    }
+
+    getTileProbability() {
+        switch (this.difficultyLevel) {
+            case 1: return 0.9; // 90% для 2
+            case 2: return 0.8; // 80% для 2
+            case 3: return 0.7; // 70% для 2
+            case 4: return 0.6; // 60% для 2
+            case 5: return 0.5; // 50% для 2
+            default: return 0.9;
         }
     }
 
@@ -252,13 +264,17 @@ class Game2048 {
                 <th>Дата</th>
                 <th>Макс. плитка</th>
                 <th>Доп. кнопки</th>
+                <th>Уровень сложности</th>
             </tr>
         `;
-        leaderboard.sort((a, b) => b.tile - a.tile);
+        const today = new Date().toISOString().split('T')[0]; // Получаем текущую дату
         leaderboard.forEach(entry => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.additionalClicks}</td>`;
-            leaderboardTable.appendChild(row);
+            const entryDate = new Date(entry.date).toISOString().split('T')[0];
+            if (entry.tile >= 2048 || entryDate === today) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.additionalClicks}</td><td>${entry.difficulty}</td>`;
+                leaderboardTable.appendChild(row);
+            }
         });
     }
 
@@ -269,7 +285,8 @@ class Game2048 {
             score: this.score, 
             date: new Date().toLocaleString(), 
             tile: this.maxTile, 
-            additionalClicks: this.additionalClicks 
+            additionalClicks: this.additionalClicks,
+            difficulty: this.difficultyLevel
         });
         localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
