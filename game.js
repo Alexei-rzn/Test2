@@ -246,6 +246,7 @@ class Game2048 {
 
         return { newColumn, moved, combined };
     }
+
     saveState() {
         if (this.history.length >= 10) {
             this.history.shift();
