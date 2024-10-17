@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="style.css">
     <style>
         table {
-            width: 100%; /* Установим ширину таблицы на 100% */
+            width: 90%; /* Установим ширину таблицы на 90% */
             border-collapse: collapse;
+            margin: 0 auto; /* Центрируем таблицу */
         }
         th, td {
             padding: 10px;
@@ -28,6 +29,7 @@
                 <th>Дата</th>
                 <th>Макс. плитка</th>
                 <th>Доп. кнопки</th>
+                <th>Уровень сложности</th>
             </tr>
             <!-- Данные будут динамически добавлены через JavaScript -->
         </table>
@@ -46,13 +48,17 @@
                     <th>Дата</th>
                     <th>Макс. плитка</th>
                     <th>Доп. кнопки</th>
+                    <th>Уровень сложности</th>
                 </tr>
             `;
-            leaderboard.sort((a, b) => b.tile - a.tile); // Фильтруем по максимальной плитке
+            const today = new Date().toISOString().split('T')[0]; // Получаем текущую дату
             leaderboard.forEach(entry => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.additionalClicks}</td>`;
-                leaderboardTable.appendChild(row);
+                const entryDate = new Date(entry.date).toISOString().split('T')[0];
+                if (entry.tile >= 2048 || entryDate === today) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.additionalClicks}</td><td>${entry.difficulty}</td>`;
+                    leaderboardTable.appendChild(row);
+                }
             });
         }
 
