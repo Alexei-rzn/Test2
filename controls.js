@@ -11,8 +11,6 @@ class GameControls {
         this.soundButton = document.getElementById("sound");
         this.soundIcon = document.getElementById("sound-icon");
         this.ratingButton = document.getElementById("rating");
-        this.difficultyButton = document.getElementById("difficulty");
-        this.difficultyLevelDisplay = document.getElementById("difficulty-level");
 
         this.deleteMode = false;
 
@@ -30,12 +28,6 @@ class GameControls {
         this.shareButton.addEventListener("click", () => this.handleShare());
         this.soundButton.addEventListener("click", () => this.handleSoundToggle());
         this.ratingButton.addEventListener("click", () => this.handleRating());
-        this.difficultyButton.addEventListener("click", () => this.handleChangeDifficulty());
-    }
-
-    handleChangeDifficulty() {
-        this.game.difficultyLevel = this.game.difficultyLevel % 5 + 1; // Циклическое изменение уровня сложности
-        this.difficultyButton.innerHTML = this.game.difficultyLevel; // Обновляем текст на кнопке
     }
 
     handleUndo() {
@@ -118,34 +110,19 @@ class GameControls {
     handleShare() {
         const shareText = "Я сыграл в 2048! Попробуйте и вы!";
         const url = window.location.href;
+        const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
+        const viberUrl = `viber://forward?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
 
-        // Используем новый подход для создания ссылки на общий доступ
-        if (navigator.share) {
-            navigator.share({
-                title: '2048 Game',
-                text: shareText,
-                url: url
-            }).then(() => {
-                console.log('Shared successfully');
-            }).catch(error => {
-                console.error('Error sharing:', error);
-            });
-        } else {
-            // Для браузеров, не поддерживающих Web Share API
-            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
-            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
-            const viberUrl = `viber://forward?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
+        window.open(telegramUrl, '_blank');
+        window.open(whatsappUrl, '_blank');
+        window.open(viberUrl, '_blank');
 
-            window.open(telegramUrl, '_blank');
-            window.open(whatsappUrl, '_blank');
-            window.open(viberUrl, '_blank');
-
-            navigator.clipboard.writeText(url)
-                .then(() => {
-                    alert("Ссылка на игру скопирована в буфер обмена!");
-                })
-                .catch(err => console.error('Ошибка копирования:', err));
-        }
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                alert("Ссылка на игру скопирована в буфер обмена!");
+            })
+            .catch(err => console.error('Ошибка копирования:', err));
     }
 
     handleSoundToggle() {
