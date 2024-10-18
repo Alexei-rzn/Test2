@@ -6,40 +6,12 @@
     <meta name="description" content="Турнирная таблица игры 2048">
     <title>Турнирная таблица 2048</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        table {
-            width: 100%; /* Установим ширину таблицы на 100% */
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            text-align: center; /* Центрируем текст */
-            border: 1px solid #ddd;
-        }
-    </style>
 </head>
 <body>
     <div class="victory-container">
         <h2>Турнирная таблица</h2>
         <table id="leaderboard">
-            <tr>
-                <th>Имя</th>
-                <th>Счёт</th>
-                <th>Дата</th>
-                <th>Макс. плитка</th>
-                <th>Доп. кнопки</th>
-            </tr>
-            <!-- Данные будут динамически добавлены через JavaScript -->
-        </table>
-        <button id="back-button" class="back-button">Назад к игре</button>
-    </div>
-
-    <script>
-        // Загрузка таблицы лидеров (например, из локального хранилища)
-        function loadLeaderboard() {
-            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-            const leaderboardTable = document.getElementById('leaderboard');
-            leaderboardTable.innerHTML = `
+            <thead>
                 <tr>
                     <th>Имя</th>
                     <th>Счёт</th>
@@ -47,8 +19,20 @@
                     <th>Макс. плитка</th>
                     <th>Доп. кнопки</th>
                 </tr>
-            `;
-            leaderboard.sort((a, b) => b.tile - a.tile); // Фильтруем по максимальной плитке
+            </thead>
+            <tbody>
+                <!-- Данные будут динамически добавлены через JavaScript -->
+            </tbody>
+        </table>
+        <button id="back-button" class="back-button">Назад к игре</button>
+    </div>
+
+    <script>
+        function loadLeaderboard() {
+            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            const leaderboardTable = document.getElementById('leaderboard').querySelector('tbody');
+            leaderboardTable.innerHTML = '';
+            leaderboard.sort((a, b) => b.score - a.score);
             leaderboard.forEach(entry => {
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.additionalClicks}</td>`;
@@ -56,13 +40,11 @@
             });
         }
 
-        // Обработчик для кнопки назад
         document.getElementById("back-button").addEventListener("click", () => {
-            window.location.href = "index.html"; // Переход обратно к игре
+            window.location.href = "index.html";
         });
 
-        // Инициализация
-        loadLeaderboard(); // Загрузка таблицы лидеров
+        loadLeaderboard();
     </script>
 </body>
 </html>
