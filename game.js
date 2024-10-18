@@ -7,7 +7,6 @@ class Game2048 {
         this.finalScoreDisplay = document.getElementById("final-score-value");
         this.playerNameInput = document.getElementById("player-name");
         this.submitScoreButton = document.getElementById("submit-score");
-
         this.moveSound = document.getElementById("move-sound");
         this.mergeSound = document.getElementById("merge-sound");
         this.gameOverSound = document.getElementById("game-over-sound");
@@ -19,14 +18,15 @@ class Game2048 {
         this.soundEnabled = true;
         this.maxTile = 0;
         this.additionalClicks = 0;
-
+        this.tileProbability = [90, 10]; // Процент появления плиток 2 и 4
         this.initGame();
     }
 
+    // Инициализация игры
     initGame() {
         this.grid = Array.from({ length: 4 }, () => Array(4).fill(0));
-        this.score = 0; 
-        this.balance = 100; 
+        this.score = 0;
+        this.balance = 100;
         this.history = [];
         this.maxTile = 0;
         this.additionalClicks = 0;
@@ -35,8 +35,9 @@ class Game2048 {
         this.updateGrid();
     }
 
+    // Добавление новой плитки
     addNewTile() {
-        const emptyCells = [];
+        let emptyCells = [];
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
                 if (this.grid[i][j] === 0) emptyCells.push({ i, j });
@@ -44,11 +45,12 @@ class Game2048 {
         }
         if (emptyCells.length) {
             const { i, j } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            this.grid[i][j] = Math.random() < 0.8 ? 2 : 4;
+            this.grid[i][j] = Math.random() < this.tileProbability[0] / 100 ? 2 : 4;
             this.saveState();
         }
     }
 
+    // Обновление отображения плиток на экране
     updateGrid() {
         this.gridContainer.innerHTML = '';
         this.grid.forEach(row => {
@@ -66,8 +68,7 @@ class Game2048 {
         });
         this.scoreDisplay.innerText = this.score;
         this.balanceDisplay.innerText = this.balance;
-        this.updateBackgroundColor(this.maxTile);
-        
+
         if (this.checkGameOver()) {
             this.gameOverDisplay.classList.remove("hidden");
             this.finalScoreDisplay.innerText = this.score;
@@ -77,303 +78,152 @@ class Game2048 {
         }
     }
 
-    updateBackgroundColor(maxTileValue) {
-        const colors = {
-            2: '#ffecb3', 4: '#ffe0b2', 8: '#ffcc80',
-            16: '#ffb74d', 32: '#ffa726', 64: '#fb8c00',
-            128: '#f57c00', 256: '#ef6c00', 512: '#e65100',
-            1024: '#bf360c', 2048: '#b71c1c'
-        };
-        document.body.style.backgroundColor = colors[maxTileValue] || '#8cceff';
-    }
-
+    // Проверка на окончание игры
     checkGameOver() {
         return this.grid.flat().every(cell => cell !== 0) &&
-            !this.grid.some((row, i) => row.some((cell, j) => 
+            !this.grid.some((row, i) => row.some((cell, j) =>
                 (j < 3 && cell === row[j + 1]) || (i < 3 && cell === this.grid[i + 1][j])
             ));
     }
 
+    // Логика сдвига плиток
     move(direction) {
-        // Логика передвижения плиток
-        // Код перемещения плиток с учетом направления
-        // ...
-        // Логика сдвига плиток
+        let moved = false;
+        let combined = false;
 
-Function move(direction) {
-
-    Let moved = false;
-
-    Let combined = false;
-
-
-
-    Switch (direction) {
-
-        Case 'left':
-
-            For (let i = 0; i < 4; i++) {
-
-                Const result = slideRow(grid[i], direction);
-
-                If (result.moved) moved = true;
-
-                If (result.combined) combined = true;
-
-                Grid[i] = result.newRow;
-
-            }
-
-            Break;
-
-
-
-        Case 'right':
-
-            For (let i = 0; i < 4; i++) {
-
-                Const result = slideRow(grid[i].slice().reverse(), 'left');
-
-                If (result.moved) moved = true;
-
-                If (result.combined) combined = true;
-
-                Grid[i] = result.newRow.reverse();
-
-            }
-
-            Break;
-
-
-
-        Case 'up':
-
-            For (let j = 0; j < 4; j++) {
-
-                Const column = [grid[0][j], grid[1][j], grid[2][j], grid[3][j]];
-
-                Const result = slideColumn(column, 'up');
-
-                For (let i = 0; i < 4; i++) {
-
-                    Grid[i][j] = result.newColumn[i];
-
+        switch (direction) {
+            case 'left':
+                for (let i = 0; i < 4; i++) {
+                    const result = this.slideRow(this.grid[i], direction);
+                    if (result.moved) moved = true;
+                    if (result.combined) combined = true;
+                    this.grid[i] = result.newRow;
                 }
+                break;
 
-                If (result.moved) moved = true;
-
-                If (result.combined) combined = true;
-
-            }
-
-            Break;
-
-
-
-        Case 'down':
-
-            For (let j = 0; j < 4; j++) {
-
-                Const column = [grid[0][j], grid[1][j], grid[2][j], grid[3][j]];
-
-                Const result = slideColumn(column, 'down');
-
-                For (let i = 0; i < 4; i++) {
-
-                    Grid[i][j] = result.newColumn[i];
-
+            case 'right':
+                for (let i = 0; i < 4; i++) {
+                    const result = this.slideRow(this.grid[i].slice().reverse(), 'left');
+                    if (result.moved) moved = true;
+                    if (result.combined) combined = true;
+                    this.grid[i] = result.newRow.reverse();
                 }
+                break;
 
-                If (result.moved) moved = true;
+            case 'up':
+                for (let j = 0; j < 4; j++) {
+                    const column = [this.grid[0][j], this.grid[1][j], this.grid[2][j], this.grid[3][j]];
+                    const result = this.slideColumn(column, 'up');
+                    for (let i = 0; i < 4; i++) {
+                        this.grid[i][j] = result.newColumn[i];
+                    }
+                    if (result.moved) moved = true;
+                    if (result.combined) combined = true;
+                }
+                break;
 
-                If (result.combined) combined = true;
-
-            }
-
-            Break;
-
-    }
-
-
-
-    If (moved || combined) {
-
-        If (soundEnabled) moveSound.play(); // Звук передвижения плиток
-
-        setTimeout(() => {
-
-            addNewTile(); // Добавляем новую плитку после хода
-
-            updateGrid(); // Обновляем интерфейс
-
-        }, 200);
-
-    }
-
-}
-
-
-
-// Логика сдвига плиток в строке
-
-Function slideRow(row, direction) {
-
-    Let newRow = row.filter(value => value);
-
-    Const emptySpaces = 4 – newRow.length;
-
-    Let moved = false;
-
-    Let combined = false;
-
-
-
-    newRow = direction === 'left' 
-
-        ? […newRow, …Array(emptySpaces).fill(0)] 
-
-        : […Array(emptySpaces).fill(0), …newRow];
-
-
-
-    For (let i = 0; i < 3; i++) {
-
-        If (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
-
-            newRow[i] *= 2;
-
-            score += newRow[i];
-
-            newRow[i + 1] = 0;
-
-            combined = true;
-
-            if (soundEnabled) mergeSound.play(); // Звук слияния плиток
-
+            case 'down':
+                for (let j = 0; j < 4; j++) {
+                    const column = [this.grid[0][j], this.grid[1][j], this.grid[2][j], this.grid[3][j]];
+                    const result = this.slideColumn(column, 'down');
+                    for (let i = 0; i < 4; i++) {
+                        this.grid[i][j] = result.newColumn[i];
+                    }
+                    if (result.moved) moved = true;
+                    if (result.combined) combined = true;
+                }
+                break;
         }
 
+        if (moved || combined) {
+            if (this.soundEnabled) this.moveSound.play();
+            setTimeout(() => {
+                this.addNewTile();
+                this.updateGrid();
+            }, 200);
+        }
     }
 
+    // Логика сдвига плиток в строке
+    slideRow(row, direction) {
+        let newRow = row.filter(value => value);
+        const emptySpaces = 4 - newRow.length;
+        let moved = false;
+        let combined = false;
 
+        newRow = direction === 'left'
+            ? [...newRow, ...Array(emptySpaces).fill(0)]
+            : [...Array(emptySpaces).fill(0), ...newRow];
 
-    If (JSON.stringify(newRow) !== JSON.stringify(row)) {
-
-        Moved = true;
-
-    }
-
-
-
-    newRow = newRow.filter(value => value);
-
-    while (newRow.length < 4) newRow.push(0);
-
-
-
-    maxTile = Math.max(maxTile, …newRow); // Обновляем максимальную плитку
-
-
-
-    return { newRow, moved, combined };
-
-}
-
-
-
-// Логика сдвига плиток в колонне
-
-Function slideColumn(column, direction) {
-
-    Let newColumn = column.filter(value => value);
-
-    Let moved = false;
-
-    Let combined = false;
-
-
-
-    While (newColumn.length < 4) {
-
-        Direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
-
-    }
-
-
-
-    If (direction === 'up') {
-
-        For (let i = 0; i < 3; i++) {
-
-            If (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
-
-                newColumn[i] *= 2;
-
-                score += newColumn[i];
-
-                newColumn[i + 1] = 0;
-
+        for (let i = 0; i < 3; i++) {
+            if (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
+                newRow[i] *= 2;
+                this.score += newRow[i];
+                newRow[i + 1] = 0;
                 combined = true;
-
-                if (soundEnabled) mergeSound.play(); // Звук слияния плиток
-
+                if (this.soundEnabled) this.mergeSound.play();
             }
-
         }
 
-    } else { // down
-
-        For (let i = 3; i > 0; i--) {
-
-            If (newColumn[i] !== 0 && newColumn[i] === newColumn[i – 1]) {
-
-                newColumn[i] *= 2;
-
-                score += newColumn[i];
-
-                newColumn[i – 1] = 0;
-
-                combined = true;
-
-                if (soundEnabled) mergeSound.play(); // Звук слияния плиток
-
-            }
-
+        if (JSON.stringify(newRow) !== JSON.stringify(row)) {
+            moved = true;
         }
 
+        newRow = newRow.filter(value => value);
+        while (newRow.length < 4) newRow.push(0);
+
+        this.maxTile = Math.max(this.maxTile, ...newRow);
+
+        return { newRow, moved, combined };
     }
 
+    // Логика сдвига плиток в колонне
+    slideColumn(column, direction) {
+        let newColumn = column.filter(value => value);
+        let moved = false;
+        let combined = false;
 
+        while (newColumn.length < 4) {
+            direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
+        }
 
-    If (JSON.stringify(newColumn) !== JSON.stringify(column)) {
+        if (direction === 'up') {
+            for (let i = 0; i < 3; i++) {
+                if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
+                    newColumn[i] *= 2;
+                    this.score += newColumn[i];
+                    newColumn[i + 1] = 0;
+                    combined = true;
+                    if (this.soundEnabled) this.mergeSound.play();
+                }
+            }
+        } else {
+            for (let i = 3; i > 0; i--) {
+                if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
+                    newColumn[i] *= 2;
+                    this.score += newColumn[i];
+                    newColumn[i - 1] = 0;
+                    combined = true;
+                    if (this.soundEnabled) this.mergeSound.play();
+                }
+            }
+        }
 
-        Moved = true;
+        if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
+            moved = true;
+        }
 
+        newColumn = newColumn.filter(value => value);
+        while (newColumn.length < 4) {
+            direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
+        }
+
+        this.maxTile = Math.max(this.maxTile, ...newColumn);
+
+        return { newColumn, moved, combined };
     }
 
-
-
-    newColumn = newColumn.filter(value => value);
-
-    while (newColumn.length < 4) {
-
-        direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
-
-    }
-
-
-
-    maxTile = Math.max(maxTile, …newColumn); // Обновляем максимальную плитку
-
-
-
-    return { newColumn, moved, combined };
-
-}
-
-        
-        this.updateGrid();
-    }
-
+    // Сохранение состояния игры в истории
     saveState() {
         if (this.history.length >= 10) {
             this.history.shift();
@@ -381,57 +231,58 @@ Function slideColumn(column, direction) {
         this.history.push(JSON.parse(JSON.stringify(this.grid)));
     }
 
-    // Дополнительные методы для управления игрой и обработки событий
-    // ...
-    
-}// Сенсорное управление
+    // Сенсорное управление
+    setupTouchControls() {
+        let touchStartX = 0;
+        let touchStartY = 0;
 
-Let touchStartX = 0;
+        this.gridContainer.addEventListener('touchstart', (event) => {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+        });
 
-Let touchStartY = 0;
+        this.gridContainer.addEventListener('touchmove', (event) => {
+            event.preventDefault();
+        });
 
+        this.gridContainer.addEventListener('touchend', (event) => {
+            const touchEndX = event.changedTouches[0].clientX;
+            const touchEndY = event.changedTouches[0].clientY;
 
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
 
-gridContainer.addEventListener('touchstart', (event) => {
+            const absDeltaX = Math.abs(deltaX);
+            const absDeltaY = Math.abs(deltaY);
 
-    touchStartX = event.touches[0].clientX;
+            if (absDeltaX > absDeltaY && absDeltaX > 30) {
+                this.move(deltaX > 0 ? 'right' : 'left');
+            } else if (absDeltaY > absDeltaX && absDeltaY > 30) {
+                this.move(deltaY > 0 ? 'down' : 'up');
+            }
+        });
+    }
 
-    touchStartY = event.touches[0].clientY;
+    // Сохранение результата в таблицу лидеров
+    saveToLeaderboard(name, difficulty) {
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        leaderboard.push({
+            name,
+            score: this.score,
+            date: new Date().toLocaleString(),
+            tile: this.maxTile,
+            additionalClicks: this.additionalClicks,
+            difficulty
+        });
+        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    }
 
-});
-
-
-
-gridContainer.addEventListener('touchmove', (event) => {
-
-    event.preventDefault(); // предотвращаем прокрутку страницы
-
-});
-
-
-
-gridContainer.addEventListener('touchend', (event) => {
-
-    const touchEndX = event.changedTouches[0].clientX;
-
-    const touchEndY = event.changedTouches[0].clientY;
-
-
-
-    const deltaX = touchEndX – touchStartX;
-
-    const deltaY = touchEndY – touchStartY;
-
-
-
-    const absDeltaX = Math.abs(deltaX);
-
-    const absDeltaY = Math.abs(deltaY);
-
-
-
+    // Инициализация игры
+    start() {
+        this.setupTouchControls();
+        this.updateGrid();
+    }
 }
 
-
-// Инициализация игры
 const game = new Game2048();
+game.start();
