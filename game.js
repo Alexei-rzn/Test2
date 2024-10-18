@@ -98,6 +98,279 @@ class Game2048 {
         // Логика передвижения плиток
         // Код перемещения плиток с учетом направления
         // ...
+        // Логика сдвига плиток
+
+Function move(direction) {
+
+    Let moved = false;
+
+    Let combined = false;
+
+
+
+    Switch (direction) {
+
+        Case 'left':
+
+            For (let i = 0; i < 4; i++) {
+
+                Const result = slideRow(grid[i], direction);
+
+                If (result.moved) moved = true;
+
+                If (result.combined) combined = true;
+
+                Grid[i] = result.newRow;
+
+            }
+
+            Break;
+
+
+
+        Case 'right':
+
+            For (let i = 0; i < 4; i++) {
+
+                Const result = slideRow(grid[i].slice().reverse(), 'left');
+
+                If (result.moved) moved = true;
+
+                If (result.combined) combined = true;
+
+                Grid[i] = result.newRow.reverse();
+
+            }
+
+            Break;
+
+
+
+        Case 'up':
+
+            For (let j = 0; j < 4; j++) {
+
+                Const column = [grid[0][j], grid[1][j], grid[2][j], grid[3][j]];
+
+                Const result = slideColumn(column, 'up');
+
+                For (let i = 0; i < 4; i++) {
+
+                    Grid[i][j] = result.newColumn[i];
+
+                }
+
+                If (result.moved) moved = true;
+
+                If (result.combined) combined = true;
+
+            }
+
+            Break;
+
+
+
+        Case 'down':
+
+            For (let j = 0; j < 4; j++) {
+
+                Const column = [grid[0][j], grid[1][j], grid[2][j], grid[3][j]];
+
+                Const result = slideColumn(column, 'down');
+
+                For (let i = 0; i < 4; i++) {
+
+                    Grid[i][j] = result.newColumn[i];
+
+                }
+
+                If (result.moved) moved = true;
+
+                If (result.combined) combined = true;
+
+            }
+
+            Break;
+
+    }
+
+
+
+    If (moved || combined) {
+
+        If (soundEnabled) moveSound.play(); // Звук передвижения плиток
+
+        setTimeout(() => {
+
+            addNewTile(); // Добавляем новую плитку после хода
+
+            updateGrid(); // Обновляем интерфейс
+
+        }, 200);
+
+    }
+
+}
+
+
+
+// Логика сдвига плиток в строке
+
+Function slideRow(row, direction) {
+
+    Let newRow = row.filter(value => value);
+
+    Const emptySpaces = 4 – newRow.length;
+
+    Let moved = false;
+
+    Let combined = false;
+
+
+
+    newRow = direction === 'left' 
+
+        ? […newRow, …Array(emptySpaces).fill(0)] 
+
+        : […Array(emptySpaces).fill(0), …newRow];
+
+
+
+    For (let i = 0; i < 3; i++) {
+
+        If (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
+
+            newRow[i] *= 2;
+
+            score += newRow[i];
+
+            newRow[i + 1] = 0;
+
+            combined = true;
+
+            if (soundEnabled) mergeSound.play(); // Звук слияния плиток
+
+        }
+
+    }
+
+
+
+    If (JSON.stringify(newRow) !== JSON.stringify(row)) {
+
+        Moved = true;
+
+    }
+
+
+
+    newRow = newRow.filter(value => value);
+
+    while (newRow.length < 4) newRow.push(0);
+
+
+
+    maxTile = Math.max(maxTile, …newRow); // Обновляем максимальную плитку
+
+
+
+    return { newRow, moved, combined };
+
+}
+
+
+
+// Логика сдвига плиток в колонне
+
+Function slideColumn(column, direction) {
+
+    Let newColumn = column.filter(value => value);
+
+    Let moved = false;
+
+    Let combined = false;
+
+
+
+    While (newColumn.length < 4) {
+
+        Direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
+
+    }
+
+
+
+    If (direction === 'up') {
+
+        For (let i = 0; i < 3; i++) {
+
+            If (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
+
+                newColumn[i] *= 2;
+
+                score += newColumn[i];
+
+                newColumn[i + 1] = 0;
+
+                combined = true;
+
+                if (soundEnabled) mergeSound.play(); // Звук слияния плиток
+
+            }
+
+        }
+
+    } else { // down
+
+        For (let i = 3; i > 0; i--) {
+
+            If (newColumn[i] !== 0 && newColumn[i] === newColumn[i – 1]) {
+
+                newColumn[i] *= 2;
+
+                score += newColumn[i];
+
+                newColumn[i – 1] = 0;
+
+                combined = true;
+
+                if (soundEnabled) mergeSound.play(); // Звук слияния плиток
+
+            }
+
+        }
+
+    }
+
+
+
+    If (JSON.stringify(newColumn) !== JSON.stringify(column)) {
+
+        Moved = true;
+
+    }
+
+
+
+    newColumn = newColumn.filter(value => value);
+
+    while (newColumn.length < 4) {
+
+        direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
+
+    }
+
+
+
+    maxTile = Math.max(maxTile, …newColumn); // Обновляем максимальную плитку
+
+
+
+    return { newColumn, moved, combined };
+
+}
+
+        
         this.updateGrid();
     }
 
@@ -110,7 +383,55 @@ class Game2048 {
 
     // Дополнительные методы для управления игрой и обработки событий
     // ...
+    
+}// Сенсорное управление
+
+Let touchStartX = 0;
+
+Let touchStartY = 0;
+
+
+
+gridContainer.addEventListener('touchstart', (event) => {
+
+    touchStartX = event.touches[0].clientX;
+
+    touchStartY = event.touches[0].clientY;
+
+});
+
+
+
+gridContainer.addEventListener('touchmove', (event) => {
+
+    event.preventDefault(); // предотвращаем прокрутку страницы
+
+});
+
+
+
+gridContainer.addEventListener('touchend', (event) => {
+
+    const touchEndX = event.changedTouches[0].clientX;
+
+    const touchEndY = event.changedTouches[0].clientY;
+
+
+
+    const deltaX = touchEndX – touchStartX;
+
+    const deltaY = touchEndY – touchStartY;
+
+
+
+    const absDeltaX = Math.abs(deltaX);
+
+    const absDeltaY = Math.abs(deltaY);
+
+
+
 }
+
 
 // Инициализация игры
 const game = new Game2048();
