@@ -1,114 +1,135 @@
-class GameControls {
-    constructor(game) {
-        this.game = game;
-        this.initControls();
-    }
+const undoButton = document.getElementById("undo");
+const deleteTileButton = document.getElementById("delete");
+const shuffleButton = document.getElementById("shuffle");
+const addFundsButton = document.getElementById("add-funds");
+const restartButton = document.getElementById("restart");
+const rulesButton = document.getElementById("rules");
+const shareButton = document.getElementById("share");
+const soundButton = document.getElementById("sound");
+const soundIcon = document.getElementById("sound-icon");
+const ratingButton = document.getElementById("rating");
+const difficultyButton = document.getElementById("difficulty");
 
-    initControls() {
-        document.getElementById("undo").addEventListener("click", () => this.undo());
-        document.getElementById("delete").addEventListener("mousedown", () => this.deleteTileMode(true));
-        document.getElementById("delete").addEventListener("mouseup", () => this.deleteTileMode(false));
-        document.getElementById("shuffle").addEventListener("click", () => this.shuffleTiles());
-        document.getElementById("add-funds").addEventListener("click", () => this.addFunds());
-        document.getElementById("restart").addEventListener("click", () => this.restartGame());
-        document.getElementById("rules").addEventListener("click", () => this.openRules());
-        document.getElementById("share").addEventListener("click", () => this.shareGame());
-        document.getElementById("sound").addEventListener("click", () => this.toggleSound());
-        document.getElementById("rating").addEventListener("click", () => this.openLeaderboard());
-    }
+let deleteMode = false;
 
-    undo() {
-        if (this.game.history.length > 0 && this.game.balance >= 30) {
-            this.game.grid = this.game.history.pop();
-            this.game.balance -= 30;
-            this.game.additionalClicks++;
-            this.game.updateGrid();
-        }
+// Ход назад
+undoButton.addEventListener("click", () => {
+    if (game.history.length > 0 && game.balance >= 30) {
+        game.grid = game.history.pop();  // Восстанавливаем последнее состояние
+        game.balance -= 30;  // Списываем 30 баллов
+        game.additionalClicks++; // Увеличиваем счетчик нажатий
+        game.updateGrid(); // Обновление интерфейса
     }
+});
 
-    deleteTileMode(active) {
-        if (active) {
-            this.deleteTile();
-        }
-    }
-
-    deleteTile() {
-        if (this.game.balance >= 50) {
-            const tiles = document.querySelectorAll(".tile");
-            tiles.forEach(tile => {
-                tile.addEventListener("click", () => {
-                    const tileValue = parseInt(tile.innerText);
-                    if (tileValue > 0) {
-                        const [rowIndex, colIndex] = this.getTileIndex(tile);
-                        this.game.grid[rowIndex][colIndex] = 0;
-                        tile.innerText = '';
-                        this.game.balance -= 50;
-                        this.game.additionalClicks++;
-                        this.game.updateGrid();
-                        this.game.saveState();
-                    }
-                }, { once: true });
-            });
-        }
-    }
-
-    shuffleTiles() {
-        if (this.game.balance >= 20) {
-            const flattenedGrid = this.game.grid.flat();
-            flattenedGrid.sort(() => Math.random() - 0.5);
-            for (let i = 0; i < 4; i++) {
-                this.game.grid[i] = flattenedGrid.slice(i * 4, (i + 1) * 4);
-            }
-            this.game.balance -= 20;
-            this.game.additionalClicks++;
-            this.game.updateGrid();
-            this.game.saveState();
-        }
-    }
-
-    addFunds() {
-        this.game.balance += 50;
-        this.game.additionalClicks++;
-        this.game.updateGrid();
-    }
-
-    restartGame() {
-        this.game.gameOverDisplay.classList.add("hidden");
-        this.game.initGame();
-    }
-
-    openRules() {
-        window.location.href = "rules.html";
-    }
-
-    shareGame() {
-        const shareText = "Я сыграл в 2048! Попробуйте и вы!";
-        const url = window.location.href;
-        const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
-        const viberUrl = `viber://forward?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
-        window.open(telegramUrl, '_blank');
-        window.open(whatsappUrl, '_blank');
-        window.open(viberUrl, '_blank');
-        navigator.clipboard.writeText(url);
-    }
-
-    toggleSound() {
-        this.game.soundEnabled = !this.game.soundEnabled;
-        document.getElementById("sound-icon").src = this.game.soundEnabled ? "sound-on.png" : "sound-off.png";
-    }
-
-    openLeaderboard() {
-        window.location.href = "victory.html";
-    }
-
-    getTileIndex(tile) {
-        const index = Array.from(tile.parentNode.children).indexOf(tile);
-        const rowIndex = Math.floor(index / 4);
-        const colIndex = index % 4;
-        return [rowIndex, colIndex];
+// Удаление плитки
+function deleteTile() {
+    if (game.balance >= 50) {
+        const tiles = document.querySelectorAll(".tile");
+        tiles.forEach(tile => {
+            tile.addEventListener("click", () => {
+                const tileValue = parseInt(tile.innerText);
+                if (tileValue > 0) {
+                    const [rowIndex, colIndex] = getTileIndex(tile);
+                    game.grid[rowIndex][colIndex] = 0; // Удаляем плитку
+                    tile.innerText = ''; // Обновляем интерфейс
+                    game.balance -= 50; // Списываем 50
+                    game.additionalClicks++; // Увеличиваем счетчик нажатий
+                    game.updateGrid(); // Обновление интерфейса
+                    game.saveState(); 
+                }
+            }, { once: true });
+        });
     }
 }
 
-// Инициализация управления
-new GameControls(game);
+// Показать и скрыть режим удаления плиток
+deleteTileButton.addEventListener("mousedown", () => {
+    deleteTileButton.classList.add("active");
+    deleteMode = true;
+    deleteTile();
+});
+
+deleteTileButton.addEventListener("mouseup", () => {
+    deleteTileButton.classList.remove("active");
+    deleteMode = false;
+});
+
+// Логика получения индекса плитки
+function getTileIndex(tile) {
+    const index = Array.from(tile.parentNode.children).indexOf(tile);
+    const rowIndex = Math.floor(index / 4);
+    const colIndex = index % 4;
+    return [rowIndex, colIndex];
+}
+
+// Перемешивание плиток
+shuffleButton.addEventListener("click", () => {
+    if (game.balance >= 20) {
+        shuffleTiles();
+        game.balance -= 20;
+        game.additionalClicks++; // Увеличиваем счетчик нажатий
+        game.updateGrid(); // Обновление интерфейса
+        game.saveState();
+    }
+});
+
+// Логика перемешивания плиток
+function shuffleTiles() {
+    const flattenedGrid = game.grid.flat();
+    flattenedGrid.sort(() => Math.random() - 0.5); // Перемешиваем массив
+    for (let i = 0; i < 4; i++) {
+        game.grid[i] = flattenedGrid.slice(i * 4, (i + 1) * 4);
+    }
+}
+
+// Пополнение баланса
+addFundsButton.addEventListener("click", () => {
+    game.balance += 50;
+    game.additionalClicks++; // Увеличиваем счетчик нажатий
+    game.updateGrid(); // Обновление интерфейса
+});
+
+// Уровень сложности
+let currentDifficulty = 0;
+difficultyButton.addEventListener("click", () => {
+    currentDifficulty = (currentDifficulty + 1) % 5; // Циклический переход по уровням
+    difficultyButton.innerText = currentDifficulty + 1; // Обновляем текст кнопки
+    switch (currentDifficulty) {
+        case 0: game.tileProbability = [90, 10]; break;
+        case 1: game.tileProbability = [80, 20]; break;
+        case 2: game.tileProbability = [70, 30]; break;
+        case 3: game.tileProbability = [60, 40]; break;
+        case 4: game.tileProbability = [50, 50]; break;
+    }
+});
+
+// Перезапуск игры
+restartButton.addEventListener("click", () => {
+    gameOverDisplay.classList.add("hidden");
+    game.initGame(); // Инициализация новой игры
+});
+
+// Правила игры
+rulesButton.addEventListener("click", () => {
+    window.location.href = "rules.html"; // Переход на страницу правил
+});
+
+// Поделиться
+shareButton.addEventListener("click", () => {
+    const shareText = "Я сыграл в 2048! Попробуйте и вы!";
+    const url = window.location.href;
+    const shareUrl = `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank');
+});
+
+// Управление звуком
+soundButton.addEventListener("click", () => {
+    game.soundEnabled = !game.soundEnabled; // Переключаем состояние звука
+    soundIcon.src = game.soundEnabled ? "sound-on.png" : "sound-off.png"; // Меняем иконку
+});
+
+// Переход на страницу с таблицей лидеров
+ratingButton.addEventListener("click", () => {
+    window.location.href = "victory.html"; // Переход на страницу таблицы лидеров
+});
