@@ -6,7 +6,6 @@
     <meta name="description" content="Правила игры 2048">
     <title>Правила игры 2048</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Подключение Bootstrap -->
 </head>
 <body>
     <div class="rules-container">
@@ -16,7 +15,6 @@
     </div>
     
     <script>
-        // Загрузка правил из файла
         fetch('rules.txt')
             .then(response => response.text())
             .then(data => {
@@ -24,9 +22,8 @@
             })
             .catch(error => console.error('Ошибка загрузки правил:', error));
 
-        // Обработчик для кнопки назад
         document.getElementById("back-button").addEventListener("click", () => {
-            window.location.href = "index.html"; // Переход обратно к игре
+            window.location.href = "index.html";
         });
     </script>
 </body>
