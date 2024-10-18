@@ -6,15 +6,13 @@
     <meta name="description" content="Игра 2048 - объединяйте плитки и достигайте 2048!">
     <title>2048 - Игра</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Добавление иконки -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div class="game-container">
         <div class="score-container">Счёт: <span id="score">0</span></div>
         <div class="balance-container">Баланс: <span id="balance">100</span></div>
-        <div class="grid-container" id="grid-container">
-            <!-- Плитки будут динамически добавлены через JavaScript -->
-        </div>
+        <div class="grid-container" id="grid-container"></div>
         <div id="game-over" class="game-over hidden">
             Игра окончена! Попробуйте снова!
             <div id="final-score" class="hidden">Ваш счёт: <span id="final-score-value"></span></div>
@@ -35,7 +33,7 @@
             <button id="rating" class="small-button"><img src="rating.png" alt="Rating"></button>
         </div>
     </div>
-    <audio id="move-sound" src="move.mp3" preload="auto"></audio> <!-- Звуки -->
+    <audio id="move-sound" src="move.mp3" preload="auto"></audio>
     <audio id="merge-sound" src="merge.mp3" preload="auto"></audio>
     <audio id="game-over-sound" src="game-over.mp3" preload="auto"></audio>
 
