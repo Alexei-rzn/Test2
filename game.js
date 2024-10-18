@@ -19,7 +19,6 @@ class Game2048 {
         this.maxTile = 0;
         this.additionalClicks = 0;
         this.tileProbability = [90, 10]; // Процент появления плиток 2 и 4
-        this.currentDifficulty = 0; // Текущий уровень сложности
         this.canChangeDifficulty = true; // Позволяет менять уровень сложности
         this.initGame();
     }
@@ -52,11 +51,11 @@ class Game2048 {
         }
     }
 
-    // Обновление фонового цвета
+    // Обновление цвет фона
     updateBackgroundColor() {
         const bodyStyle = document.body.style;
-        const hue = this.maxTile * 10; // Цвет фона на основе максимальной плитки
-        bodyStyle.backgroundColor = `hsl(${hue}, 60%, 80%)`;
+        const color = this.maxTile + 2; // Цвет фона + 2 тона
+        bodyStyle.backgroundColor = `hsl(${color * 10}, 60%, 80%)`;
     }
 
     // Обновление отображения плиток на экране
@@ -291,18 +290,6 @@ class Game2048 {
     start() {
         this.setupTouchControls();
         this.updateGrid();
-    }
-
-    // Установка уровня сложности
-    setDifficulty(level) {
-        switch (level) {
-            case 0: this.tileProbability = [90, 10]; break;
-            case 1: this.tileProbability = [80, 20]; break;
-            case 2: this.tileProbability = [70, 30]; break;
-            case 3: this.tileProbability = [60, 40]; break;
-            case 4: this.tileProbability = [50, 50]; break;
-        }
-        this.canChangeDifficulty = false; // Запрет на изменение сложности во время игры
     }
 }
 
