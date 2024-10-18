@@ -1,14 +1,14 @@
 body {
-    background-color: #8cceff; /* Цвет фона */
+    background-color: #8cceff;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0; /* Убираем отступы по умолчанию */
+    margin: 0;
     font-family: 'Arial', sans-serif;
 }
 
-.game-container, .victory-container {
+.game-container, .victory-container, .rules-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -27,8 +27,8 @@ body {
 }
 
 .tile {
-    width: 80px; /* Ширина плитки */
-    height: 80px; /* Высота плитки */
+    width: 80px;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,11 +36,10 @@ body {
     border-radius: 5px;
     color: white;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Тень для плиток */
-    transition: transform 0.2s ease, background-color 0.2s ease; /* Плавный переход при перемещении и изменении цвета */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.3s ease;
 }
 
-/* Цвета плиток от бледно-оранжевого до бардового */
 .tile-2 { background-color: #ffecb3; }
 .tile-4 { background-color: #ffe0b2; }
 .tile-8 { background-color: #ffcc80; }
@@ -65,63 +64,36 @@ body {
 
 .button-container {
     display: flex;
-    justify-content: space-between; /* Равномерное распределение кнопок */
+    justify-content: space-between;
     margin-top: 20px;
 }
 
-.action-button {
-    width: 80px; /* Ширина кнопки */
-    height: 80px; /* Высота кнопки */
+.action-button, .small-button {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    background-color: #3498db; /* Цвет кнопки */
+    background-color: #3498db;
     color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
 }
 
-.action-button img {
-    width: 100%; /* Изображение заполняет всю кнопку */
-    height: 100%;
-}
-
-.action-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-
-.top-buttons {
-    display: flex;
-    justify-content: space-between; /* Равномерное распределение кнопок */
-    width: 100%; /* Ширина блока кнопок */
-    margin-top: 10px;
+.action-button {
+    width: 80px;
+    height: 80px;
 }
 
 .small-button {
-    width: 20px; /* Ширина маленькой кнопки */
-    height: 20px; /* Высота маленькой кнопки */
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #3498db; /* Цвет кнопки */
-    color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s; /* Плавный переход */
+    width: 20px;
+    height: 20px;
 }
 
-.small-button img {
-    width: 100%; /* Изображение заполняет всю кнопку */
+.action-button img, .small-button img {
+    width: 100%;
     height: 100%;
 }
 
-.small-button:hover {
+.action-button:hover, .small-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-
-.victory-container {
-    text-align: center;
 }
 
 .victory-container h2 {
@@ -160,13 +132,13 @@ body {
 
 @media (max-width: 600px) {
     .tile {
-        height: 70px; /* Уменьшаем высоту плитки на мобильных устройствах */
-        width: 70px; /* Уменьшаем ширину плитки на мобильных устройствах */
-        font-size: 24px; /* Уменьшаем размер шрифта */
+        height: 70px;
+        width: 70px;
+        font-size: 24px;
     }
 
     .action-button, .small-button {
-        width: 60px; /* Уменьшаем ширину кнопок на мобильных устройствах */
-        height: 60px; /* Уменьшаем высоту кнопок на мобильных устройствах */
+        width: 60px;
+        height: 60px;
     }
 }
