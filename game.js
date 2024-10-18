@@ -19,6 +19,7 @@ class Game2048 {
         this.maxTile = 0;
         this.additionalClicks = 0;
         this.tileProbability = [90, 10]; // Процент появления плиток 2 и 4
+        this.canChangeDifficulty = true; // Позволяет менять уровень сложности
         this.initGame();
     }
 
@@ -50,6 +51,13 @@ class Game2048 {
         }
     }
 
+    // Обновление цвет фона
+    updateBackgroundColor() {
+        const bodyStyle = document.body.style;
+        const color = this.maxTile + 2; // Цвет фона + 2 тона
+        bodyStyle.backgroundColor = `hsl(${color * 10}, 60%, 80%)`;
+    }
+
     // Обновление отображения плиток на экране
     updateGrid() {
         this.gridContainer.innerHTML = '';
@@ -68,6 +76,7 @@ class Game2048 {
         });
         this.scoreDisplay.innerText = this.score;
         this.balanceDisplay.innerText = this.balance;
+        this.updateBackgroundColor();
 
         if (this.checkGameOver()) {
             this.gameOverDisplay.classList.remove("hidden");
