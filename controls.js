@@ -4,10 +4,13 @@ const shuffleButton = document.getElementById("shuffle");
 const addFundsButton = document.getElementById("add-funds");
 const restartButton = document.getElementById("restart");
 const rulesButton = document.getElementById("rules");
+const ratingButton = document.getElementById("rating");
 const shareButton = document.getElementById("share");
 const soundButton = document.getElementById("sound");
 const soundIcon = document.getElementById("sound-icon");
-const ratingButton = document.getElementById("rating");
+const submitScoreButton = document.getElementById("submit-score");
+const gameOverDisplay = document.getElementById("game-over");
+const playerNameInput = document.getElementById("player-name");
 const difficultyButton = document.getElementById("difficulty");
 
 // Инициализация текущего уровня сложности
@@ -103,17 +106,14 @@ restartButton.addEventListener("click", () => {
     game.initGame(); // Инициализация новой игры
 });
 
+// Переход на страницу таблицы лидеров
+ratingButton.addEventListener("click", () => {
+    window.location.href = "victory.html"; // Переход на страницу таблицы лидеров
+});
+
 // Правила игры
 rulesButton.addEventListener("click", () => {
     window.location.href = "rules.html"; // Переход на страницу правил
-});
-
-// Поделиться
-shareButton.addEventListener("click", () => {
-    const shareText = "Я сыграл в 2048! Попробуйте и вы!";
-    const url = window.location.href;
-    const shareUrl = `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
-    window.open(shareUrl, '_blank');
 });
 
 // Управление звуком
@@ -124,13 +124,57 @@ soundButton.addEventListener("click", () => {
 
 // Сохранение результата в таблицу лидеров
 submitScoreButton.addEventListener("click", () => {
-    const name = game.playerNameInput.value.trim();
+    const name = playerNameInput.value.trim();
     if (name) {
         game.saveToLeaderboard(name, difficultyButton.innerText); // Сохраняем результат
-        game.playerNameInput.value = ''; // Очищаем поле ввода
+        playerNameInput.value = ''; // Очищаем поле ввода
         gameOverDisplay.classList.add("hidden"); // Скрываем окно окончания игры
         game.initGame(); // Перезагрузка игры
     } else {
         alert("Пожалуйста, введите ваше имя!");
+    }
+});
+
+// Share functionality
+const shareMenu = document.createElement('div');
+shareMenu.id = 'shareMenu';
+shareMenu.innerHTML = `
+    <div class="shareOption" id="whatsapp">WhatsApp</div>
+    <div class="shareOption" id="viber">Viber</div>
+    <div class="shareOption" id="copyLink">Скопировать ссылку</div>
+`;
+document.body.appendChild(shareMenu);
+
+shareButton.addEventListener("click", () => {
+    shareMenu.style.display = shareMenu.style.display === "block" ? "none" : "block";
+});
+
+const shareText = "Я сыграл в 2048! Попробуйте и вы!";
+const url = window.location.href;
+
+document.getElementById("whatsapp").addEventListener("click", () => {
+    const shareUrl = `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank');
+    shareMenu.style.display = "none"; // Скрываем меню
+});
+
+document.getElementById("viber").addEventListener("click", () => {
+    const shareUrl = `viber://forward?text=${encodeURIComponent(shareText)} ${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank');
+    shareMenu.style.display = "none"; // Скрываем меню
+});
+
+document.getElementById("copyLink").addEventListener("click", () => {
+    navigator.clipboard.writeText(`${shareText} ${url}`)
+        .then(() => {
+            alert("Ссылка скопирована!");
+        });
+    shareMenu.style.display = "none"; // Скрываем меню
+});
+
+// Закрытие меню при клике вне его
+window.addEventListener("click", (event) => {
+    if (!shareButton.contains(event.target) && !shareMenu.contains(event.target)) {
+        shareMenu.style.display = "none";
     }
 });
