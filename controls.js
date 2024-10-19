@@ -10,7 +10,9 @@ const soundIcon = document.getElementById("sound-icon");
 const ratingButton = document.getElementById("rating");
 const difficultyButton = document.getElementById("difficulty");
 
-let deleteMode = false;
+// Инициализация текущего уровня сложности
+let currentDifficulty = 0;
+difficultyButton.innerText = currentDifficulty + 1; // Устанавливаем текст кнопки
 
 // Ход назад
 undoButton.addEventListener("click", () => {
@@ -46,13 +48,11 @@ function deleteTile() {
 // Показать и скрыть режим удаления плиток
 deleteTileButton.addEventListener("mousedown", () => {
     deleteTileButton.classList.add("active");
-    deleteMode = true;
     deleteTile();
 });
 
 deleteTileButton.addEventListener("mouseup", () => {
     deleteTileButton.classList.remove("active");
-    deleteMode = false;
 });
 
 // Логика получения индекса плитки
@@ -91,20 +91,10 @@ addFundsButton.addEventListener("click", () => {
 });
 
 // Уровень сложности
-let currentDifficulty = 0;
 difficultyButton.addEventListener("click", () => {
-    if (game.canChangeDifficulty) {
-        currentDifficulty = (currentDifficulty + 1) % 5; // Циклический переход по уровням
-        difficultyButton.innerText = currentDifficulty + 1; // Обновляем текст кнопки
-        switch (currentDifficulty) {
-            case 0: game.tileProbability = [90, 10]; break;
-            case 1: game.tileProbability = [80, 20]; break;
-            case 2: game.tileProbability = [70, 30]; break;
-            case 3: game.tileProbability = [60, 40]; break;
-            case 4: game.tileProbability = [50, 50]; break;
-        }
-        game.canChangeDifficulty = false; // Запрет на изменение сложности во время игры
-    }
+    currentDifficulty = (currentDifficulty + 1) % 5; // Циклический переход по уровням
+    difficultyButton.innerText = currentDifficulty + 1; // Обновляем текст кнопки
+    game.setDifficulty(currentDifficulty); // Устанавливаем уровень сложности
 });
 
 // Перезапуск игры
@@ -130,11 +120,6 @@ shareButton.addEventListener("click", () => {
 soundButton.addEventListener("click", () => {
     game.soundEnabled = !game.soundEnabled; // Переключаем состояние звука
     soundIcon.src = game.soundEnabled ? "sound-on.png" : "sound-off.png"; // Меняем иконку
-});
-
-// Переход на страницу с таблицей лидеров
-ratingButton.addEventListener("click", () => {
-    window.location.href = "victory.html"; // Переход на страницу таблицы лидеров
 });
 
 // Сохранение результата в таблицу лидеров
