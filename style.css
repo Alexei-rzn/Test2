@@ -1,5 +1,5 @@
 body {
-    background-color: #8cceff; /* Цвет фона */
+    background-color: #f0f4f8;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,6 +12,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    background-color: #ffffff;
 }
 
 .score-container, .balance-container {
@@ -24,11 +28,12 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
+    transition: transform 0.2s ease;
 }
 
 .tile {
-    width: 80px; /* Ширина плитки */
-    height: 80px; /* Высота плитки */
+    width: 80px;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,16 +45,16 @@ body {
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.tile-2 { background-color: #ffecb3; }
-.tile-4 { background-color: #ffe0b2; }
-.tile-8 { background-color: #ffcc80; }
-.tile-16 { background-color: #ffb74d; }
-.tile-32 { background-color: #ffa726; }
-.tile-64 { background-color: #fb8c00; }
-.tile-128 { background-color: #f57c00; }
-.tile-256 { background-color: #ef6c00; }
-.tile-512 { background-color: #e65100; }
-.tile-1024 { background-color: #bf360c; }
+.tile-2 { background-color: #ffccbc; }
+.tile-4 { background-color: #ffab91; }
+.tile-8 { background-color: #ff8a65; }
+.tile-16 { background-color: #ff7043; }
+.tile-32 { background-color: #ff5722; }
+.tile-64 { background-color: #f4511e; }
+.tile-128 { background-color: #e64a19; }
+.tile-256 { background-color: #d84315; }
+.tile-512 { background-color: #bf360c; }
+.tile-1024 { background-color: #c62828; }
 .tile-2048 { background-color: #b71c1c; }
 
 .game-over {
@@ -74,7 +79,7 @@ body {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    background-color: #3498db;
+    background-color: #00796b;
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
@@ -103,7 +108,7 @@ body {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    background-color: #3498db;
+    background-color: #00796b;
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
@@ -130,7 +135,7 @@ body {
 .victory-container table {
     margin: 0 auto;
     border-collapse: collapse;
-    width: 90%; /* Устанавливаем ширину таблицы на 90% */
+    width: 90%;
 }
 
 .victory-container th, .victory-container td {
@@ -139,13 +144,14 @@ body {
 }
 
 .victory-container th {
-    background-color: #f2f2f2;
+    background-color: #00796b;
+    color: white;
 }
 
 .back-button {
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #3498db;
+    background-color: #00796b;
     color: white;
     border: none;
     border-radius: 5px;
@@ -154,18 +160,18 @@ body {
 }
 
 .back-button:hover {
-    background-color: #2980b9;
+    background-color: #004d40;
 }
 
 @media (max-width: 600px) {
     .tile {
-        height: 70px; /* Уменьшаем высоту плитки на мобильных устройствах */
-        width: 70px; /* Уменьшаем ширину плитки на мобильных устройствах */
-        font-size: 24px; /* Уменьшаем размер шрифта */
+        height: 70px;
+        width: 70px;
+        font-size: 24px;
     }
 
     .action-button, .small-button {
-        width: 60px; /* Уменьшаем ширину кнопок на мобильных устройствах */
-        height: 60px; /* Уменьшаем высоту кнопок на мобильных устройствах */
+        width: 60px;
+        height: 60px;
     }
 }
