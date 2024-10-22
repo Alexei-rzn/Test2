@@ -18,13 +18,12 @@ class Game2048 {
         this.soundEnabled = true;
         this.maxTile = 0;
         this.additionalClicks = 0;
-        this.tileProbability = [90, 10]; // Процент появления плиток 2 и 4
-        this.currentDifficulty = 0; // Текущий уровень сложности
-        this.canChangeDifficulty = true; // Позволяет менять уровень сложности
+        this.tileProbability = [90, 10]; 
+        this.currentDifficulty = 0; 
+        this.canChangeDifficulty = true; 
         this.initGame();
     }
 
-    // Инициализация игры
     initGame() {
         this.grid = Array.from({ length: 4 }, () => Array(4).fill(0));
         this.score = 0;
@@ -37,7 +36,6 @@ class Game2048 {
         this.updateGrid();
     }
 
-    // Добавление новой плитки
     addNewTile() {
         let emptyCells = [];
         for (let i = 0; i < 4; i++) {
@@ -52,14 +50,12 @@ class Game2048 {
         }
     }
 
-    // Обновление фонового цвета
     updateBackgroundColor() {
         const bodyStyle = document.body.style;
-        const hue = this.maxTile * 10; // Цвет фона на основе максимальной плитки
-        bodyStyle.backgroundColor = `hsl(${hue}, 60%, 80%)`;
+        const hue = this.maxTile * 10; 
+        bodyStyle.backgroundColor = `hsl(${hue}, 60%, 90%)`; 
     }
 
-    // Обновление отображения плиток на экране
     updateGrid() {
         this.gridContainer.innerHTML = '';
         this.grid.forEach(row => {
@@ -88,7 +84,6 @@ class Game2048 {
         }
     }
 
-    // Проверка на окончание игры
     checkGameOver() {
         return this.grid.flat().every(cell => cell !== 0) &&
             !this.grid.some((row, i) => row.some((cell, j) =>
@@ -96,7 +91,6 @@ class Game2048 {
             ));
     }
 
-    // Логика сдвига плиток
     move(direction) {
         let moved = false;
         let combined = false;
@@ -154,7 +148,6 @@ class Game2048 {
         }
     }
 
-    // Логика сдвига плиток в строке
     slideRow(row, direction) {
         let newRow = row.filter(value => value);
         const emptySpaces = 4 - newRow.length;
@@ -187,7 +180,6 @@ class Game2048 {
         return { newRow, moved, combined };
     }
 
-    // Логика сдвига плиток в колонне
     slideColumn(column, direction) {
         let newColumn = column.filter(value => value);
         let moved = false;
@@ -233,7 +225,6 @@ class Game2048 {
         return { newColumn, moved, combined };
     }
 
-    // Сохранение состояния игры в истории
     saveState() {
         if (this.history.length >= 10) {
             this.history.shift();
@@ -241,7 +232,6 @@ class Game2048 {
         this.history.push(JSON.parse(JSON.stringify(this.grid)));
     }
 
-    // Сенсорное управление
     setupTouchControls() {
         let touchStartX = 0;
         let touchStartY = 0;
@@ -273,36 +263,34 @@ class Game2048 {
         });
     }
 
-    // Сохранение результата в таблицу лидеров
     saveToLeaderboard(name, difficulty) {
         const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        leaderboard.push({
-            name,
-            score: this.score,
-            date: new Date().toLocaleString(),
-            tile: this.maxTile,
-            additionalClicks: this.additionalClicks,
-            difficulty
-        });
+        const existingEntryIndex = leaderboard.findIndex(entry => entry.name === name && entry.tile === 2048);
+        if (existingEntryIndex > -1) {
+            leaderboard[existingEntryIndex].score = Math.max(leaderboard[existingEntryIndex].score, this.score);
+            leaderboard[existingEntryIndex].date = new Date().toLocaleString();
+            leaderboard[existingEntryIndex].additionalClicks += this.additionalClicks;
+        } else {
+            leaderboard.push({
+                name,
+                score: this.score,
+                date: new Date().toLocaleString(),
+                tile: this.maxTile,
+                additionalClicks: this.additionalClicks,
+                difficulty
+            });
+        }
         localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
 
-    // Инициализация игры
     start() {
         this.setupTouchControls();
         this.updateGrid();
     }
 
-    // Установка уровня сложности
     setDifficulty(level) {
-        switch (level) {
-            case 0: this.tileProbability = [90, 10]; break;
-            case 1: this.tileProbability = [80, 20]; break;
-            case 2: this.tileProbability = [70, 30]; break;
-            case 3: this.tileProbability = [60, 40]; break;
-            case 4: this.tileProbability = [50, 50]; break;
-        }
-        this.canChangeDifficulty = false; // Запрет на изменение сложности во время игры
+        this.tileProbability = [90 - level * 10, 10 + level * 10];
+        this.canChangeDifficulty = false;
     }
 }
 
