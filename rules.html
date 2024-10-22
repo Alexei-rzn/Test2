@@ -16,7 +16,6 @@
     </div>
     
     <script>
-        // Загрузка правил из файла
         fetch('rules.txt')
             .then(response => response.text())
             .then(data => {
@@ -24,9 +23,8 @@
             })
             .catch(error => console.error('Ошибка загрузки правил:', error));
 
-        // Обработчик для кнопки назад
         document.getElementById("back-button").addEventListener("click", () => {
-            window.location.href = "index.html"; // Переход обратно к игре
+            window.location.href = "index.html";
         });
     </script>
 </body>
