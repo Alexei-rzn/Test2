@@ -16,6 +16,7 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     padding: 20px;
     background-color: #ffffff;
+    transition: transform 0.2s ease;
 }
 
 .score-container, .balance-container {
@@ -42,7 +43,7 @@ body {
     color: white;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .tile-2 { background-color: #ffccbc; }
@@ -174,4 +175,4 @@ body {
         width: 60px;
         height: 60px;
     }
-}
+        }
