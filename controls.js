@@ -85,11 +85,9 @@ addFundsButton.addEventListener("click", () => {
 });
 
 difficultyButton.addEventListener("click", () => {
-    if (game.grid.flat().filter(value => value > 0).length < 3) {
-        currentDifficulty = (currentDifficulty + 1) % 5;
-        difficultyButton.innerText = currentDifficulty + 1;
-        game.setDifficulty(currentDifficulty);
-    }
+    currentDifficulty = (currentDifficulty + 1) % 5;
+    difficultyButton.innerText = currentDifficulty + 1;
+    game.setDifficulty(currentDifficulty);
 });
 
 restartButton.addEventListener("click", () => {
@@ -113,7 +111,7 @@ soundButton.addEventListener("click", () => {
 submitScoreButton.addEventListener("click", () => {
     const name = playerNameInput.value.trim();
     if (name) {
-        game.saveToLeaderboard(name);
+        game.saveToLeaderboard(name, difficultyButton.innerText);
         playerNameInput.value = '';
         gameOverDisplay.classList.add("hidden");
         game.initGame();
