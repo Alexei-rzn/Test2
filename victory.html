@@ -31,11 +31,10 @@
                 <tr>
                     <th>Имя</th>
                     <th>Счёт</th>
-                    <th>Макс. плитка</th>
-                    <th>Ходы</th>
-                    <th>Клики</th>
-                    <th>Уровень сложности</th>
                     <th>Дата</th>
+                    <th>Макс. плитка</th>
+                    <th>Уровень сложности</th>
+                    <th>Доп. кнопки</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,35 +45,30 @@
     </div>
 
     <script>
+        // Загрузка таблицы лидеров
         function loadLeaderboard() {
             const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
             const leaderboardTable = document.getElementById('leaderboard').querySelector('tbody');
             leaderboardTable.innerHTML = '';
-
             const today = new Date().toDateString();
 
+            // Фильтрация по дате и плитке 2048
             const filteredLeaderboard = leaderboard.filter(entry => 
                 entry.tile === 2048 || new Date(entry.date).toDateString() === today
             );
 
             filteredLeaderboard.sort((a, b) => b.score - a.score).forEach(entry => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${entry.name}</td>
-                                 <td>${entry.score}</td>
-                                 <td>${entry.tile}</td>
-                                 <td>${entry.moves}</td>
-                                 <td>${entry.clicks}</td>
-                                 <td>${entry.difficulty}</td>
-                                 <td>${entry.date}</td>`;
+                row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.difficulty}</td><td>${entry.additionalClicks}</td>`;
                 leaderboardTable.appendChild(row);
             });
         }
 
         document.getElementById("back-button").addEventListener("click", () => {
-            window.location.href = "index.html";
+            window.location.href = "index.html"; // Переход обратно к игре
         });
 
-        loadLeaderboard();
+        loadLeaderboard(); // Загрузка таблицы лидеров
     </script>
 </body>
 </html>
