@@ -282,6 +282,15 @@ class Game2048 {
             });
         }
         localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+
+        // Сохранение в table.csv
+        this.saveToCSV(name, difficulty);
+    }
+
+    saveToCSV(name, difficulty) {
+        const csvData = `${name},${this.score},${new Date().toLocaleString()},${this.maxTile},${difficulty},${this.additionalClicks}\n`;
+        const existingData = localStorage.getItem('tableData') || "Имя,Счёт,Дата,Макс. плитка,Уровень сложности,Доп. кнопки\n";
+        localStorage.setItem('tableData', existingData + csvData);
     }
 
     start() {
@@ -290,14 +299,16 @@ class Game2048 {
     }
 
     setDifficulty(level) {
-        switch (level) {
-            case 0: this.tileProbability = [90, 10]; break;
-            case 1: this.tileProbability = [80, 20]; break;
-            case 2: this.tileProbability = [70, 30]; break;
-            case 3: this.tileProbability = [60, 40]; break;
-            case 4: this.tileProbability = [50, 50]; break;
+        if (this.grid.flat().filter(tile => tile > 0).length < 3) { // Условие для смены уровня сложности
+            switch (level) {
+                case 0: this.tileProbability = [90, 10]; break;
+                case 1: this.tileProbability = [80, 20]; break;
+                case 2: this.tileProbability = [70, 30]; break;
+                case 3: this.tileProbability = [60, 40]; break;
+                case 4: this.tileProbability = [50, 50]; break;
+            }
+            this.canChangeDifficulty = false;
         }
-        this.canChangeDifficulty = false;
     }
 }
 
