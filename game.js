@@ -18,10 +18,10 @@ class Game2048 {
         this.soundEnabled = true;
         this.maxTile = 0;
         this.additionalClicks = 0;
-        this.tileProbability = [90, 10]; 
-        this.currentDifficulty = 0; 
-        this.canChangeDifficulty = true; 
-        this.moves = 0; // количество ходов
+        this.tileProbability = [90, 10];
+        this.currentDifficulty = 0;
+        this.canChangeDifficulty = true;
+
         this.initGame();
     }
 
@@ -32,7 +32,6 @@ class Game2048 {
         this.history = [];
         this.maxTile = 0;
         this.additionalClicks = 0;
-        this.moves = 0; // сбросить количество ходов при новой игре
         this.addNewTile();
         this.addNewTile();
         this.updateGrid();
@@ -54,8 +53,8 @@ class Game2048 {
 
     updateBackgroundColor() {
         const bodyStyle = document.body.style;
-        const hue = this.maxTile * 10; 
-        bodyStyle.backgroundColor = `hsl(${hue}, 60%, 90%)`; 
+        const hue = this.maxTile * 10;
+        bodyStyle.backgroundColor = `hsl(${hue}, 60%, 90%)`;
     }
 
     updateGrid() {
@@ -142,7 +141,6 @@ class Game2048 {
         }
 
         if (moved || combined) {
-            this.moves++; // Увеличить количество ходов
             if (this.soundEnabled) this.moveSound.play();
             setTimeout(() => {
                 this.addNewTile();
@@ -228,17 +226,61 @@ class Game2048 {
         return { newColumn, moved, combined };
     }
 
-    saveToLeaderboard(name) {
-        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        leaderboard.push({
-            name,
-            score: this.score,
-            tile: this.maxTile,
-            moves: this.moves,
-            clicks: this.additionalClicks,
-            difficulty: this.currentDifficulty + 1,
-            date: new Date().toLocaleString()
+    saveState() {
+        if (this.history.length >= 10) {
+            this.history.shift();
+        }
+        this.history.push(JSON.parse(JSON.stringify(this.grid)));
+    }
+
+    setupTouchControls() {
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        this.gridContainer.addEventListener('touchstart', (event) => {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
         });
+
+        this.gridContainer.addEventListener('touchmove', (event) => {
+            event.preventDefault();
+        });
+
+        this.gridContainer.addEventListener('touchend', (event) => {
+            const touchEndX = event.changedTouches[0].clientX;
+            const touchEndY = event.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            const absDeltaX = Math.abs(deltaX);
+            const absDeltaY = Math.abs(deltaY);
+
+            if (absDeltaX > absDeltaY && absDeltaX > 30) {
+                this.move(deltaX > 0 ? 'right' : 'left');
+            } else if (absDeltaY > absDeltaX && absDeltaY > 30) {
+                this.move(deltaY > 0 ? 'down' : 'up');
+            }
+        });
+    }
+
+    saveToLeaderboard(name, difficulty) {
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        const existingEntryIndex = leaderboard.findIndex(entry => entry.name === name && entry.tile === 2048);
+        if (existingEntryIndex > -1) {
+            leaderboard[existingEntryIndex].score = Math.max(leaderboard[existingEntryIndex].score, this.score);
+            leaderboard[existingEntryIndex].date = new Date().toLocaleString();
+            leaderboard[existingEntryIndex].additionalClicks += this.additionalClicks;
+        } else {
+            leaderboard.push({
+                name,
+                score: this.score,
+                date: new Date().toLocaleString(),
+                tile: this.maxTile,
+                additionalClicks: this.additionalClicks,
+                difficulty
+            });
+        }
         localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
 
@@ -248,11 +290,14 @@ class Game2048 {
     }
 
     setDifficulty(level) {
-        if (this.grid.flat().filter(value => value > 0).length < 3) { // Изменение сложности только если менее 3 плиток
-            this.tileProbability = [90 - level * 10, 10 + level * 10];
-            this.currentDifficulty = level;
-            this.canChangeDifficulty = false;
+        switch (level) {
+            case 0: this.tileProbability = [90, 10]; break;
+            case 1: this.tileProbability = [80, 20]; break;
+            case 2: this.tileProbability = [70, 30]; break;
+            case 3: this.tileProbability = [60, 40]; break;
+            case 4: this.tileProbability = [50, 50]; break;
         }
+        this.canChangeDifficulty = false;
     }
 }
 
