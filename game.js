@@ -307,7 +307,9 @@ class Game2048 {
                 case 3: this.tileProbability = [60, 40]; break;
                 case 4: this.tileProbability = [50, 50]; break;
             }
-            this.canChangeDifficulty = false;
+            this.canChangeDifficulty = true; // Позволяем менять уровень сложности
+        } else {
+            this.canChangeDifficulty = false; // Запрещаем менять уровень сложности
         }
     }
 }
