@@ -85,9 +85,11 @@ addFundsButton.addEventListener("click", () => {
 });
 
 difficultyButton.addEventListener("click", () => {
-    currentDifficulty = (currentDifficulty + 1) % 5;
-    difficultyButton.innerText = currentDifficulty + 1;
-    game.setDifficulty(currentDifficulty);
+    if (game.canChangeDifficulty) { // Проверяем, можно ли менять уровень сложности
+        currentDifficulty = (currentDifficulty + 1) % 5;
+        difficultyButton.innerText = currentDifficulty + 1;
+        game.setDifficulty(currentDifficulty);
+    }
 });
 
 restartButton.addEventListener("click", () => {
