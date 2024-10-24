@@ -47,17 +47,12 @@
     <script>
         // Загрузка таблицы лидеров
         function loadLeaderboard() {
+            const today = new Date().toDateString();
             const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
             const leaderboardTable = document.getElementById('leaderboard').querySelector('tbody');
             leaderboardTable.innerHTML = '';
-            const today = new Date().toDateString();
 
-            // Фильтрация по дате и плитке 2048
-            const filteredLeaderboard = leaderboard.filter(entry => 
-                entry.tile === 2048 || new Date(entry.date).toDateString() === today
-            );
-
-            filteredLeaderboard.sort((a, b) => b.score - a.score).forEach(entry => {
+            leaderboard.forEach(entry => {
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.difficulty}</td><td>${entry.additionalClicks}</td>`;
                 leaderboardTable.appendChild(row);
