@@ -19,46 +19,31 @@ undoButton.addEventListener("click", () => {
     if (game.history.length > 0 && game.balance >= 30) {
         game.grid = game.history.pop();
         game.balance -= 30;
-        game.additionalClicks++;
         game.updateGrid();
     }
 });
 
 function deleteTile() {
-    if (game.balance >= 50) {
-        const tiles = document.querySelectorAll(".tile");
-        tiles.forEach(tile => {
-            tile.addEventListener("click", () => {
-                const tileValue = parseInt(tile.innerText);
-                if (tileValue > 0) {
-                    const [rowIndex, colIndex] = getTileIndex(tile);
-                    game.grid[rowIndex][colIndex] = 0;
-                    tile.innerText = '';
-                    game.balance -= 50;
-                    game.additionalClicks++;
-                    game.updateGrid();
-                    game.saveState();
-                }
-            }, { once: true });
-        });
-    }
+    const tiles = document.querySelectorAll(".tile");
+    tiles.forEach(tile => {
+        tile.addEventListener("click", () => {
+            const tileValue = parseInt(tile.innerText);
+            if (tileValue > 0 && game.balance >= 50) {
+                const [rowIndex, colIndex] = getTileIndex(tile);
+                game.grid[rowIndex][colIndex] = 0;
+                tile.innerText = '';
+                game.balance -= 50;
+                game.additionalClicks++;
+                game.updateGrid();
+                game.saveState();
+            }
+        }, { once: true });
+    });
 }
 
-deleteTileButton.addEventListener("mousedown", () => {
-    deleteTileButton.classList.add("active");
+deleteTileButton.addEventListener("click", () => {
     deleteTile();
 });
-
-deleteTileButton.addEventListener("mouseup", () => {
-    deleteTileButton.classList.remove("active");
-});
-
-function getTileIndex(tile) {
-    const index = Array.from(tile.parentNode.children).indexOf(tile);
-    const rowIndex = Math.floor(index / 4);
-    const colIndex = index % 4;
-    return [rowIndex, colIndex];
-}
 
 shuffleButton.addEventListener("click", () => {
     if (game.balance >= 20) {
@@ -85,11 +70,9 @@ addFundsButton.addEventListener("click", () => {
 });
 
 difficultyButton.addEventListener("click", () => {
-    if (game.canChangeDifficulty) { // Проверяем, можно ли менять уровень сложности
-        currentDifficulty = (currentDifficulty + 1) % 5;
-        difficultyButton.innerText = currentDifficulty + 1;
-        game.setDifficulty(currentDifficulty);
-    }
+    currentDifficulty = (currentDifficulty + 1) % 5;
+    difficultyButton.innerText = currentDifficulty + 1;
+    game.setDifficulty(currentDifficulty);
 });
 
 restartButton.addEventListener("click", () => {
