@@ -7,10 +7,15 @@
     <title>Турнирная таблица 2048</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 0 auto;
+            position: relative;
         }
         th, td {
             padding: 10px;
@@ -20,6 +25,34 @@
         th {
             background-color: #00796b;
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .victory-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            background-color: #ffffff;
+            margin: 20px;
+            width: calc(100% - 40px);
+            max-width: 800px;
+        }
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #004d40;
         }
     </style>
 </head>
@@ -51,7 +84,17 @@
             const leaderboardTable = document.getElementById('leaderboard').querySelector('tbody');
             leaderboardTable.innerHTML = '';
 
-            leaderboard.forEach(entry => {
+            // Сортировка по максимальной плитке
+            leaderboard.sort((a, b) => b.tile - a.tile);
+
+            const today = new Date().toDateString();
+            const permanentEntries = leaderboard.filter(entry => entry.tile === 2048);
+            const temporaryEntries = leaderboard.filter(entry => new Date(entry.date).toDateString() === today);
+
+            // Объединение постоянных и временных записей
+            const combinedEntries = [...permanentEntries, ...temporaryEntries];
+
+            combinedEntries.forEach(entry => {
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td><td>${entry.date}</td><td>${entry.tile}</td><td>${entry.difficulty}</td><td>${entry.additionalClicks}</td>`;
                 leaderboardTable.appendChild(row);
