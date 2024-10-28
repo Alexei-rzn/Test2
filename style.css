@@ -17,8 +17,8 @@ body {
     padding: 20px;
     background-color: #ffffff;
     transition: transform 0.2s ease;
-    width: 90%; /* Увеличиваем ширину для лучшей адаптивности */
-    max-width: 600px; /* Ограничиваем максимальную ширину */
+    width: 90%;
+    max-width: 600px;
 }
 
 .score-container, .balance-container {
@@ -31,7 +31,6 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    transition: transform 0.2s ease;
 }
 
 .tile {
