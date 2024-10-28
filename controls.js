@@ -85,7 +85,7 @@ ratingButton.addEventListener("click", () => {
 });
 
 rulesButton.addEventListener("click", () => {
-    window.location.href = "rules.html";
+    window.location.href = "rules.html"; 
 });
 
 soundButton.addEventListener("click", () => {
