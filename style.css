@@ -8,7 +8,7 @@ body {
     font-family: 'Arial', sans-serif;
 }
 
-.game-container, .victory-container, .rules-container {
+.game-container, .victory-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,8 +17,6 @@ body {
     padding: 20px;
     background-color: #ffffff;
     transition: transform 0.2s ease;
-    width: 90%;
-    max-width: 600px;
 }
 
 .score-container, .balance-container {
@@ -31,6 +29,7 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
+    transition: transform 0.2s ease;
 }
 
 .tile {
@@ -126,11 +125,11 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-.victory-container, .rules-container {
+.victory-container {
     text-align: center;
 }
 
-.victory-container h2, .rules-container h2 {
+.victory-container h2 {
     margin-bottom: 20px;
 }
 
