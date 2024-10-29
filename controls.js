@@ -19,12 +19,11 @@ undoButton.addEventListener("click", () => {
     if (game.history.length > 0 && game.balance >= 30) {
         game.grid = game.history.pop();
         game.balance -= 30;
-        game.additionalClicks++;
         game.updateGrid();
     }
 });
 
-function deleteTile() {
+deleteTileButton.addEventListener("click", () => {
     if (game.balance >= 50) {
         const tiles = document.querySelectorAll(".tile");
         tiles.forEach(tile => {
@@ -42,23 +41,7 @@ function deleteTile() {
             }, { once: true });
         });
     }
-}
-
-deleteTileButton.addEventListener("mousedown", () => {
-    deleteTileButton.classList.add("active");
-    deleteTile();
 });
-
-deleteTileButton.addEventListener("mouseup", () => {
-    deleteTileButton.classList.remove("active");
-});
-
-function getTileIndex(tile) {
-    const index = Array.from(tile.parentNode.children).indexOf(tile);
-    const rowIndex = Math.floor(index / 4);
-    const colIndex = index % 4;
-    return [rowIndex, colIndex];
-}
 
 shuffleButton.addEventListener("click", () => {
     if (game.balance >= 20) {
@@ -85,11 +68,9 @@ addFundsButton.addEventListener("click", () => {
 });
 
 difficultyButton.addEventListener("click", () => {
-    if (game.canChangeDifficulty) { // Проверяем, можно ли менять уровень сложности
-        currentDifficulty = (currentDifficulty + 1) % 5;
-        difficultyButton.innerText = currentDifficulty + 1;
-        game.setDifficulty(currentDifficulty);
-    }
+    currentDifficulty = (currentDifficulty + 1) % 5;
+    difficultyButton.innerText = currentDifficulty + 1;
+    game.setDifficulty(currentDifficulty);
 });
 
 restartButton.addEventListener("click", () => {
@@ -102,7 +83,7 @@ ratingButton.addEventListener("click", () => {
 });
 
 rulesButton.addEventListener("click", () => {
-    window.location.href = "rules.html";
+    window.location.href = "rules.html"; 
 });
 
 soundButton.addEventListener("click", () => {
@@ -121,3 +102,10 @@ submitScoreButton.addEventListener("click", () => {
         alert("Пожалуйста, введите ваше имя!");
     }
 });
+
+function getTileIndex(tile) {
+    const index = Array.from(tile.parentNode.children).indexOf(tile);
+    const rowIndex = Math.floor(index / 4);
+    const colIndex = index % 4;
+    return [rowIndex, colIndex];
+}
