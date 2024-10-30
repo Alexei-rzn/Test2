@@ -20,6 +20,7 @@ class Game2048 {
         this.additionalClicks = 0;
         this.tileProbability = [90, 10];
         this.currentDifficulty = 0;
+        this.canChangeDifficulty = true;
 
         this.initGame();
     }
@@ -98,7 +99,7 @@ class Game2048 {
         switch (direction) {
             case 'left':
                 for (let i = 0; i < 4; i++) {
-                    const result = this.slideRow(this.grid[i]);
+                    const result = this.slideRow(this.grid[i], direction);
                     if (result.moved) moved = true;
                     if (result.combined) combined = true;
                     this.grid[i] = result.newRow;
@@ -107,17 +108,17 @@ class Game2048 {
 
             case 'right':
                 for (let i = 0; i < 4; i++) {
-                    const result = this.slideRow(this.grid[i].slice().reverse()).newRow.reverse();
+                    const result = this.slideRow(this.grid[i].slice().reverse(), 'left');
                     if (result.moved) moved = true;
                     if (result.combined) combined = true;
-                    this.grid[i] = result;
+                    this.grid[i] = result.newRow.reverse();
                 }
                 break;
 
             case 'up':
                 for (let j = 0; j < 4; j++) {
                     const column = [this.grid[0][j], this.grid[1][j], this.grid[2][j], this.grid[3][j]];
-                    const result = this.slideColumn(column);
+                    const result = this.slideColumn(column, 'up');
                     for (let i = 0; i < 4; i++) {
                         this.grid[i][j] = result.newColumn[i];
                     }
@@ -129,9 +130,9 @@ class Game2048 {
             case 'down':
                 for (let j = 0; j < 4; j++) {
                     const column = [this.grid[0][j], this.grid[1][j], this.grid[2][j], this.grid[3][j]];
-                    const result = this.slideColumn(column.reverse()).newColumn.reverse();
+                    const result = this.slideColumn(column, 'down');
                     for (let i = 0; i < 4; i++) {
-                        this.grid[i][j] = result[i];
+                        this.grid[i][j] = result.newColumn[i];
                     }
                     if (result.moved) moved = true;
                     if (result.combined) combined = true;
@@ -148,13 +149,15 @@ class Game2048 {
         }
     }
 
-    slideRow(row) {
+    slideRow(row, direction) {
         let newRow = row.filter(value => value);
         const emptySpaces = 4 - newRow.length;
         let moved = false;
         let combined = false;
 
-        newRow = [...newRow, ...Array(emptySpaces).fill(0)];
+        newRow = direction === 'left'
+            ? [...newRow, ...Array(emptySpaces).fill(0)]
+            : [...Array(emptySpaces).fill(0), ...newRow];
 
         for (let i = 0; i < 3; i++) {
             if (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
@@ -178,22 +181,34 @@ class Game2048 {
         return { newRow, moved, combined };
     }
 
-    slideColumn(column) {
+    slideColumn(column, direction) {
         let newColumn = column.filter(value => value);
         let moved = false;
         let combined = false;
 
         while (newColumn.length < 4) {
-            newColumn.push(0);
+            direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
         }
 
-        for (let i = 0; i < 3; i++) {
-            if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
-                newColumn[i] *= 2;
-                this.score += newColumn[i];
-                newColumn[i + 1] = 0;
-                combined = true;
-                if (this.soundEnabled) this.mergeSound.play();
+        if (direction === 'up') {
+            for (let i = 0; i < 3; i++) {
+                if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
+                    newColumn[i] *= 2;
+                    this.score += newColumn[i];
+                    newColumn[i + 1] = 0;
+                    combined = true;
+                    if (this.soundEnabled) this.mergeSound.play();
+                }
+            }
+        } else {
+            for (let i = 3; i > 0; i--) {
+                if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
+                    newColumn[i] *= 2;
+                    this.score += newColumn[i];
+                    newColumn[i - 1] = 0;
+                    combined = true;
+                    if (this.soundEnabled) this.mergeSound.play();
+                }
             }
         }
 
@@ -203,7 +218,7 @@ class Game2048 {
 
         newColumn = newColumn.filter(value => value);
         while (newColumn.length < 4) {
-            newColumn.push(0);
+            direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
         }
 
         this.maxTile = Math.max(this.maxTile, ...newColumn);
@@ -292,6 +307,7 @@ class Game2048 {
                 case 3: this.tileProbability = [60, 40]; break;
                 case 4: this.tileProbability = [50, 50]; break;
             }
+            this.canChangeDifficulty = false;
         }
     }
 }
