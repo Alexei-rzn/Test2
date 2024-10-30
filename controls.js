@@ -108,4 +108,4 @@ function getTileIndex(tile) {
     const rowIndex = Math.floor(index / 4);
     const colIndex = index % 4;
     return [rowIndex, colIndex];
-        }
+}
