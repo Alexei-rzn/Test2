@@ -34,7 +34,7 @@
                     <th>Дата</th>
                     <th>Макс. плитка</th>
                     <th>Уровень сложности</th>
-                    <th>Доп. кнопки</th>
+                    <th>Доп. клики</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,7 +45,6 @@
     </div>
 
     <script>
-        // Загрузка таблицы лидеров
         function loadLeaderboard() {
             const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
             const leaderboardTable = document.getElementById('leaderboard').querySelector('tbody');
