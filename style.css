@@ -59,6 +59,14 @@ body {
 .tile-1024 { background-color: #c62828; }
 .tile-2048 { background-color: #b71c1c; }
 
+.tile.merging {
+    animation: merge 0.4s forwards;
+}
+
+@keyframes merge {
+    transform: scale(1.1);
+}
+
 .game-over {
     font-size: 24px;
     color: red;
@@ -84,7 +92,9 @@ body {
     background-color: #00796b;
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
+    transition: background-color 0.3s, 
+        transform 0.1s, 
+        box-shadow 0.1s;
 }
 
 .action-button img {
@@ -113,7 +123,9 @@ body {
     background-color: #00796b;
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
+    transition: background-color 0.3s, 
+        transform 0.1s, 
+        box-shadow 0.1s;
 }
 
 .small-button img {
