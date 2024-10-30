@@ -150,167 +150,154 @@ class Game2048 {
     }
 
     slideRow(row, direction) {
-        let newRow = row.filter(value => value);
-        const emptySpaces = 4 - newRow.length;
-        let moved = false;
-        let combined = false;
+        let newRow = row
+                        .filter(val => val !== 0); // Удаляем нулевые элементы
+        const combinedRow = [];
 
-        newRow = direction === 'left'
-            ? [...newRow, ...Array(emptySpaces).fill(0)]
-            : [...Array(emptySpaces).fill(0), ...newRow];
-
-        for (let i = 0; i < 3; i++) {
-            if (newRow[i] !== 0 && newRow[i] === newRow[i + 1]) {
-                newRow[i] *= 2;
-                this.score += newRow[i];
-                newRow[i + 1] = 0;
-                combined = true;
-                if (this.soundEnabled) this.mergeSound.play();
+        for (let i = 0; i < newRow.length; i++) {
+            if (newRow[i] === newRow[i + 1] && !combinedRow.includes(newRow[i])) {
+                combinedRow.push(newRow[i] * 2);
+                this.score += newRow[i] * 2; // Увеличиваем счёт
+                this.maxTile = Math.max(this.maxTile, newRow[i] * 2); // Максимальная плитка
+                i++; // Пропускаем следующий элемент
+            } else {
+                combinedRow.push(newRow[i]);
             }
         }
 
-        if (JSON.stringify(newRow) !== JSON.stringify(row)) {
-            moved = true;
+        // Заполняем оставшиеся пустые места нулями
+        while (combinedRow.length < 4) {
+            combinedRow.push(0);
         }
 
-        newRow = newRow.filter(value => value);
-        while (newRow.length < 4) newRow.push(0);
-
-        this.maxTile = Math.max(this.maxTile, ...newRow);
-
-        return { newRow, moved, combined };
+        const moved = combinedRow.toString() !== row.toString();
+        return { newRow: combinedRow, moved, combined: combinedRow.length !== newRow.length };
     }
 
     slideColumn(column, direction) {
-        let newColumn = column.filter(value => value);
-        let moved = false;
-        let combined = false;
+        // Работает аналогично slideRow, но с колонками
+        const newColumn = column.filter(val => val !== 0);
+        const combinedColumn = [];
 
-        while (newColumn.length < 4) {
-            direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
-        }
-
-        if (direction === 'up') {
-            for (let i = 0; i < 3; i++) {
-                if (newColumn[i] !== 0 && newColumn[i] === newColumn[i + 1]) {
-                    newColumn[i] *= 2;
-                    this.score += newColumn[i];
-                    newColumn[i + 1] = 0;
-                    combined = true;
-                    if (this.soundEnabled) this.mergeSound.play();
-                }
-            }
-        } else {
-            for (let i = 3; i > 0; i--) {
-                if (newColumn[i] !== 0 && newColumn[i] === newColumn[i - 1]) {
-                    newColumn[i] *= 2;
-                    this.score += newColumn[i];
-                    newColumn[i - 1] = 0;
-                    combined = true;
-                    if (this.soundEnabled) this.mergeSound.play();
-                }
+        for (let i = 0; i < newColumn.length; i++) {
+            if (newColumn[i] === newColumn[i + 1] && !combinedColumn.includes(newColumn[i])) {
+                combinedColumn.push(newColumn[i] * 2);
+                this.score += newColumn[i] * 2;
+                this.maxTile = Math.max(this.maxTile, newColumn[i] * 2);
+                i++;
+            } else {
+                combinedColumn.push(newColumn[i]);
             }
         }
 
-        if (JSON.stringify(newColumn) !== JSON.stringify(column)) {
-            moved = true;
+        // Заполняем оставшиеся пустые места нулями
+        while (combinedColumn.length < 4) {
+            combinedColumn.push(0);
         }
 
-        newColumn = newColumn.filter(value => value);
-        while (newColumn.length < 4) {
-            direction === 'up' ? newColumn.push(0) : newColumn.unshift(0);
-        }
-
-        this.maxTile = Math.max(this.maxTile, ...newColumn);
-
-        return { newColumn, moved, combined };
+        const moved = combinedColumn.toString() !== column.toString();
+        return { newColumn: combinedColumn, moved, combined: combinedColumn.length !== newColumn.length };
     }
 
     saveState() {
-        if (this.history.length >= 10) {
-            this.history.shift();
-        }
-        this.history.push(JSON.parse(JSON.stringify(this.grid)));
-    }
-
-    setupTouchControls() {
-        let touchStartX = 0;
-        let touchStartY = 0;
-
-        this.gridContainer.addEventListener('touchstart', (event) => {
-            touchStartX = event.touches[0].clientX;
-            touchStartY = event.touches[0].clientY;
-        });
-
-        this.gridContainer.addEventListener('touchmove', (event) => {
-            event.preventDefault();
-        });
-
-        this.gridContainer.addEventListener('touchend', (event) => {
-            const touchEndX = event.changedTouches[0].clientX;
-            const touchEndY = event.changedTouches[0].clientY;
-
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-
-            const absDeltaX = Math.abs(deltaX);
-            const absDeltaY = Math.abs(deltaY);
-
-            if (absDeltaX > absDeltaY && absDeltaX > 30) {
-                this.move(deltaX > 0 ? 'right' : 'left');
-            } else if (absDeltaY > absDeltaX && absDeltaY > 30) {
-                this.move(deltaY > 0 ? 'down' : 'up');
-            }
+        this.history.push({
+            grid: this.grid.map(row => row.slice()),
+            score: this.score,
+            balance: this.balance,
+            additionalClicks: this.additionalClicks
         });
     }
 
-    saveToLeaderboard(name, difficulty) {
-        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        const existingEntryIndex = leaderboard.findIndex(entry => entry.name === name && entry.tile === 2048);
-        if (existingEntryIndex > -1) {
-            leaderboard[existingEntryIndex].score = Math.max(leaderboard[existingEntryIndex].score, this.score);
-            leaderboard[existingEntryIndex].date = new Date().toLocaleString();
-            leaderboard[existingEntryIndex].additionalClicks += this.additionalClicks;
-        } else {
-            leaderboard.push({
-                name,
-                score: this.score,
-                date: new Date().toLocaleString(),
-                tile: this.maxTile,
-                additionalClicks: this.additionalClicks,
-                difficulty
-            });
+    undo() {
+        if (this.history.length > 1) {
+            this.history.pop(); // Убираем текущее состояние
+            const lastState = this.history[this.history.length - 1]; // Последнее состояние
+            this.grid = lastState.grid;
+            this.score = lastState.score;
+            this.balance = lastState.balance;
+            this.additionalClicks = lastState.additionalClicks;
+            this.updateGrid();
         }
-        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-
-        // Сохранение в table.csv
-        this.saveToCSV(name, difficulty);
     }
 
-    saveToCSV(name, difficulty) {
-        const csvData = `${name},${this.score},${new Date().toLocaleString()},${this.maxTile},${difficulty},${this.additionalClicks}\n`;
-        const existingData = localStorage.getItem('tableData') || "Имя,Счёт,Дата,Макс. плитка,Уровень сложности,Доп. кнопки\n";
-        localStorage.setItem('tableData', existingData + csvData);
-    }
-
-    start() {
-        this.setupTouchControls();
-        this.updateGrid();
-    }
-
-    setDifficulty(level) {
-        if (this.grid.flat().filter(tile => tile > 0).length < 3) { // Условие для смены уровня сложности
-            switch (level) {
-                case 0: this.tileProbability = [90, 10]; break;
-                case 1: this.tileProbability = [80, 20]; break;
-                case 2: this.tileProbability = [70, 30]; break;
-                case 3: this.tileProbability = [60, 40]; break;
-                case 4: this.tileProbability = [50, 50]; break;
-            }
-            this.canChangeDifficulty = false;
-        }
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        const soundIcon = document.getElementById("sound-icon");
+        soundIcon.src = this.soundEnabled ? "sound-on.png" : "sound-off.png";
     }
 }
 
-const game = new Game2048();
-game.start();
+// Инициализация игры
+const game2048 = new Game2048();
+
+// Обработка действий игрока
+document.addEventListener("keydown", (event) => {
+    if (!game2048.gameOverDisplay.classList.contains("hidden")) return;
+
+    switch (event.key) {
+        case 'ArrowLeft':
+            game2048.move('left');
+            break;
+        case 'ArrowRight':
+            game2048.move('right');
+            break;
+        case 'ArrowUp':
+            game2048.move('up');
+            break;
+        case 'ArrowDown':
+            game2048.move('down');
+            break;
+    }
+});
+
+// Перезапуск игры
+document.getElementById("restart").addEventListener("click", () => {
+    game2048.initGame();
+});
+
+// Обработка кнопки "Слышимость"
+document.getElementById("sound").addEventListener("click", () => {
+    game2048.toggleSound();
+});
+
+// Обработка кнопки "Ход назад"
+document.getElementById("undo").addEventListener("click", () => {
+    game2048.undo();
+});
+
+// Обработка кнопки "Добавить средства"
+document.getElementById("add-funds").addEventListener("click", () => {
+    game2048.balance += 50; // Добавить 50 к балансу
+    game2048.updateGrid();
+});
+
+// Обработка кнопки "Правила"
+document.getElementById("rules").addEventListener("click", () => {
+    window.location.href = "rules.html";
+});
+
+// Обработка кнопки "Турнирная таблица"
+document.getElementById("rating").addEventListener("click", () => {
+    window.location.href = "victory.html";
+});
+
+// Запись результата на турнире
+document.getElementById("submit-score").addEventListener("click", () => {
+    const name = game2048.playerNameInput.value.trim();
+    if (!name) {
+        alert("Пожалуйста, введите ваше имя!");
+        return;
+    }
+
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    leaderboard.push({
+        name,
+        score: game2048.score,
+        date: new Date().toLocaleString(),
+        tile: game2048.maxTile,
+        difficulty: game2048.currentDifficulty,
+        additionalClicks: game2048.additionalClicks
+    });
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    alert("Ваш результат сохранён!");
+});
